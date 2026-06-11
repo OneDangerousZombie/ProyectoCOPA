@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Anotador Fútbol</title>
+    <link rel="stylesheet" href="css/estilos.css">
+    <base target="_blank">
+</head>
+<body>
+
+<div id="screen-config" class="screen active">
+    <h1>⚽ Configurar Partido</h1>
+
+    <div class="card">
+        <h2>📍 Datos del partido</h2>
+        <input type="text" id="venueInput" placeholder="Cancha / Dirección / Torneo" value="MEGA FÚTBOL - Cancha 3">
+        <div class="input-hint">Este texto aparecerá en la parte superior del .txt</div>
+        <input type="text" id="matchInfoInput" placeholder="Fecha / Jornada / Info extra" value="FECHA 7 Jornada 5 Apertura">
+        <div class="input-hint">Ej: FECHA 7 Jornada 5 Apertura</div>
+    </div>
+
+    <div class="card">
+        <h2>Formato de juego</h2>
+        <div class="format-selector">
+            <button class="format-btn" onclick="selectFormat(5)">5 vs 5</button>
+            <button class="format-btn" onclick="selectFormat(6)">6 vs 6</button>
+            <button class="format-btn" onclick="selectFormat(7)">7 vs 7</button>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>Nombres de equipos</h2>
+        <div class="team-inputs">
+            <input type="text" id="teamAName" placeholder="Equipo A" value="BLANCO">
+            <input type="text" id="teamBName" placeholder="Equipo B" value="NEGRO">
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>Jugadores <span id="formatLabel"></span></h2>
+        <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+            <input type="text" id="playerInput" placeholder="Nombre del jugador" style="flex:1; margin-bottom:0;">
+            <select id="teamSelect" style="width: 120px; margin-bottom:0;">
+                <option value="A">Equipo A</option>
+                <option value="B">Equipo B</option>
+            </select>
+        </div>
+        <button class="btn btn-secondary" onclick="addPlayer()">➕ Agregar Jugador</button>
+
+        <div style="margin-top: 12px;">
+            <div style="display: flex; gap: 10px;">
+                <div style="flex:1;">
+                    <h3 id="listAName" style="font-size:0.85rem; color:#3b82f6; margin-bottom:6px;">Equipo A</h3>
+                    <div id="listA" class="player-list"></div>
+                </div>
+                <div style="flex:1;">
+                    <h3 id="listBName" style="font-size:0.85rem; color:#ef4444; margin-bottom:6px;">Equipo B</h3>
+                    <div id="listB" class="player-list"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <button class="btn btn-primary" id="startBtn" onclick="startMatch()" disabled>🚀 Iniciar Partido</button>
+</div>
+
+<div id="screen-match" class="screen">
+    <div class="timer" id="timer">00:00</div>
+
+    <div class="scoreboard">
+        <div class="team-score">
+            <div class="name" id="scoreAName">EQUIPO A</div>
+            <div class="score" id="scoreA">0</div>
+        </div>
+        <div class="vs">VS</div>
+        <div class="team-score">
+            <div class="name" id="scoreBName">EQUIPO B</div>
+            <div class="score" id="scoreB">0</div>
+        </div>
+    </div>
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="label">Goles registrados</div>
+            <div class="value" id="totalGoals">0</div>
+        </div>
+        <div class="stat-card">
+            <div class="label">Asistencias</div>
+            <div class="value" id="totalAssists">0</div>
+        </div>
+    </div>
+
+    <button class="btn goal-btn" onclick="startGoal()">⚽ REGISTRAR GOL</button>
+    <button class="btn btn-secondary" onclick="startSubstitution()">🔄 CAMBIO DE JUGADOR</button>
+
+    <div class="card">
+        <h2>📋 Resumen del partido</h2>
+        <div class="summary-list" id="summaryList">
+            <div style="color:#525252; text-align:center; padding:20px;">Sin goles registrados</div>
+        </div>
+    </div>
+
+    <div class="final-actions">
+        <button class="btn btn-dark" onclick="undoLast()">↩️ Deshacer</button>
+        <button class="btn btn-danger" onclick="finishMatch()">🏁 Finalizar</button>
+    </div>
+</div>
+
+<div id="screen-substitution-team" class="screen">
+    <button class="back-btn" onclick="backToMatch()">← Volver</button>
+    <h1>¿Qué equipo hace cambio?</h1>
+    <div class="step-indicator">
+        <div class="step-dot active"></div>
+        <div class="step-dot"></div>
+        <div class="step-dot"></div>
+    </div>
+    <div class="team-select-grid">
+        <div class="team-card team-a" id="subTeamA" onclick="selectSubTeam('A')">
+            <div id="subTeamAName">EQUIPO A</div>
+        </div>
+        <div class="team-card team-b" id="subTeamB" onclick="selectSubTeam('B')">
+            <div id="subTeamBName">EQUIPO B</div>
+        </div>
+    </div>
+</div>
+
+<div id="screen-substitution-enter" class="screen">
+    <button class="back-btn" onclick="backToSubTeam()">← Volver</button>
+    <h1>¿Quién sale?</h1>
+    <div class="step-indicator">
+        <div class="step-dot active"></div>
+        <div class="step-dot active"></div>
+        <div class="step-dot"></div>
+    </div>
+    <div class="player-grid" id="enterGrid"></div>
+</div>
+
+<div id="screen-substitution-exit" class="screen">
+    <button class="back-btn" onclick="backToSubEnter()">← Volver</button>
+    <h1>¿Quién entra?</h1>
+    <div class="step-indicator">
+        <div class="step-dot active"></div>
+        <div class="step-dot active"></div>
+        <div class="step-dot active"></div>
+    </div>
+    <div class="player-grid" id="exitGrid"></div>
+</div>
+
+<div id="screen-goal-team-select" class="screen">
+    <button class="back-btn" onclick="backToActionMenu()">← Volver</button>
+    <h1>¿Quién anotó?</h1>
+    <div class="step-indicator">
+        <div class="step-dot active"></div>
+        <div class="step-dot"></div>
+        <div class="step-dot"></div>
+    </div>
+    <div class="team-select-grid">
+        <div class="team-card team-a" id="goalTeamA" onclick="selectGoalTeam('A')">
+            <div id="goalTeamAName">EQUIPO A</div>
+        </div>
+        <div class="team-card team-b" id="goalTeamB" onclick="selectGoalTeam('B')">
+            <div id="goalTeamBName">EQUIPO B</div>
+        </div>
+    </div>
+</div>
+
+<div id="screen-goal-scorer" class="screen">
+    <button class="back-btn" onclick="backToGoalTeam()">← Volver</button>
+    <h1>Autor del gol</h1>
+    <div class="step-indicator">
+        <div class="step-dot active"></div>
+        <div class="step-dot active"></div>
+        <div class="step-dot"></div>
+    </div>
+    <div class="player-grid" id="scorerGrid"></div>
+</div>
+
+<div id="screen-goal-assist" class="screen">
+    <button class="back-btn" onclick="backToScorer()">← Volver</button>
+    <h1>Asistencia</h1>
+    <div class="step-indicator">
+        <div class="step-dot active"></div>
+        <div class="step-dot active"></div>
+        <div class="step-dot active"></div>
+    </div>
+    <div class="assist-options" id="assistGrid"></div>
+</div>
+
+<div id="screen-finish" class="screen">
+    <h1>🏁 Partido Finalizado</h1>
+
+    <div class="scoreboard">
+        <div class="team-score">
+            <div class="name" id="finalAName">EQUIPO A</div>
+            <div class="score" id="finalAScore">0</div>
+        </div>
+        <div class="vs">VS</div>
+        <div class="team-score">
+            <div class="name" id="finalBName">EQUIPO B</div>
+            <div class="score" id="finalBScore">0</div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>📊 Estadísticas</h2>
+        <div id="finalStats"></div>
+    </div>
+
+    <div class="card">
+        <h2>📋 Detalle de goles</h2>
+        <div id="finalSummary"></div>
+    </div>
+
+    <button class="btn btn-primary" onclick="downloadResult()">💾 Descargar .txt</button>
+    <button class="btn btn-outline" onclick="newMatch()">🔄 Nuevo Partido</button>
+</div>
+
+<script src="js/app.js"></script>
+</body>
+</html>
