@@ -1,0 +1,515 @@
+/* ── Timer ─────────────────────────────────────── */
+.timer-section {
+    text-align: center;
+    padding: 1rem;
+    background: var(--bg-card);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border-color);
+}
+
+.timer {
+    font-size: 3rem;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.02em;
+    color: var(--text-primary);
+    line-height: 1;
+    margin-bottom: 0.75rem;
+    transition: color 0.3s ease;
+}
+
+.timer.running { color: var(--green-primary); }
+
+.timer-controls {
+    display: flex;
+    justify-content: center;
+    gap: 0.625rem;
+}
+
+.timer-btn {
+    padding: 0.5rem 1.25rem;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-md);
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-size: 0.83rem;
+    font-weight: 600;
+    transition: all 0.15s ease;
+    font-family: inherit;
+}
+
+.timer-btn:hover { border-color: var(--green-border); color: var(--green-primary); }
+.timer-btn-pause:hover { border-color: rgba(251,191,36,0.4); color: #fbbf24; }
+
+/* ── Scoreboard ─────────────────────────────────── */
+.scoreboard {
+    display: flex;
+    align-items: stretch;
+    gap: 0.5rem;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 1rem 0.75rem;
+}
+
+.team-block {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.team-shield {
+    font-size: 1.75rem;
+    line-height: 1;
+}
+
+.team-label {
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+}
+
+.team-score-num {
+    font-size: 3.5rem;
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    color: var(--text-primary);
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+}
+
+.goal-team-btn {
+    margin-top: 0.5rem;
+    width: 100%;
+    padding: 0.875rem 0.5rem;
+    border: none;
+    border-radius: var(--radius-md);
+    font-size: 0.9rem;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    font-family: inherit;
+    letter-spacing: 0.02em;
+}
+
+.goal-team-btn:active { transform: scale(0.96); }
+
+.goal-btn-1 {
+    background: #f1f5f9;
+    color: #0f172a;
+}
+.goal-btn-1:hover {
+    background: #fff;
+    box-shadow: 0 4px 20px rgba(255,255,255,0.12);
+}
+
+.goal-btn-2 {
+    background: var(--bg-elevated);
+    color: var(--text-primary);
+    border: 2px solid var(--border-medium);
+}
+.goal-btn-2:hover {
+    border-color: var(--green-border);
+    box-shadow: var(--shadow-green-sm);
+}
+
+.scoreboard-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 0.25rem;
+    padding-top: 3.5rem; /* alinear con los números */
+}
+
+.scoreboard-dash {
+    font-size: 1.5rem;
+    color: var(--text-muted, #3a3a3a);
+    font-weight: 300;
+}
+
+/* ── Sub button ─────────────────────────────────── */
+.sub-btn {
+    width: 100%;
+    padding: 0.875rem;
+    background: var(--bg-card);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-lg);
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    font-family: inherit;
+    letter-spacing: 0.01em;
+}
+
+.sub-btn:hover {
+    border-color: var(--green-border);
+    color: var(--green-primary);
+    background: var(--green-glow);
+}
+
+.sub-btn:active { transform: scale(0.98); }
+
+/* ── Timeline ───────────────────────────────────── */
+.timeline-section {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+}
+
+.timeline-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.625rem 0.875rem;
+    border-bottom: 1px solid var(--border-color);
+    background: var(--bg-tertiary);
+}
+
+.timeline-title {
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+}
+
+.timeline-team-label {
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    width: 70px;
+}
+
+.tl-left  { color: #93c5fd; text-align: left; }
+.tl-right { color: #fca5a5; text-align: right; }
+
+.timeline-body {
+    max-height: 260px;
+    overflow-y: auto;
+    padding: 0.5rem 0;
+}
+
+.timeline-empty {
+    text-align: center;
+    color: var(--text-tertiary);
+    font-size: 0.8rem;
+    padding: 1.5rem 0;
+}
+
+/* Fila de evento */
+.tl-row {
+    display: grid;
+    grid-template-columns: 1fr 44px 1fr;
+    align-items: center;
+    padding: 0.3rem 0.625rem;
+    gap: 0.25rem;
+    min-height: 32px;
+}
+
+.tl-row:hover { background: rgba(255,255,255,0.02); }
+
+.tl-time {
+    text-align: center;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: var(--green-primary);
+    font-variant-numeric: tabular-nums;
+}
+
+.tl-event-left {
+    text-align: right;
+    font-size: 0.78rem;
+    color: var(--text-primary);
+    line-height: 1.3;
+}
+
+.tl-event-right {
+    text-align: left;
+    font-size: 0.78rem;
+    color: var(--text-primary);
+    line-height: 1.3;
+}
+
+.tl-assist {
+    display: block;
+    font-size: 0.68rem;
+    color: var(--text-tertiary);
+    margin-top: 0.1rem;
+}
+
+.tl-sub {
+    font-size: 0.72rem;
+    color: var(--text-tertiary);
+}
+
+/* ── Bottom actions ─────────────────────────────── */
+.bottom-actions {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    max-width: 430px;
+    margin: 0 auto;
+    display: flex;
+    gap: 0.625rem;
+    padding: 0.875rem 1rem;
+    padding-bottom: calc(0.875rem + env(safe-area-inset-bottom));
+    background: rgba(8,8,8,0.96);
+    backdrop-filter: blur(20px);
+    border-top: 1px solid var(--border-color);
+    z-index: 90;
+}
+
+.action-btn {
+    flex: 1;
+    padding: 0.8rem;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-md);
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.83rem;
+    transition: all 0.15s ease;
+    font-family: inherit;
+}
+
+.action-btn:hover { border-color: var(--border-medium); color: var(--text-primary); }
+
+.action-btn.primary {
+    background: var(--green-primary);
+    border-color: transparent;
+    color: #000;
+    font-weight: 700;
+}
+
+.action-btn.primary:hover { background: var(--green-bright); }
+
+/* ── Back btn ────────────────────────────────────── */
+.back-btn {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-light);
+    color: var(--text-secondary);
+    width: 34px; height: 34px;
+    border-radius: var(--radius-xs);
+    font-size: 1.2rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s ease;
+    font-family: inherit;
+    line-height: 1;
+}
+.back-btn:hover { color: var(--text-primary); border-color: var(--border-medium); }
+
+/* ── Modal: player grid ──────────────────────────── */
+.player-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.player-select-btn {
+    padding: 0.9rem 0.5rem;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-md);
+    color: var(--text-primary);
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.15s ease;
+    font-family: inherit;
+}
+
+.player-select-btn:active { transform: scale(0.96); }
+
+.player-select-btn:hover,
+.player-select-btn.selected {
+    background: var(--green-glow);
+    border-color: var(--green-primary);
+    color: var(--green-primary);
+}
+
+/* ── No assist ───────────────────────────────────── */
+.no-assist-btn {
+    width: 100%;
+    padding: 0.8rem;
+    background: transparent;
+    border: 1px dashed var(--border-medium);
+    border-radius: var(--radius-md);
+    color: var(--text-tertiary);
+    font-size: 0.83rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    font-family: inherit;
+}
+
+.no-assist-btn:hover {
+    border-color: var(--border-light);
+    color: var(--text-secondary);
+    background: var(--bg-elevated);
+}
+
+/* ── Sub modal tabs ──────────────────────────────── */
+.sub-team-label {
+    font-size: 0.72rem;
+    color: var(--text-tertiary);
+    margin-bottom: 0.625rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.sub-team-tabs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+    margin-bottom: 0.875rem;
+}
+
+.sub-tab {
+    padding: 0.7rem;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-md);
+    color: var(--text-secondary);
+    font-size: 0.83rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    font-family: inherit;
+    letter-spacing: 0.04em;
+}
+
+.sub-tab.active {
+    background: var(--green-glow);
+    border-color: var(--green-primary);
+    color: var(--green-primary);
+}
+
+/* ── Modal step texts ────────────────────────────── */
+.modal-step-sub {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+    margin-bottom: 0.2rem;
+}
+
+.modal-step-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    letter-spacing: -0.01em;
+}
+
+/* ── Pantalla resumen ────────────────────────── */
+.sum-winner {
+    text-align: center;
+    font-size: 1.375rem;
+    font-weight: 800;
+    color: var(--green-primary);
+    letter-spacing: -0.02em;
+    padding: 0.5rem 0;
+}
+
+.sum-duration {
+    text-align: center;
+    font-size: 0.8rem;
+    color: var(--text-tertiary);
+    margin-top: -0.5rem;
+}
+
+.sum-section {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 1rem 1.125rem;
+}
+
+.sum-section-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+    margin-bottom: 0.75rem;
+}
+
+.sum-player {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--border-color);
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.sum-player:last-child { border-bottom: none; }
+
+.sum-chips { display: flex; gap: 0.375rem; }
+
+.sum-chip {
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 0.2rem 0.5rem;
+    border-radius: 999px;
+}
+
+.sum-chip-green {
+    background: rgba(34,197,94,0.12);
+    color: var(--green-primary);
+}
+
+.sum-chip-amber {
+    background: rgba(251,191,36,0.12);
+    color: #fbbf24;
+}
+
+.sum-empty {
+    text-align: center;
+    color: var(--text-tertiary);
+    font-size: 0.83rem;
+    padding: 0.75rem 0;
+}
+
+/* ── Utilitarios ─────────────────────────────── */
+.hidden { display: none !important; }
+
+.header-spacer { width: 34px; flex-shrink: 0; }
+
+/* ── Modal centrado (override del bottom-sheet) ─ */
+/* El .modal de global.css hace align-items:flex-end
+   Para el anotador lo sobreescribimos a center     */
+#goalModal,
+#assistModal,
+#subModal,
+#subInModal {
+    align-items: center;
+    padding: 1rem;
+}
+
+#goalModal   .modal-content,
+#assistModal .modal-content,
+#subModal    .modal-content,
+#subInModal  .modal-content {
+    border-radius: var(--radius-xl);
+    max-height: 80vh;
+    width: 100%;
+    max-width: 400px;
+    border: 1px solid var(--border-light);
+}

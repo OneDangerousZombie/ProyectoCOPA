@@ -1,0 +1,559 @@
+/* ── Hero button ────────────────────────────── */
+.create-match-hero {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.25rem 1.25rem;
+    background: var(--green-primary);
+    border: none;
+    border-radius: var(--radius-lg);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    text-align: left;
+}
+
+.create-match-hero:hover {
+    background: var(--green-bright);
+    box-shadow: var(--shadow-green);
+    transform: translateY(-1px);
+}
+
+.create-match-hero:active {
+    transform: translateY(0);
+}
+
+.create-match-hero-icon {
+    width: 48px;
+    height: 48px;
+    background: rgba(0,0,0,0.12);
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    flex-shrink: 0;
+}
+
+.create-match-hero-text {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+}
+
+.create-match-hero-title {
+    font-size: 1rem;
+    font-weight: 800;
+    color: #000;
+    letter-spacing: -0.01em;
+}
+
+.create-match-hero-sub {
+    font-size: 0.78rem;
+    color: rgba(0,0,0,0.55);
+    font-weight: 500;
+}
+
+.create-match-hero-arrow {
+    font-size: 1.5rem;
+    color: rgba(0,0,0,0.4);
+    font-weight: 300;
+    flex-shrink: 0;
+}
+
+/* ── Lista de partidos ──────────────────────── */
+.upcoming-matches {
+    background: var(--bg-card);
+    border-radius: var(--radius-lg);
+    padding: 1rem 1.125rem;
+    border: 1px solid var(--border-color);
+}
+
+.upcoming-matches h3 {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+    margin-bottom: 0.875rem;
+}
+
+.match-item {
+    background: var(--bg-tertiary);
+    border-radius: var(--radius-md);
+    padding: 0.875rem 1rem;
+    margin-bottom: 0.625rem;
+    border: 1px solid var(--border-color);
+    transition: border-color var(--transition-fast);
+}
+
+.match-item:hover { border-color: var(--border-light); }
+
+.match-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.match-date {
+    font-size: 0.75rem;
+    color: var(--green-primary);
+    font-weight: 700;
+}
+
+.match-status {
+    font-size: 0.68rem;
+    font-weight: 600;
+    padding: 0.2rem 0.5rem;
+    border-radius: 999px;
+}
+
+.match-status.complete {
+    background: rgba(34, 197, 94, 0.1);
+    color: var(--green-primary);
+    border: 1px solid var(--green-border);
+}
+
+.match-status.pending {
+    background: rgba(239, 68, 68, 0.1);
+    color: #f87171;
+    border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+.match-venue {
+    font-size: 0.8rem;
+    color: var(--text-tertiary);
+    margin-bottom: 0.375rem;
+}
+
+.match-teams {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+.match-format {
+    font-size: 0.72rem;
+    color: var(--text-tertiary);
+    margin-bottom: 0.625rem;
+}
+
+.match-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.625rem;
+}
+
+.match-actions button {
+    flex: 1;
+    padding: 0.55rem 0.5rem;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-sm);
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-size: 0.78rem;
+    font-weight: 500;
+    transition: all var(--transition-fast);
+}
+
+.match-actions button:hover {
+    border-color: var(--green-border);
+    color: var(--green-primary);
+}
+
+.match-actions .btn-start {
+    background: var(--green-primary);
+    border-color: transparent;
+    color: #000;
+    font-weight: 700;
+}
+
+.match-actions .btn-start:hover {
+    background: var(--green-bright);
+    color: #000;
+}
+
+/* ── Modal step label ───────────────────────── */
+.modal-step-label {
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+    margin-bottom: 0.2rem;
+}
+
+/* ── Step dots ──────────────────────────────── */
+.step-dots {
+    display: flex;
+    gap: 0.4rem;
+    padding: 0 1.25rem 0.875rem;
+}
+
+.step-dot {
+    height: 3px;
+    flex: 1;
+    border-radius: 2px;
+    background: var(--border-medium);
+    transition: background var(--transition-normal);
+}
+
+.step-dot.active { background: var(--green-primary); }
+
+/* ── Format grid ────────────────────────────── */
+.format-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+}
+
+.format-btn {
+    padding: 0.75rem 0.5rem;
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-md);
+    background: var(--bg-tertiary);
+    color: var(--text-secondary);
+    font-size: 0.83rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-align: center;
+    transition: all var(--transition-fast);
+}
+
+.format-btn:active { transform: scale(0.96); }
+
+.format-btn.selected {
+    border-color: var(--green-primary);
+    background: var(--green-glow);
+    color: var(--green-primary);
+}
+
+/* ── Players progress ───────────────────────── */
+.players-count-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.8rem;
+    color: var(--text-tertiary);
+    margin-bottom: 0.4rem;
+}
+
+.players-count-numbers strong {
+    color: var(--green-primary);
+    font-size: 0.95rem;
+}
+
+.players-progress {
+    height: 3px;
+    background: var(--border-color);
+    border-radius: 2px;
+    margin-bottom: 0.875rem;
+    overflow: hidden;
+}
+
+.players-progress-fill {
+    height: 100%;
+    background: var(--green-primary);
+    border-radius: 2px;
+    transition: width var(--transition-normal);
+    width: 0%;
+}
+
+/* ── Players selection ──────────────────────── */
+.players-selection {
+    max-height: 260px;
+    overflow-y: auto;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 0.375rem;
+    background: var(--bg-tertiary);
+    margin-bottom: 1rem;
+}
+
+/* ── Step navigation ────────────────────────── */
+.step-nav {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.625rem;
+    align-items: center;
+}
+
+.step-back-btn {
+    padding: 0.8rem 1rem;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-md);
+    color: var(--text-secondary);
+    font-size: 0.83rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    white-space: nowrap;
+}
+
+.step-back-btn:hover {
+    color: var(--text-primary);
+    border-color: var(--border-medium);
+}
+
+.step-next-btn {
+    width: 100%;
+    padding: 0.875rem;
+    background: var(--green-primary);
+    border: none;
+    border-radius: var(--radius-md);
+    color: #000;
+    font-weight: 700;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    letter-spacing: 0.01em;
+}
+
+.step-next-btn:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+}
+
+.step-next-btn:hover:not(:disabled) {
+    background: var(--green-bright);
+    box-shadow: var(--shadow-green);
+}
+
+.step-next-inline {
+    /* cuando está dentro de step-nav */
+}
+
+/* ── Teams ──────────────────────────────────── */
+.balance-btn {
+    width: 100%;
+    padding: 0.8rem;
+    background: var(--green-primary);
+    border: none;
+    border-radius: var(--radius-md);
+    color: #000;
+    font-weight: 700;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    margin-bottom: 0.875rem;
+}
+
+.balance-btn:hover {
+    background: var(--green-bright);
+    box-shadow: var(--shadow-green);
+}
+
+.teams-container {
+    display: flex;
+    gap: 0.75rem;
+    margin-bottom: 0.875rem;
+}
+
+.team-box {
+    flex: 1;
+    background: var(--bg-tertiary);
+    border-radius: var(--radius-md);
+    padding: 0.75rem;
+    border: 1px solid var(--border-color);
+}
+
+.team-box h4 {
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+    color: var(--green-primary);
+}
+
+.team-box > div {
+    font-size: 0.8rem;
+    line-height: 1.8;
+    color: var(--text-secondary);
+    min-height: 40px;
+}
+
+.edit-team-btn {
+    margin-top: 0.625rem;
+    padding: 0.4rem 0.625rem;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-xs);
+    color: var(--text-secondary);
+    font-size: 0.75rem;
+    cursor: pointer;
+    width: 100%;
+    transition: all var(--transition-fast);
+}
+
+.edit-team-btn:hover {
+    border-color: var(--green-border);
+    color: var(--green-primary);
+}
+
+.elo-diff {
+    text-align: center;
+    margin-bottom: 0.875rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    padding: 0.5rem;
+    background: var(--bg-tertiary);
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-color);
+}
+
+.save-match-btn {
+    flex: 1;
+    padding: 0.875rem;
+    background: var(--green-primary);
+    border: none;
+    border-radius: var(--radius-md);
+    color: #000;
+    font-weight: 700;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.save-match-btn:hover {
+    background: var(--green-bright);
+    box-shadow: var(--shadow-green);
+}
+
+/* ── Edit teams modal ───────────────────────── */
+.edit-teams-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.edit-team {
+    background: var(--bg-tertiary);
+    border-radius: var(--radius-md);
+    padding: 0.75rem;
+    border: 1px solid var(--border-color);
+}
+
+.edit-team h4 {
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    margin-bottom: 0.625rem;
+    color: var(--green-primary);
+}
+
+.player-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0.625rem;
+    margin-bottom: 0.25rem;
+    background: var(--bg-elevated);
+    border-radius: var(--radius-xs);
+    border: 1px solid var(--border-color);
+    font-size: 0.85rem;
+}
+
+.player-actions button {
+    padding: 0.3rem 0.625rem;
+    background: var(--bg-card);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-xs);
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-size: 0.8rem;
+    transition: all var(--transition-fast);
+}
+
+.player-actions button:hover {
+    border-color: var(--green-border);
+    color: var(--green-primary);
+}
+
+/* ── Accordion equipos ──────────────────────── */
+.teams-accordion {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease, padding 0.3s ease;
+}
+
+.teams-accordion.open {
+    max-height: 400px;
+    padding: 0.75rem 0 0.25rem;
+}
+
+.teams-accordion-inner {
+    display: flex;
+    gap: 0;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+}
+
+.acc-team-col {
+    flex: 1;
+    padding: 0.75rem;
+}
+
+.acc-divider {
+    width: 1px;
+    background: var(--border-color);
+    flex-shrink: 0;
+}
+
+.acc-team-title {
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--green-primary);
+    margin-bottom: 0.5rem;
+}
+
+.acc-player {
+    font-size: 0.83rem;
+    color: var(--text-secondary);
+    padding: 0.25rem 0;
+    border-bottom: 1px solid var(--border-color);
+    line-height: 1.4;
+}
+
+.acc-player:last-child { border-bottom: none; }
+
+.btn-view-teams {
+    flex: 1;
+    padding: 0.55rem 0.5rem;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-sm);
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-size: 0.78rem;
+    font-weight: 500;
+    transition: all var(--transition-fast);
+    font-family: inherit;
+}
+
+.btn-view-teams:hover {
+    border-color: var(--green-border);
+    color: var(--green-primary);
+}
+
+.match-vs {
+    color: var(--text-tertiary);
+    font-size: 0.75rem;
+}
+
+/* ── Clases utilitarias ─────────────────────── */
+.hidden { display: none !important; }
+.team-empty { color: var(--text-tertiary); }

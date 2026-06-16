@@ -1,0 +1,160 @@
+/* ── Layout ─────────────────────────────────── */
+body {
+    background: var(--bg-primary);
+    min-height: 100vh;
+    min-height: 100dvh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(ellipse 80% 50% at 50% -10%, rgba(34, 197, 94, 0.07) 0%, transparent 60%);
+    pointer-events: none;
+}
+
+/* ── Contenedor ─────────────────────────────── */
+.selection-container {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 380px;
+    padding: 2rem 1.75rem;
+}
+
+/* ── Header ─────────────────────────────────── */
+.page-header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+    animation: fadeInUp 0.4s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+.logo-mark {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 56px;
+    height: 56px;
+    background: var(--green-primary);
+    border-radius: 16px;
+    font-size: 1.6rem;
+    margin-bottom: 1.25rem;
+    box-shadow: 0 0 0 1px rgba(34,197,94,0.3), 0 12px 32px rgba(34,197,94,0.18);
+}
+
+.page-header h1 {
+    font-size: 1.6rem;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    color: var(--text-primary);
+    margin-bottom: 0.35rem;
+}
+
+.page-header p {
+    font-size: 0.85rem;
+    color: var(--text-tertiary);
+}
+
+/* ── Botones ─────────────────────────────────── */
+.buttons-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    animation: fadeInUp 0.4s cubic-bezier(0.32, 0.72, 0, 1) 0.08s both;
+}
+
+.league-btn {
+    width: 100%;
+    padding: 1.1rem 1.25rem;
+    border-radius: var(--radius-lg);
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    text-align: left;
+    letter-spacing: 0.01em;
+    font-family: inherit;
+}
+
+.league-btn-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+}
+
+.league-btn-text {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+}
+
+.league-btn-text span {
+    font-size: 0.72rem;
+    font-weight: 500;
+    opacity: 0.65;
+}
+
+/* Primario */
+.league-btn.primary {
+    background: var(--green-primary);
+    border: none;
+    color: #000;
+}
+
+.league-btn.primary .league-btn-icon {
+    background: rgba(0,0,0,0.15);
+}
+
+.league-btn.primary:hover {
+    background: var(--green-bright);
+    box-shadow: var(--shadow-green);
+    transform: translateY(-1px);
+}
+
+.league-btn.primary:active {
+    transform: translateY(0);
+}
+
+/* Secundario */
+.league-btn.secondary {
+    background: var(--bg-card);
+    border: 1px solid var(--border-light);
+    color: var(--text-primary);
+}
+
+.league-btn.secondary .league-btn-icon {
+    background: var(--bg-elevated);
+}
+
+.league-btn.secondary:hover {
+    border-color: var(--green-border);
+    background: var(--bg-elevated);
+}
+
+/* ── Divider ─────────────────────────────────── */
+.or-divider {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: var(--text-tertiary);
+    font-size: 0.75rem;
+}
+
+.or-divider::before,
+.or-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border-color);
+}
