@@ -84,12 +84,12 @@
 }
 
 .goal-team-btn {
-    margin-top: 0.5rem;
+    margin-top: 0.625rem;
     width: 100%;
-    padding: 0.875rem 0.5rem;
+    padding: 1.1rem 0.5rem;
     border: none;
-    border-radius: var(--radius-md);
-    font-size: 0.9rem;
+    border-radius: var(--radius-lg);
+    font-size: 1.05rem;
     font-weight: 800;
     cursor: pointer;
     transition: all 0.15s ease;
@@ -105,7 +105,7 @@
 }
 .goal-btn-1:hover {
     background: #fff;
-    box-shadow: 0 4px 20px rgba(255,255,255,0.12);
+    box-shadow: 0 6px 24px rgba(255,255,255,0.15);
 }
 
 .goal-btn-2 {
@@ -120,41 +120,67 @@
 
 .scoreboard-center {
     display: flex;
+    flex-direction: column;
     align-items: center;
-    justify-content: center;
+    gap: 0.3rem;
     padding: 0 0.25rem;
-    padding-top: 3.5rem; /* alinear con los números */
+}
+
+.scoreboard-center-spacer {
+    visibility: hidden;
 }
 
 .scoreboard-dash {
     font-size: 1.5rem;
     color: var(--text-muted, #3a3a3a);
     font-weight: 300;
+    line-height: 1;
+    /* mismo alto de línea que .team-score-num para centrar ópticamente */
+    height: 3.5rem;
+    display: flex;
+    align-items: center;
 }
 
-/* ── Sub button ─────────────────────────────────── */
-.sub-btn {
-    width: 100%;
-    padding: 0.875rem;
-    background: var(--bg-card);
-    border: 1px solid var(--border-light);
-    border-radius: var(--radius-lg);
-    color: var(--text-secondary);
-    font-size: 0.875rem;
+/* ── Barra de cambio unificada ───────────────────── */
+.sub-bar {
+    display: flex;
+    align-items: stretch;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    height: 32px;
+    overflow: hidden;
+}
+
+.sub-bar-btn {
+    flex: 1;
+    border: none;
+    background: transparent;
+    color: var(--text-muted, #5a5a5a);
+    font-size: 0.68rem;
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.15s ease;
+    transition: color 0.15s ease, background 0.15s ease;
     font-family: inherit;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.25rem;
     letter-spacing: 0.01em;
 }
 
-.sub-btn:hover {
-    border-color: var(--green-border);
-    color: var(--green-primary);
-    background: var(--green-glow);
+.sub-bar-btn:hover {
+    color: var(--text-secondary);
+    background: var(--bg-elevated);
 }
 
-.sub-btn:active { transform: scale(0.98); }
+.sub-bar-btn:active { opacity: 0.7; }
+
+.sub-bar-divider {
+    width: 1px;
+    background: var(--border-color);
+    flex-shrink: 0;
+}
 
 /* ── Timeline ───────────────────────────────────── */
 .timeline-section {
@@ -310,35 +336,78 @@
 }
 .back-btn:hover { color: var(--text-primary); border-color: var(--border-medium); }
 
-/* ── Modal: player grid ──────────────────────────── */
-.player-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 0.5rem;
+/* ── Modal: lista vertical de jugadores con avatar ── */
+.player-list-scroll {
+    max-height: 50vh;
+    overflow-y: auto;
     margin-bottom: 0.5rem;
 }
 
-.player-select-btn {
-    padding: 0.9rem 0.5rem;
+.player-list-scroll::-webkit-scrollbar { width: 6px; }
+.player-list-scroll::-webkit-scrollbar-track {
     background: var(--bg-tertiary);
-    border: 1px solid var(--border-light);
-    border-radius: var(--radius-md);
-    color: var(--text-primary);
-    font-size: 0.875rem;
-    font-weight: 600;
+    border-radius: 4px;
+    margin: 4px 0;
+}
+.player-list-scroll::-webkit-scrollbar-thumb {
+    background: var(--green-primary);
+    border-radius: 4px;
+}
+
+.player-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+    padding-right: 0.375rem;
+}
+
+.player-row-btn {
+    width: 100%;
+    padding: 0.7rem 0.5rem;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    text-align: left;
     cursor: pointer;
-    text-align: center;
-    transition: all 0.15s ease;
+    transition: background 0.15s ease;
     font-family: inherit;
 }
 
-.player-select-btn:active { transform: scale(0.96); }
+.player-row-btn:last-child { border-bottom: none; }
 
-.player-select-btn:hover,
-.player-select-btn.selected {
-    background: var(--green-glow);
-    border-color: var(--green-primary);
-    color: var(--green-primary);
+.player-row-btn:hover,
+.player-row-btn:active {
+    background: var(--bg-elevated);
+}
+
+.player-avatar-circle {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+.player-row-name {
+    flex: 1;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.player-row-chevron {
+    color: var(--text-muted, #3a3a3a);
+    flex-shrink: 0;
 }
 
 /* ── No assist ───────────────────────────────────── */
@@ -360,43 +429,6 @@
     border-color: var(--border-light);
     color: var(--text-secondary);
     background: var(--bg-elevated);
-}
-
-/* ── Sub modal tabs ──────────────────────────────── */
-.sub-team-label {
-    font-size: 0.72rem;
-    color: var(--text-tertiary);
-    margin-bottom: 0.625rem;
-    font-weight: 600;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-}
-
-.sub-team-tabs {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0.5rem;
-    margin-bottom: 0.875rem;
-}
-
-.sub-tab {
-    padding: 0.7rem;
-    background: var(--bg-tertiary);
-    border: 1px solid var(--border-light);
-    border-radius: var(--radius-md);
-    color: var(--text-secondary);
-    font-size: 0.83rem;
-    font-weight: 700;
-    cursor: pointer;
-    transition: all 0.15s ease;
-    font-family: inherit;
-    letter-spacing: 0.04em;
-}
-
-.sub-tab.active {
-    background: var(--green-glow);
-    border-color: var(--green-primary);
-    color: var(--green-primary);
 }
 
 /* ── Modal step texts ────────────────────────────── */

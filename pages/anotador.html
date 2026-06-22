@@ -24,8 +24,8 @@
                 <div class="timer" id="timer">00:00</div>
                 <div class="timer-controls">
                     <button type="button" class="timer-btn" id="startTimer">▶ Iniciar</button>
-                    <button type="button" class="timer-btn timer-btn-pause" id="pauseTimer" class="hidden">⏸ Pausar</button>
-                    <button type="button" class="timer-btn" id="resumeTimer" class="hidden">▶ Continuar</button>
+                    <button type="button" class="timer-btn timer-btn-pause hidden" id="pauseTimer">⏸ Pausar</button>
+                    <button type="button" class="timer-btn hidden" id="resumeTimer">▶ Continuar</button>
                 </div>
             </div>
 
@@ -42,6 +42,8 @@
                 </div>
 
                 <div class="scoreboard-center">
+                    <div class="scoreboard-center-spacer team-shield">⬜</div>
+                    <div class="scoreboard-center-spacer team-label">VS</div>
                     <div class="scoreboard-dash">—</div>
                 </div>
 
@@ -56,10 +58,16 @@
                 </div>
             </div>
 
-            <!-- Botón cambio -->
-            <button type="button" class="sub-btn" id="subBtn" onclick="openSubModal()">
-                🔄 Cambio de jugador
-            </button>
+            <!-- Cambio unificado -->
+            <div class="sub-bar">
+                <button type="button" class="sub-bar-btn" id="subBtn1" onclick="openSubModal('white')">
+                    🔄 Cambio <span id="subBtnLabel1">Blanco</span>
+                </button>
+                <div class="sub-bar-divider"></div>
+                <button type="button" class="sub-bar-btn" id="subBtn2" onclick="openSubModal('black')">
+                    🔄 Cambio <span id="subBtnLabel2">Negro</span>
+                </button>
+            </div>
 
             <!-- Timeline -->
             <div class="timeline-section">
@@ -95,7 +103,9 @@
                 <button type="button" class="close-modal" onclick="closeGoalModal()">×</button>
             </div>
             <div class="modal-body">
-                <div class="player-grid" id="goalPlayerGrid"></div>
+                <div class="player-list-scroll">
+                    <div class="player-list" id="goalPlayerGrid"></div>
+                </div>
             </div>
         </div>
     </div>
@@ -112,7 +122,9 @@
                 <button type="button" class="close-modal" onclick="closeAssistModal()">×</button>
             </div>
             <div class="modal-body">
-                <div class="player-grid" id="assistPlayerGrid"></div>
+                <div class="player-list-scroll">
+                    <div class="player-list" id="assistPlayerGrid"></div>
+                </div>
                 <button type="button" class="no-assist-btn" onclick="confirmGoal(null)">
                     Sin asistencia
                 </button>
@@ -120,28 +132,21 @@
         </div>
     </div>
 
-    <!-- ══ MODAL CAMBIO — paso 1: elegir quién sale ══ -->
+    <!-- ══ MODAL CAMBIO — paso 1: quién sale ══ -->
     <div class="modal" id="subModal">
         <div class="modal-content">
             <div class="modal-handle"></div>
             <div class="modal-header">
                 <div>
-                    <div class="modal-step-sub">Cambio de jugador</div>
+                    <div class="modal-step-sub" id="subTeamHint">Cambio de jugador</div>
                     <h3 class="modal-step-title">¿Quién sale?</h3>
                 </div>
                 <button type="button" class="close-modal" onclick="closeSubModal()">×</button>
             </div>
             <div class="modal-body">
-                <div class="sub-team-label" id="subTeamHint">Seleccioná el equipo</div>
-                <div class="sub-team-tabs">
-                    <button type="button" class="sub-tab active" id="subTab1" onclick="selectSubTeam('white')">
-                        <span id="subTab1Label">BLANCO</span>
-                    </button>
-                    <button type="button" class="sub-tab" id="subTab2" onclick="selectSubTeam('black')">
-                        <span id="subTab2Label">NEGRO</span>
-                    </button>
+                <div class="player-list-scroll">
+                    <div class="player-list" id="subOutGrid"></div>
                 </div>
-                <div class="player-grid" id="subOutGrid"></div>
             </div>
         </div>
     </div>
@@ -158,7 +163,9 @@
                 <button type="button" class="close-modal" onclick="closeSubInModal()">×</button>
             </div>
             <div class="modal-body">
-                <div class="player-grid" id="subInGrid"></div>
+                <div class="player-list-scroll">
+                    <div class="player-list" id="subInGrid"></div>
+                </div>
             </div>
         </div>
     </div>

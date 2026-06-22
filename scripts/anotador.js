@@ -7,13 +7,14 @@ var eventsList    = [];
 var pendingGoal   = { team: null, scorer: null };
 var pendingSub    = { team: null, playerOut: null };
 
+var AVATAR_COLORS = ['#7f77dd', '#1d9e75', '#d85a30', '#d4537e', '#378ade', '#ba7517', '#639922'];
+
 // ── Init ────────────────────────────────────────────────────
 window.addEventListener('DOMContentLoaded', function() {
     var matchId = sessionStorage.getItem('currentMatchId');
     if (matchId) {
         loadMatch(parseInt(matchId));
     } else {
-        // Sin partido activo, volver
         window.location.href = 'crear-partido.html';
         return;
     }
@@ -46,12 +47,12 @@ function loadMatch(matchId) {
     var t1 = currentMatch.team1Name || 'BLANCO';
     var t2 = currentMatch.team2Name || 'NEGRO';
 
-    setEl('team1Label',    t1);
-    setEl('team2Label',    t2);
-    setEl('tlLabel1',      t1);
-    setEl('tlLabel2',      t2);
-    setEl('subTab1Label',  t1);
-    setEl('subTab2Label',  t2);
+    setEl('team1Label',   t1);
+    setEl('team2Label',   t2);
+    setEl('tlLabel1',     t1);
+    setEl('tlLabel2',     t2);
+    setEl('subBtnLabel1', t1);
+    setEl('subBtnLabel2', t2);
 
     updateScoreboard();
     updateTimeline();
@@ -97,6 +98,27 @@ function fmtTime(s) {
 
 function pad(n) { return String(n).padStart(2, '0'); }
 
+// ── Avatar helper ────────────────────────────────────────────
+// Genera un color consistente por nombre (mismo jugador = mismo color siempre)
+function avatarColorFor(name) {
+    var hash = 0;
+    for (var i = 0; i < name.length; i++) {
+        hash = (hash * 31 + name.charCodeAt(i)) % 1000;
+    }
+    return AVATAR_COLORS[hash % AVATAR_COLORS.length];
+}
+
+// Construye el HTML del círculo de avatar.
+// Hoy: solo inicial coloreada. El día que haya foto en la BD,
+// alcanza con envolver una <img> acá adentro con fallback a esta inicial.
+function avatarHtml(name) {
+    var color  = avatarColorFor(name);
+    var letter = name.charAt(0).toUpperCase();
+    return '<div class="player-avatar-circle" style="background:' + color + '22; border:1px solid ' + color + '55; color:' + color + ';">' +
+        letter +
+    '</div>';
+}
+
 // ── Modal GOL — paso 1 ───────────────────────────────────────
 function openGoalModal(team) {
     if (!currentMatch) return;
@@ -108,7 +130,7 @@ function openGoalModal(team) {
     var list = team === 'white' ? currentMatch.whiteTeam : currentMatch.blackTeam;
 
     setEl('goalModalSub', name);
-    buildGrid('goalPlayerGrid', list, function(p) { selectScorer(p); });
+    buildPlayerList('goalPlayerGrid', list, function(p) { selectScorer(p); });
     document.getElementById('goalModal').classList.add('active');
 }
 
@@ -129,7 +151,7 @@ function selectScorer(name) {
     var others = list.filter(function(p) { return p !== name; });
 
     setEl('assistModalSub', 'Gol de ' + name + ' \u2014 ' + tName);
-    buildGrid('assistPlayerGrid', others, function(p) { confirmGoal(p); });
+    buildPlayerList('assistPlayerGrid', others, function(p) { confirmGoal(p); });
     document.getElementById('assistModal').classList.add('active');
 }
 
@@ -160,26 +182,20 @@ function confirmGoal(assist) {
     showToast('Gol registrado');
 }
 
-// ── Modal CAMBIO — paso 1 ────────────────────────────────────
-function openSubModal() {
+// ── Modal CAMBIO — paso 1: quién sale ────────────────────────
+// Ahora cada botón de la barra unificada ya pasa el equipo directo
+function openSubModal(team) {
     if (!currentMatch) return;
-    pendingSub = { team: 'white', playerOut: null };
-    selectSubTeam('white');
-    document.getElementById('subModal').classList.add('active');
-}
-
-function selectSubTeam(team) {
-    pendingSub.team = team;
-    document.getElementById('subTab1').classList.toggle('active', team === 'white');
-    document.getElementById('subTab2').classList.toggle('active', team === 'black');
+    pendingSub = { team: team, playerOut: null };
 
     var t1    = currentMatch.team1Name || 'BLANCO';
     var t2    = currentMatch.team2Name || 'NEGRO';
     var tName = team === 'white' ? t1 : t2;
     var list  = team === 'white' ? currentMatch.whiteTeam : currentMatch.blackTeam;
 
-    setEl('subTeamHint', 'Jugadores de ' + tName);
-    buildGrid('subOutGrid', list, function(p) { selectPlayerOut(p); });
+    setEl('subTeamHint', 'Cambio en ' + tName);
+    buildPlayerList('subOutGrid', list, function(p) { selectPlayerOut(p); });
+    document.getElementById('subModal').classList.add('active');
 }
 
 function closeSubModal() {
@@ -187,7 +203,7 @@ function closeSubModal() {
     pendingSub = { team: null, playerOut: null };
 }
 
-// ── Modal CAMBIO — paso 2 ────────────────────────────────────
+// ── Modal CAMBIO — paso 2: quién entra ───────────────────────
 function selectPlayerOut(name) {
     pendingSub.playerOut = name;
     document.getElementById('subModal').classList.remove('active');
@@ -203,9 +219,9 @@ function selectPlayerOut(name) {
 
     var grid = document.getElementById('subInGrid');
     if (available.length === 0) {
-        grid.innerHTML = '<div style="color:var(--text-tertiary);font-size:0.83rem;text-align:center;padding:1rem;grid-column:1/-1">No hay jugadores disponibles fuera del partido</div>';
+        grid.innerHTML = '<div style="color:var(--text-tertiary);font-size:0.83rem;text-align:center;padding:1rem;">No hay jugadores disponibles fuera del partido</div>';
     } else {
-        buildGrid('subInGrid', available, function(p) { confirmSub(p); });
+        buildPlayerList('subInGrid', available, function(p) { confirmSub(p); });
     }
 
     document.getElementById('subInModal').classList.add('active');
@@ -238,19 +254,28 @@ function confirmSub(playerIn) {
     showToast('Cambio registrado');
 }
 
-// ── Helpers ──────────────────────────────────────────────────
-function buildGrid(containerId, names, onClickFn) {
-    var grid = document.getElementById(containerId);
-    if (!grid) return;
-    grid.innerHTML = '';
+// ── Helper: lista vertical con avatares ──────────────────────
+function buildPlayerList(containerId, names, onClickFn) {
+    var list = document.getElementById(containerId);
+    if (!list) return;
+    list.innerHTML = '';
+
     names.forEach(function(name) {
-        var btn = document.createElement('button');
-        btn.type      = 'button';
-        btn.className = 'player-select-btn';
-        btn.textContent = name;
-        btn.onclick   = function() { onClickFn(name); };
-        grid.appendChild(btn);
+        var row = document.createElement('button');
+        row.type      = 'button';
+        row.className = 'player-row-btn';
+        row.innerHTML =
+            avatarHtml(name) +
+            '<span class="player-row-name">' + name + '</span>' +
+            '<svg class="player-row-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>';
+        row.onclick = function() { onClickFn(name); };
+        list.appendChild(row);
     });
+
+    // Resetear scroll al tope — sin esto, el modal puede abrir
+    // mostrando el final de la lista en vez del primer jugador
+    var scrollWrap = list.closest('.player-list-scroll');
+    if (scrollWrap) scrollWrap.scrollTop = 0;
 }
 
 // ── Scoreboard ───────────────────────────────────────────────
@@ -345,32 +370,26 @@ function finishMatch() {
     currentMatch.completed = true;
     currentMatch.events    = eventsList;
 
-    // Guardar primero — seguro
     saveMatchProgress();
 
-    // Intentar actualizar stats (no bloqueante)
     try { updateStatsAfterMatch(currentMatch); } catch(e) { console.warn('Stats:', e); }
-
-    // Exportar TXT backup
     try { exportMatchToTXT(currentMatch); } catch(e) { console.warn('TXT:', e); }
 
-    // Mostrar pantalla de resumen
     showSummaryScreen();
 }
 
 // ── PANTALLA DE RESUMEN ──────────────────────────────────────
 function showSummaryScreen() {
-    var t1    = currentMatch.team1Name || 'BLANCO';
-    var t2    = currentMatch.team2Name || 'NEGRO';
-    var ws    = currentMatch.whiteScore;
-    var bs    = currentMatch.blackScore;
+    var t1 = currentMatch.team1Name || 'BLANCO';
+    var t2 = currentMatch.team2Name || 'NEGRO';
+    var ws = currentMatch.whiteScore;
+    var bs = currentMatch.blackScore;
 
     var winner = '';
     if      (ws > bs) winner = t1 + ' ganó 🏆';
     else if (bs > ws) winner = t2 + ' ganó 🏆';
     else              winner = 'Empate';
 
-    // Contar goles y asistencias por jugador
     var stats = {};
     eventsList.forEach(function(ev) {
         if (ev.type !== 'goal') return;
@@ -382,7 +401,6 @@ function showSummaryScreen() {
         }
     });
 
-    // Armar HTML de goleadores
     var scorers = Object.keys(stats).map(function(name) {
         return { name: name, goals: stats[name].goals, assists: stats[name].assists };
     }).sort(function(a, b) { return (b.goals + b.assists) - (a.goals + a.assists); });
@@ -396,7 +414,6 @@ function showSummaryScreen() {
             return '<div class="sum-player"><span>' + p.name + '</span><div class="sum-chips">' + chips + '</div></div>';
         }).join('');
 
-    // Armar HTML de timeline
     var timelineHtml = eventsList.length === 0
         ? '<div class="sum-empty">Sin eventos</div>'
         : eventsList.map(function(ev) {
@@ -416,23 +433,19 @@ function showSummaryScreen() {
             '</div>';
         }).join('');
 
-    // Duración
     var duration = fmtTime(seconds);
 
-    // Reemplazar contenido del body
     document.querySelector('.app-container').innerHTML =
         '<div class="header">' +
-            '<div style="width:34px"></div>' +
+            '<div class="header-spacer"></div>' +
             '<h1>Resultado</h1>' +
-            '<div style="width:34px"></div>' +
+            '<div class="header-spacer"></div>' +
         '</div>' +
 
         '<main class="main-content">' +
 
-            // Ganador
             '<div class="sum-winner">' + winner + '</div>' +
 
-            // Marcador final
             '<div class="scoreboard">' +
                 '<div class="team-block">' +
                     '<div class="team-label">' + t1 + '</div>' +
@@ -445,16 +458,13 @@ function showSummaryScreen() {
                 '</div>' +
             '</div>' +
 
-            // Duración
             '<div class="sum-duration">⏱ Duración: ' + duration + '</div>' +
 
-            // Estadísticas
             '<div class="sum-section">' +
                 '<div class="sum-section-label">Goleadores y asistentes</div>' +
                 scorersHtml +
             '</div>' +
 
-            // Timeline
             '<div class="timeline-section">' +
                 '<div class="timeline-header">' +
                     '<span class="timeline-team-label tl-left">' + t1 + '</span>' +
@@ -466,7 +476,6 @@ function showSummaryScreen() {
 
         '</main>' +
 
-        // Botones finales
         '<div class="bottom-actions">' +
             '<button type="button" class="action-btn" onclick="window.location.href=\'crear-partido.html\'">⚽ Partidos</button>' +
             '<button type="button" class="action-btn primary" onclick="window.location.href=\'home.html\'">🏠 Inicio</button>' +
