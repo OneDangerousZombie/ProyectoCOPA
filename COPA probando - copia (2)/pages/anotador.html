@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+    <title>Anotador — COPA</title>
+    <link rel="stylesheet" href="../styles/global.css">
+    <link rel="stylesheet" href="../styles/anotador.css">
+</head>
+<body>
+    <div class="app-container">
+
+        <!-- Header -->
+        <div class="header">
+            <button type="button" class="back-btn" onclick="confirmBack()">‹</button>
+            <h1>En curso</h1>
+            <div class="header-spacer"></div>
+        </div>
+
+        <main class="main-content">
+
+            <!-- Cronómetro -->
+            <div class="timer-section">
+                <div class="timer" id="timer">00:00</div>
+                <div class="timer-controls">
+                    <button type="button" class="timer-btn" id="startTimer">▶ Iniciar</button>
+                    <button type="button" class="timer-btn timer-btn-pause hidden" id="pauseTimer">⏸ Pausar</button>
+                    <button type="button" class="timer-btn hidden" id="resumeTimer">▶ Continuar</button>
+                </div>
+            </div>
+
+            <!-- Marcador -->
+            <div class="scoreboard">
+                <!-- Equipo 1 -->
+                <div class="team-block">
+                    <div class="team-shield">⬜</div>
+                    <div class="team-label" id="team1Label">BLANCO</div>
+                    <div class="team-score-num" id="whiteScore">0</div>
+                    <button type="button" class="goal-team-btn goal-btn-1" id="goalBtn1" onclick="openGoalModal('white')">
+                        ⚽ GOL
+                    </button>
+                </div>
+
+                <div class="scoreboard-center">
+                    <div class="scoreboard-center-spacer team-shield">⬜</div>
+                    <div class="scoreboard-center-spacer team-label">VS</div>
+                    <div class="scoreboard-dash">—</div>
+                </div>
+
+                <!-- Equipo 2 -->
+                <div class="team-block">
+                    <div class="team-shield">⬛</div>
+                    <div class="team-label" id="team2Label">NEGRO</div>
+                    <div class="team-score-num" id="blackScore">0</div>
+                    <button type="button" class="goal-team-btn goal-btn-2" id="goalBtn2" onclick="openGoalModal('black')">
+                        ⚽ GOL
+                    </button>
+                </div>
+            </div>
+
+            <!-- Cambio unificado -->
+            <div class="sub-bar">
+                <button type="button" class="sub-bar-btn" id="subBtn1" onclick="openSubModal('white')">
+                    🔄 Cambio <span id="subBtnLabel1">Blanco</span>
+                </button>
+                <div class="sub-bar-divider"></div>
+                <button type="button" class="sub-bar-btn" id="subBtn2" onclick="openSubModal('black')">
+                    🔄 Cambio <span id="subBtnLabel2">Negro</span>
+                </button>
+            </div>
+
+            <!-- Timeline -->
+            <div class="timeline-section">
+                <div class="timeline-header">
+                    <span class="timeline-team-label tl-left" id="tlLabel1">BLANCO</span>
+                    <span class="timeline-title">LÍNEA DE TIEMPO</span>
+                    <span class="timeline-team-label tl-right" id="tlLabel2">NEGRO</span>
+                </div>
+                <div class="timeline-body" id="matchTimeline">
+                    <div class="timeline-empty">Sin eventos aún</div>
+                </div>
+            </div>
+
+        </main>
+
+        <!-- Bottom actions -->
+        <div class="bottom-actions">
+            <button type="button" class="action-btn" id="undoBtn">↩ Deshacer</button>
+            <button type="button" class="action-btn primary" id="finishMatchBtn">🏁 Finalizar</button>
+        </div>
+
+    </div>
+
+    <!-- ══ MODAL GOL — paso 1: goleador ══ -->
+    <div class="modal" id="goalModal">
+        <div class="modal-content">
+            <div class="modal-handle"></div>
+            <div class="modal-header">
+                <div>
+                    <div class="modal-step-sub" id="goalModalSub">Equipo Blanco</div>
+                    <h3 class="modal-step-title">¿Quién metió el gol?</h3>
+                </div>
+                <button type="button" class="close-modal" onclick="closeGoalModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="player-list-scroll">
+                    <div class="player-list" id="goalPlayerGrid"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══ MODAL ASISTENCIA — paso 2 ══ -->
+    <div class="modal" id="assistModal">
+        <div class="modal-content">
+            <div class="modal-handle"></div>
+            <div class="modal-header">
+                <div>
+                    <div class="modal-step-sub" id="assistModalSub"></div>
+                    <h3 class="modal-step-title">¿Hubo asistencia?</h3>
+                </div>
+                <button type="button" class="close-modal" onclick="closeAssistModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="player-list-scroll">
+                    <div class="player-list" id="assistPlayerGrid"></div>
+                </div>
+                <button type="button" class="no-assist-btn" onclick="confirmGoal(null)">
+                    Sin asistencia
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══ MODAL CAMBIO — paso 1: quién sale ══ -->
+    <div class="modal" id="subModal">
+        <div class="modal-content">
+            <div class="modal-handle"></div>
+            <div class="modal-header">
+                <div>
+                    <div class="modal-step-sub" id="subTeamHint">Cambio de jugador</div>
+                    <h3 class="modal-step-title">¿Quién sale?</h3>
+                </div>
+                <button type="button" class="close-modal" onclick="closeSubModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="player-list-scroll">
+                    <div class="player-list" id="subOutGrid"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══ MODAL CAMBIO — paso 2: quién entra ══ -->
+    <div class="modal" id="subInModal">
+        <div class="modal-content">
+            <div class="modal-handle"></div>
+            <div class="modal-header">
+                <div>
+                    <div class="modal-step-sub" id="subInSub"></div>
+                    <h3 class="modal-step-title">¿Quién entra?</h3>
+                </div>
+                <button type="button" class="close-modal" onclick="closeSubInModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="player-list-scroll">
+                    <div class="player-list" id="subInGrid"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../scripts/data.js"></script>
+    <script src="../scripts/utils.js"></script>
+    <script src="../scripts/txt-export.js"></script>
+    <script src="../scripts/anotador.js"></script>
+</body>
+</html>

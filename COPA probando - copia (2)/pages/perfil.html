@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Perfil — COPA</title>
+    <link rel="stylesheet" href="../styles/global.css">
+    <link rel="stylesheet" href="../styles/components.css">
+    <link rel="stylesheet" href="../styles/perfil.css">
+</head>
+<body>
+    <div class="app-container">
+        <div class="header">
+            <h1>Perfil</h1>
+        </div>
+
+        <main class="main-content">
+            <div class="profile-header">
+                <div class="profile-avatar">👤</div>
+                <h2 id="profileName">Brandon</h2>
+                <div class="profile-elo" id="profileElo">⚡ ELO: 2450</div>
+            </div>
+
+            <div class="profile-stats">
+                <div class="stat-card">
+                    <span class="stat-value" id="profilePJ">0</span>
+                    <span class="stat-label">Partidos</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-value" id="profileGoles">0</span>
+                    <span class="stat-label">Goles</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-value" id="profileAsistencias">0</span>
+                    <span class="stat-label">Asistencias</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-value" id="profileWinRate">0%</span>
+                    <span class="stat-label">Win Rate</span>
+                </div>
+            </div>
+
+            <div class="achievements">
+                <h3>Logros</h3>
+                <div class="achievements-list">
+                    <div class="achievement">🏆 Máximo Goleador</div>
+                    <div class="achievement">🎯 Mejor Asistente</div>
+                    <div class="achievement">⚡ Racha de 5 victorias</div>
+                </div>
+            </div>
+
+            <div class="match-history">
+                <h3>Historial de Partidos</h3>
+                <div id="matchHistoryList"></div>
+            </div>
+        </main>
+
+        <nav class="bottom-nav">
+            <div class="nav-item" data-page="home"><span class="nav-icon">🏠</span>Inicio</div>
+            <div class="nav-item" data-page="liga"><span class="nav-icon">👥</span>Liga</div>
+            <div class="nav-item" data-page="crear-partido"><span class="nav-icon">⚽</span>Partidos</div>
+            <div class="nav-item" data-page="estadisticas"><span class="nav-icon">📊</span>Stats</div>
+            <div class="nav-item active" data-page="perfil"><span class="nav-icon">👤</span>Perfil</div>
+        </nav>
+    </div>
+
+    <script src="../scripts/data.js"></script>
+    <script src="../scripts/utils.js"></script>
+    <script src="../scripts/navigation.js"></script>
+    <script src="../scripts/perfil.js"></script>
+</body>
+</html>
