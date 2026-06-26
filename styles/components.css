@@ -1,0 +1,189 @@
+/* components.css — estilos compartidos entre páginas */
+/* Las definiciones base de .card, .btn, inputs, .modal, .fab y .checkbox-label
+   viven en global.css. Este archivo agrega variantes y overrides específicos. */
+
+/* ── Form groups (modales) ─────────────────── */
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.4rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+}
+
+.form-group input,
+.form-group select {
+    width: 100%;
+}
+
+/* ── Players selection list ────────────────── */
+.players-selection {
+    max-height: 240px;
+    overflow-y: auto;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 0.375rem;
+    background: var(--bg-tertiary);
+}
+
+.players-count {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 0.625rem;
+    font-size: 0.8rem;
+    color: var(--text-tertiary);
+}
+
+.players-count span strong {
+    color: var(--green-primary);
+    font-weight: 700;
+}
+
+/* ── Balance / Save buttons ────────────────── */
+.balance-btn-container {
+    margin-bottom: 0.875rem;
+}
+
+.balance-btn,
+.save-match-btn {
+    width: 100%;
+    padding: 0.8rem;
+    background: var(--green-primary);
+    border: none;
+    border-radius: var(--radius-md);
+    color: #000;
+    font-weight: 700;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    letter-spacing: 0.01em;
+}
+
+.balance-btn:hover,
+.save-match-btn:hover {
+    background: var(--green-bright);
+    box-shadow: var(--shadow-green);
+    transform: translateY(-1px);
+}
+
+/* ── Teams display ────────────────────────── */
+.teams-container {
+    display: flex;
+    gap: 0.75rem;
+    margin-bottom: 0.875rem;
+}
+
+.team-box {
+    flex: 1;
+    background: var(--bg-tertiary);
+    border-radius: var(--radius-md);
+    padding: 0.75rem;
+    border: 1px solid var(--border-color);
+}
+
+.team-box h4 {
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+    color: var(--green-primary);
+}
+
+.team-box > div {
+    font-size: 0.8rem;
+    line-height: 1.7;
+    color: var(--text-secondary);
+}
+
+.edit-team-btn {
+    margin-top: 0.625rem;
+    padding: 0.4rem 0.625rem;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-xs);
+    color: var(--text-secondary);
+    font-size: 0.75rem;
+    cursor: pointer;
+    width: 100%;
+    transition: all var(--transition-fast);
+}
+
+.edit-team-btn:hover {
+    border-color: var(--green-border);
+    color: var(--green-primary);
+}
+
+.elo-diff {
+    text-align: center;
+    margin-bottom: 0.875rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    padding: 0.5rem;
+    background: var(--bg-tertiary);
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-color);
+}
+
+/* ── Edit teams modal ─────────────────────── */
+.edit-teams-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.edit-team {
+    background: var(--bg-tertiary);
+    border-radius: var(--radius-md);
+    padding: 0.75rem;
+    border: 1px solid var(--border-color);
+}
+
+.edit-team h4 {
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    margin-bottom: 0.625rem;
+    color: var(--green-primary);
+}
+
+.player-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0.625rem;
+    margin-bottom: 0.25rem;
+    background: var(--bg-elevated);
+    border-radius: var(--radius-xs);
+    border: 1px solid var(--border-color);
+    font-size: 0.85rem;
+}
+
+.player-actions {
+    display: flex;
+    gap: 0.375rem;
+}
+
+.player-actions button {
+    padding: 0.3rem 0.5rem;
+    background: var(--bg-card);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-xs);
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-size: 0.8rem;
+    transition: all var(--transition-fast);
+}
+
+.player-actions button:hover {
+    border-color: var(--green-border);
+    color: var(--green-primary);
+}
