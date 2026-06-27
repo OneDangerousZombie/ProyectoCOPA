@@ -427,6 +427,23 @@ INSERT INTO `roles` (`ID_ROLES`, `ROL_DESCRIPCION`) VALUES
 (1, 'JUGADOR'),
 (9, 'DEV');
 
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `contactos`
+--
+
+CREATE TABLE `contactos` (
+  `ID_CONTACTOS` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `NOMBRE` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_spanish_ci NOT NULL,
+  `CORREO_ELECTRONICO` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_spanish_ci NOT NULL,
+  `ASUNTO` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_spanish_ci NOT NULL,
+  `MENSAJE` text CHARACTER SET utf8mb4 COLLATE utf8mb4_spanish_ci NOT NULL,
+  PRIMARY KEY (`ID_CONTACTOS`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_spanish_ci;
+
+-- --------------------------------------------------------
+
 --
 -- Índices para tablas volcadas
 --
@@ -525,6 +542,12 @@ ALTER TABLE `recolector_eventos`
 --
 ALTER TABLE `roles`
   MODIFY `ID_ROLES` int(1) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+
+--
+-- AUTO_INCREMENT de la tabla `contactos`
+--
+ALTER TABLE `contactos`
+  MODIFY `id_contactos` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
 
 --
 -- Restricciones para tablas volcadas

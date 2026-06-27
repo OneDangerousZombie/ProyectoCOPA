@@ -130,8 +130,9 @@
                         <div class="form-success" id="formSuccess">
                             ✅ ¡Gracias! Tu mensaje fue enviado. Te respondemos a la brevedad.
                         </div>
+                        <div class="form-error" id="formError"></div>
 
-                        <form id="contactForm">
+                        <form id="contactForm" action="api/contacto.php" method="POST">
                             <div class="form-group">
                                 <label for="contactName">Nombre</label>
                                 <input type="text" id="contactName" name="nombre" placeholder="Tu nombre" autocomplete="name" required>
@@ -139,12 +140,12 @@
 
                             <div class="form-group">
                                 <label for="contactEmail">Correo electrónico</label>
-                                <input type="email" id="contactEmail" name="email" placeholder="tu@correo.com" autocomplete="email" required>
+                                <input type="email" id="contactEmail" name="correo_electronico" placeholder="tu@correo.com" autocomplete="email" required>
                             </div>
 
                             <div class="form-group">
                                 <label for="contactSubject">Asunto</label>
-                                <input type="text" id="contactSubject" name="asunto" placeholder="¿Sobre qué nos escribís?">
+                                <input type="text" id="contactSubject" name="asunto" placeholder="¿Sobre qué nos escribís?" required>
                             </div>
 
                             <div class="form-group">

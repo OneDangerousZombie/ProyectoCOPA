@@ -193,18 +193,52 @@ document.addEventListener('DOMContentLoaded', () => {
     const formSuccess = document.getElementById('formSuccess');
 
     if (contactForm) {
-        contactForm.addEventListener('submit', (event) => {
+        const formError = document.getElementById('formError');
+
+        contactForm.addEventListener('submit', async (event) => {
             event.preventDefault();
 
             const nombre = document.getElementById('contactName');
             const email = document.getElementById('contactEmail');
+            const asunto = document.getElementById('contactSubject');
             const mensaje = document.getElementById('contactMessage');
 
-            const camposOk = [nombre, email, mensaje].every((el) => el && el.value.trim().length > 0);
-            if (!camposOk) return;
+            const camposOk = [nombre, email, asunto, mensaje].every((el) => el && el.value.trim().length > 0);
+            if (!camposOk) {
+                if (formError) {
+                    formError.textContent = 'Por favor completá todos los campos obligatorios.';
+                    formError.classList.add('active');
+                }
+                return;
+            }
 
-            if (formSuccess) formSuccess.classList.add('active');
-            contactForm.reset();
+            if (formError) {
+                formError.textContent = '';
+                formError.classList.remove('active');
+            }
+
+            try {
+                const response = await fetch(contactForm.action, {
+                    method: 'POST',
+                    body: new FormData(contactForm)
+                });
+
+                const data = await response.json();
+                if (data.ok) {
+                    if (formSuccess) formSuccess.classList.add('active');
+                    contactForm.reset();
+                } else {
+                    if (formError) {
+                        formError.textContent = data.error || 'No se pudo enviar el mensaje. Intentá de nuevo.';
+                        formError.classList.add('active');
+                    }
+                }
+            } catch (error) {
+                if (formError) {
+                    formError.textContent = 'Error de conexión. Por favor intentá más tarde.';
+                    formError.classList.add('active');
+                }
+            }
         });
     }
 
