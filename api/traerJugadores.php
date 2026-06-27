@@ -11,7 +11,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
     exit;
 }
 
-$stmt = $conn->prepare('SELECT NOMBRE, VALOR_ELO FROM jugadores ORDER BY NOMBRE ASC');
+$stmt = $conn->prepare('SELECT ID_JUGADORES, NOMBRE, VALOR_ELO, ROL FROM jugadores ORDER BY NOMBRE ASC');
 if (!$stmt) {
     http_response_code(500);
     echo json_encode(['ok' => false, 'error' => 'Error en la consulta: ' . $conn->error]);
@@ -23,8 +23,10 @@ $result = $stmt->get_result();
 $jugadores = [];
 while ($row = $result->fetch_assoc()) {
     $jugadores[] = [
+        'id' => (int) $row['ID_JUGADORES'],
         'nombre' => $row['NOMBRE'],
-        'valor_elo' => (int) $row['VALOR_ELO']
+        'valor_elo' => (int) $row['VALOR_ELO'],
+        'rol' => $row['ROL']
     ];
 }
 

@@ -15,8 +15,10 @@ function fetchPlayersFromDb() {
             }
             return data.jugadores.map(function(player) {
                 return {
+                    id: parseInt(player.id, 10) || null,
                     name: player.nombre,
-                    elo: parseInt(player.valor_elo, 10) || 1200
+                    elo: parseInt(player.valor_elo, 10) || 1200,
+                    role: player.rol || null
                 };
             });
         });
@@ -36,9 +38,10 @@ function normalizePlayersFromDb(dbPlayers) {
     return dbPlayers.map(function(player, index) {
         const existing = existingByName[player.name];
         return {
-            id: existing ? existing.id : nextIdBase + index,
+            id: existing ? existing.id : (player.id !== null ? player.id : nextIdBase + index),
             name: player.name,
             elo: player.elo || 1200,
+            role: existing && existing.role ? existing.role : (player.role || null),
             stats: existing && existing.stats ? existing.stats : {
                 matches: 0,
                 wins: 0,
@@ -119,6 +122,12 @@ function initializePlayerData() {
 // Obtener jugadores
 function getPlayers() {
     return JSON.parse(localStorage.getItem('players')) || [];
+}
+
+function getPlayersByRole(role) {
+    return getPlayers().filter(function(player) {
+        return String(player.role) === String(role);
+    });
 }
 
 // Actualizar jugador

@@ -10,9 +10,10 @@ function loadPlayersFromApi() {
     console.log("[TRACK] 3. loadPlayersFromApi() iniciada. Sincronizando con base de datos...");
 
     return Promise.resolve(typeof dataReady !== 'undefined' ? dataReady : Promise.reject(new Error('dataReady no definido')))
-        .then(function(players) {
+        .then(function() {
+            const players = getPlayersByRole(1);
             if (!Array.isArray(players) || players.length === 0) {
-                throw new Error('No hay jugadores disponibles en la caché de DB');
+                throw new Error('No hay jugadores disponibles en la caché de DB con rol 1');
             }
             return players.map(function(player) {
                 return {
@@ -35,13 +36,17 @@ function loadPlayersFromApi() {
                     if (!data.ok || !Array.isArray(data.jugadores)) {
                         throw new Error('Respuesta inválida de la base de datos');
                     }
-                    return data.jugadores.map(function(player) {
-                        return {
-                            name: player.nombre,
-                            elo: player.valor_elo,
-                            isNew: false
-                        };
-                    });
+                    return data.jugadores
+                        .filter(function(player) {
+                            return String(player.rol) === '1';
+                        })
+                        .map(function(player) {
+                            return {
+                                name: player.nombre,
+                                elo: player.valor_elo,
+                                isNew: false
+                            };
+                        });
                 });
         });
 }
