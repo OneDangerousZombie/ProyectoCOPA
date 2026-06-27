@@ -2,7 +2,14 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log('🟢 DOM cargado. Iniciando script de perfil...');
     
     loadProfileData();
-    loadMatchHistory(); 
+    Promise.resolve(typeof dataReady !== 'undefined' ? dataReady : Promise.resolve())
+        .then(function() {
+            loadMatchHistory();
+        })
+        .catch(function(error) {
+            console.warn('⚠️ dataReady no disponible en perfil.js, cargando historial con datos locales.', error);
+            loadMatchHistory();
+        });
 });
 
 function loadProfileData() {

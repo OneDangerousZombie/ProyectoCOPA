@@ -5,26 +5,74 @@ let npState = {
     allPlayers: []
 };
 
+// ── Helpers ─────────────────────────────────────────────────
+function loadPlayersFromApi() {
+    console.log("[TRACK] 3. loadPlayersFromApi() iniciada. Sincronizando con base de datos...");
+
+    return Promise.resolve(typeof dataReady !== 'undefined' ? dataReady : Promise.reject(new Error('dataReady no definido')))
+        .then(function(players) {
+            if (!Array.isArray(players) || players.length === 0) {
+                throw new Error('No hay jugadores disponibles en la caché de DB');
+            }
+            return players.map(function(player) {
+                return {
+                    name: player.name,
+                    elo: player.elo,
+                    isNew: false
+                };
+            });
+        })
+        .catch(function(error) {
+            console.warn('[TRACK] Fallback directo a la API en nuevo-partido:', error);
+            return fetch('../api/traerJugadores.php')
+                .then(function(response) {
+                    if (!response.ok) {
+                        throw new Error('Error al cargar jugadores (Status HTTP no OK)');
+                    }
+                    return response.json();
+                })
+                .then(function(data) {
+                    if (!data.ok || !Array.isArray(data.jugadores)) {
+                        throw new Error('Respuesta inválida de la base de datos');
+                    }
+                    return data.jugadores.map(function(player) {
+                        return {
+                            name: player.nombre,
+                            elo: player.valor_elo,
+                            isNew: false
+                        };
+                    });
+                });
+        });
+}
+
 // ── Init ────────────────────────────────────────────────────
+console.log("[TRACK] 1. Script cargado en memoria. Esperando a DOMContentLoaded...");
+
 window.addEventListener('DOMContentLoaded', function() {
-    // Fecha de hoy
+    console.log("[TRACK] 2. Evento DOMContentLoaded disparado. Inicializando vista...");
+
     var today = new Date().toISOString().split('T')[0];
     document.getElementById('npDate').value = today;
 
-    // Hora actual redondeada
     var now  = new Date();
     var mins = now.getMinutes() >= 30 ? 30 : 0;
-    document.getElementById('npTime').value =
-        pad(now.getHours()) + ':' + pad(mins);
+    document.getElementById('npTime').value = pad(now.getHours()) + ':' + pad(mins);
 
-    // Cargar jugadores de data.js
-    var dbPlayers = getPlayers();
-    npState.allPlayers = dbPlayers.map(function(p) {
-        return { name: p.name, elo: p.elo, isNew: false };
-    });
+    loadPlayersFromApi()
+        .then(function(players) {
+            console.log("[TRACK] 7A. Promesa cumplida con éxito. Jugadores cargados en npState:", players);
+            npState.allPlayers = players;
+            renderPlayerList();
+            validateForm();
+        })
+        .catch(function(error) {
+            console.error("[TRACK] 7B. ¡ERROR EN EL FLUJO! Capturado en .catch():", error.message);
+            npState.allPlayers = [];
+            renderPlayerList();
+            validateForm();
+        });
 
-    // Listeners formato — usando onclick directo en lugar de addEventListener
-    // para evitar problemas de timing
     document.querySelectorAll('.format-btn').forEach(function(btn) {
         btn.onclick = function() {
             npState.format = parseInt(this.dataset.format);
@@ -37,13 +85,11 @@ window.addEventListener('DOMContentLoaded', function() {
         };
     });
 
-    // Listeners inputs
     ['npDate','npTime','npVenue','npTeam1Name','npTeam2Name'].forEach(function(id) {
         var el = document.getElementById(id);
         if (el) el.oninput = function() { validateForm(); };
     });
 
-    // Enter en nuevo jugador
     document.getElementById('newPlayerInput').onkeypress = function(e) {
         if (e.key === 'Enter') addNewPlayer();
     };
@@ -54,7 +100,7 @@ window.addEventListener('DOMContentLoaded', function() {
 
 function pad(n) { return String(n).padStart(2,'0'); }
 
-// ── Agregar jugador nuevo ───────────────────────────────────
+// ── Agregar jugador nuevo temporalmente ─────────────────────
 function addNewPlayer() {
     var input = document.getElementById('newPlayerInput');
     var name  = input.value.trim();
@@ -65,7 +111,12 @@ function addNewPlayer() {
     });
 
     if (exists) {
-        showToast('Ese jugador ya está en la lista', 'error');
+        // Asumiendo que tienes una función showToast definida globalmente
+        if (typeof showToast === 'function') {
+            showToast('Ese jugador ya está en la lista', 'error');
+        } else {
+            alert('Ese jugador ya está en la lista');
+        }
         input.value = '';
         return;
     }
