@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="description" content="¿Necesitás ayuda con COPA? Escribinos y te respondemos a la brevedad.">
+    <title>Ayuda — COPA</title>
+    <link rel="stylesheet" href="styles/global.css">
+    <link rel="stylesheet" href="styles/index.css">
+</head>
+<body>
+
+    <!-- ============================ NAVBAR ============================ -->
+    <header class="landing-navbar">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">
+                <span class="nav-logo-icon">⚽</span>
+                <span class="nav-logo-text">COPA</span>
+            </a>
+
+            <nav class="nav-links">
+                <a href="ligas.html" class="nav-link" data-page="ligas">Ligas</a>
+                <a href="caracteristicas.html" class="nav-link" data-page="caracteristicas">Características</a>
+                <a href="como-funciona.html" class="nav-link" data-page="como-funciona">Cómo funciona</a>
+                <a href="ayuda.html" class="nav-link" data-page="ayuda">Ayuda</a>
+                <a href="sobre-nosotros.html" class="nav-link" data-page="sobre-nosotros">Sobre nosotros</a>
+            </nav>
+
+            <div class="nav-actions">
+                <a href="pages/login.html" class="btn-nav btn-nav-outline" data-auth="guest">Iniciar sesión</a>
+
+                <div class="nav-user-menu" data-auth="user">
+                    <button type="button" class="nav-user-trigger" id="userTrigger" aria-expanded="false">
+                        <span class="nav-user-avatar" id="navUserAvatar">👤</span>
+                        <span class="nav-user-name" id="navUserName">Usuario</span>
+                        <span class="dropdown-caret">▾</span>
+                    </button>
+                    <div class="dropdown-menu" id="userMenu">
+                        <a href="pages/perfil.html" class="dropdown-item">Mi cuenta</a>
+                        <a href="pages/perfil.html" class="dropdown-item">Configuración del perfil</a>
+                        <button type="button" class="dropdown-item dropdown-item-danger" id="logoutBtn">Cerrar sesión</button>
+                    </div>
+                </div>
+
+                <a href="pages/home.html" class="btn-nav btn-nav-cta" data-auth="user">⚽ Iniciar App</a>
+
+                <button type="button" class="nav-hamburger" id="navHamburger" aria-label="Abrir menú" aria-expanded="false">
+                    <span></span><span></span><span></span>
+                </button>
+            </div>
+        </div>
+
+        <div class="mobile-menu-panel" id="mobileMenuPanel">
+            <a href="ligas.html" class="mobile-link" data-page="ligas">Ligas</a>
+            <a href="caracteristicas.html" class="mobile-link" data-page="caracteristicas">Características</a>
+            <a href="como-funciona.html" class="mobile-link" data-page="como-funciona">Cómo funciona</a>
+            <a href="ayuda.html" class="mobile-link" data-page="ayuda">Ayuda</a>
+            <a href="sobre-nosotros.html" class="mobile-link" data-page="sobre-nosotros">Sobre nosotros</a>
+
+            <div class="mobile-divider"></div>
+
+            <a href="pages/login.html" class="mobile-link" data-auth="guest">Iniciar sesión</a>
+            <a href="pages/perfil.html" class="mobile-link" data-auth="user">Mi cuenta</a>
+            <a href="pages/perfil.html" class="mobile-link" data-auth="user">Configuración del perfil</a>
+            <button type="button" class="mobile-link mobile-link-danger" data-auth="user" id="mobileLogoutBtn">Cerrar sesión</button>
+
+            <a href="pages/home.html" class="btn-nav btn-nav-cta mobile-full" data-auth="user">⚽ Iniciar App</a>
+        </div>
+    </header>
+
+    <main>
+
+        <!-- ============================ PAGE HERO ============================ -->
+        <div class="page-hero">
+            <div class="section-container">
+                <span class="section-eyebrow">Ayuda</span>
+                <h1 class="page-hero-title">¿En qué te podemos ayudar?</h1>
+                <p class="page-hero-subtitle">
+                    Contanos qué necesitás y te respondemos a la brevedad.
+                </p>
+            </div>
+        </div>
+
+        <!-- ============================ AYUDA: INFO + FORMULARIO ============================ -->
+        <section class="section-padding" id="formulario-contacto">
+            <div class="section-container">
+                <div class="help-layout">
+
+                    <!-- IZQUIERDA: información sobre COPA -->
+                    <div class="help-info reveal">
+                        <div class="help-info-block">
+                            <h3 class="help-info-title">¿Qué es COPA?</h3>
+                            <p class="help-info-text">
+                                COPA es una plataforma para organizar ligas de fútbol amateur:
+                                balancea los equipos automáticamente, registra resultados y
+                                lleva las estadísticas de cada jugador a lo largo de la temporada.
+                            </p>
+                        </div>
+
+                        <div class="help-info-block">
+                            <h3 class="help-info-title">Objetivo del proyecto</h3>
+                            <p class="help-info-text">
+                                Simplificar la organización de los picados semanales: terminar
+                                con las planillas sueltas y las discusiones sobre quién juega
+                                con quién.
+                            </p>
+                        </div>
+
+                        <div class="help-info-block">
+                            <h3 class="help-info-title">El equipo</h3>
+                            <p class="help-info-text">
+                                COPA es un proyecto académico desarrollado por un equipo de
+                                estudiantes apasionados por el fútbol y el desarrollo de software.
+                            </p>
+                        </div>
+
+                        <div class="help-info-block">
+                            <h3 class="help-info-title">Medios de contacto</h3>
+                            <div class="help-contact-list">
+                                <a href="mailto:ayuda@copa-app.com" class="help-contact-item">✉️ ayuda@copa-app.com</a>
+                                <a href="mailto:contacto@copa-app.com" class="help-contact-item">✉️ contacto@copa-app.com</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- DERECHA: formulario de contacto -->
+                    <div class="help-form-card reveal">
+                        <h3 class="help-info-title">Envianos un mensaje</h3>
+
+                        <div class="form-success" id="formSuccess">
+                            ✅ ¡Gracias! Tu mensaje fue enviado. Te respondemos a la brevedad.
+                        </div>
+                        <div class="form-error" id="formError"></div>
+
+                        <form id="contactForm" action="api/contacto.php" method="POST">
+                            <div class="form-group">
+                                <label for="contactName">Nombre</label>
+                                <input type="text" id="contactName" name="nombre" placeholder="Tu nombre" autocomplete="name" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="contactEmail">Correo electrónico</label>
+                                <input type="email" id="contactEmail" name="correo_electronico" placeholder="tu@correo.com" autocomplete="email" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="contactSubject">Asunto</label>
+                                <input type="text" id="contactSubject" name="asunto" placeholder="¿Sobre qué nos escribís?" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="contactMessage">Mensaje</label>
+                                <textarea id="contactMessage" name="mensaje" placeholder="Contanos en qué te podemos ayudar…" required></textarea>
+                            </div>
+
+                            <button type="submit" class="btn-landing btn-landing-solid">Enviar mensaje</button>
+                        </form>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ============================ FOOTER ============================ -->
+    <footer class="landing-footer">
+        <div class="footer-container">
+            <div class="footer-top">
+                <div class="footer-brand">
+                    <a href="index.html" class="nav-logo">
+                        <span class="nav-logo-icon">⚽</span>
+                        <span class="nav-logo-text">COPA</span>
+                    </a>
+                    <p class="footer-brand-text">Tu liga de fútbol amateur, organizada.</p>
+                </div>
+
+                <div class="footer-column">
+                    <h4 class="footer-column-title">Producto</h4>
+                    <a href="caracteristicas.html" class="footer-link">Características</a>
+                    <a href="ligas.html" class="footer-link">Ligas</a>
+                    <a href="pages/estadisticas.html" class="footer-link">Estadísticas</a>
+                </div>
+
+                <div class="footer-column">
+                    <h4 class="footer-column-title">Soporte</h4>
+                    <a href="ayuda.html" class="footer-link">Necesito ayuda</a>
+                    <a href="ayuda.html#formulario-contacto" class="footer-link">Contáctanos</a>
+                </div>
+
+                <div class="footer-column">
+                    <h4 class="footer-column-title">Redes</h4>
+                    <a href="#" class="footer-link">Instagram</a>
+                    <a href="#" class="footer-link">X</a>
+                    <a href="#" class="footer-link">Discord</a>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <span>© 2026 COPA — Proyecto académico</span>
+            </div>
+        </div>
+    </footer>
+
+    <script src="scripts/index.js"></script>
+</body>
+</html>
