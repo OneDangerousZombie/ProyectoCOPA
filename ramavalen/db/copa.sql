@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 24-06-2026 a las 01:52:34
+-- Tiempo de generación: 26-06-2026 a las 19:54:13
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -20,8 +20,6 @@ SET time_zone = "+00:00";
 --
 -- Base de datos: `copa`
 --
-CREATE DATABASE IF NOT EXISTS `copa` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_spanish_ci;
-USE `copa`;
 
 -- --------------------------------------------------------
 
@@ -63,6 +61,38 @@ CREATE TABLE `estadisticas` (
   `RACHA` int(2) UNSIGNED ZEROFILL NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_spanish_ci;
 
+--
+-- Volcado de datos para la tabla `estadisticas`
+--
+
+INSERT INTO `estadisticas` (`ID_ESTADISTICAS`, `PARTIDOS_JUGADOS`, `PARTIDOS_GANADOS`, `PARTIDOS_PERDIDOS`, `PARTIDOS_EMPATADOS`, `GOLES`, `ASISTENCIAS`, `ID_JUGADOR`, `RACHA`) VALUES
+(1, 6, 4, 2, 0, 17, 11, 1, 02),
+(2, 3, 1, 2, 0, 1, 1, 2, 01),
+(3, 8, 5, 2, 1, 12, 6, 3, 00),
+(4, 8, 4, 3, 1, 12, 8, 4, 00),
+(5, 1, 1, 0, 0, 2, 0, 5, 01),
+(6, 8, 3, 4, 1, 2, 3, 6, 00),
+(7, 3, 1, 1, 1, 7, 1, 7, 01),
+(8, 7, 2, 4, 1, 15, 4, 8, 02),
+(9, 8, 5, 2, 1, 11, 8, 9, 03),
+(10, 2, 1, 1, 0, 3, 2, 10, 00),
+(11, 7, 4, 2, 1, 14, 9, 11, 02),
+(12, 4, 1, 3, 0, 5, 0, 14, 00),
+(13, 2, 0, 2, 0, 7, 1, 15, 00),
+(14, 1, 0, 1, 0, 1, 0, 16, 00),
+(15, 1, 0, 1, 0, 0, 0, 17, 00),
+(16, 1, 1, 0, 0, 2, 0, 18, 01),
+(17, 2, 1, 0, 1, 2, 2, 19, 01),
+(18, 3, 0, 2, 1, 6, 0, 20, 00),
+(19, 1, 0, 0, 1, 1, 0, 21, 00),
+(20, 1, 0, 1, 0, 1, 0, 22, 00),
+(21, 1, 0, 1, 0, 3, 0, 23, 00),
+(22, 1, 0, 1, 0, 0, 0, 24, 00),
+(23, 1, 1, 0, 0, 5, 0, 25, 01),
+(24, 1, 0, 1, 0, 1, 2, 26, 00),
+(25, 0, 0, 0, 0, 0, 0, 28, 00),
+(26, 0, 0, 0, 0, 0, 0, 29, 00);
+
 -- --------------------------------------------------------
 
 --
@@ -95,40 +125,43 @@ INSERT INTO `eventos` (`ID_EVENTOS`, `DESCRIPCION`) VALUES
 CREATE TABLE `jugadores` (
   `ID_JUGADORES` int(3) UNSIGNED NOT NULL,
   `NOMBRE` varchar(20) CHARACTER SET utf8 COLLATE utf8_spanish_ci DEFAULT NULL,
+  `AVATAR_URL` varchar(255) DEFAULT '/imagenes/avatares/default.png',
   `CLAVE` varchar(266) CHARACTER SET utf8 COLLATE utf8_spanish_ci NOT NULL,
   `ROL` int(1) UNSIGNED NOT NULL,
-  `VALOR_ELO` decimal(3,0) NOT NULL
+  `VALOR_ELO` int(4) NOT NULL DEFAULT 1200
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_spanish_ci;
 
 --
 -- Volcado de datos para la tabla `jugadores`
 --
 
-INSERT INTO `jugadores` (`ID_JUGADORES`, `NOMBRE`, `CLAVE`, `ROL`, `VALOR_ELO`) VALUES
-(1, 'Brandon', '1234', 1, 0),
-(2, 'Rama', '1234', 1, 0),
-(3, 'Chanchi', '1234', 1, 0),
-(4, 'Loto', '1234', 1, 0),
-(5, 'Chapa', '1234', 1, 0),
-(6, 'Nico', '1234', 1, 0),
-(7, 'Chiwi', '1234', 1, 0),
-(8, 'Pipi', '1234', 1, 0),
-(9, 'Arbol', '1234', 9, 0),
-(10, 'Mateo', '1234', 1, 0),
-(11, 'Goofy', '1234', 1, 0),
-(14, 'Juanchi', '1234', 1, 0),
-(15, 'ByViruzz', '1234', 1, 0),
-(16, 'ColoPerez', '1234', 1, 0),
-(17, 'TobiLED', '1234', 1, 0),
-(18, 'MyM', '1234', 1, 0),
-(19, 'Dylan', '1234', 1, 0),
-(20, 'Santi', '1234', 1, 0),
-(21, 'Diego', '1234', 1, 0),
-(22, 'Almidonte', '1234', 1, 0),
-(23, 'R1', '1234', 1, 0),
-(24, 'R2', '1234', 1, 0),
-(25, 'BautiTwink', '1234', 1, 0),
-(26, 'Batata', '1234', 1, 0);
+INSERT INTO `jugadores` (`ID_JUGADORES`, `NOMBRE`, `AVATAR_URL`, `CLAVE`, `ROL`, `VALOR_ELO`) VALUES
+(1, 'Brandon', '../images/avatares/avatarMessi.png', '$2y$10$iKIRvMDZpzZnWwYoBFsQnuQ8xAeBBtoXS3.cDCz7Osp6kGBEQpXz6', 1, 1300),
+(2, 'Rama', '../images/avatares/default.png', '$2y$10$QWiFXKJNYt81kb6ocCcCfOKCDso7d.snoPNR4EBoCSzLM4R/8z3Te', 1, 1250),
+(3, 'Chanchi', '/imagenes/avatares/default.png', '1234', 1, 1100),
+(4, 'Loto', '/imagenes/avatares/default.png', '1234', 1, 1200),
+(5, 'Chapa', '/imagenes/avatares/default.png', '1234', 1, 1050),
+(6, 'Nico', '/imagenes/avatares/default.png', '1234', 1, 1275),
+(7, 'Chiwi', '/imagenes/avatares/default.png', '1234', 1, 1000),
+(8, 'Pipi', '/imagenes/avatares/default.png', '1234', 1, 950),
+(9, 'Arbol', '/imagenes/avatares/default.png', '1234', 9, 1060),
+(10, 'Mateo', '/imagenes/avatares/default.png', '1234', 1, 1150),
+(11, 'Goofy', '/imagenes/avatares/default.png', '1234', 1, 0),
+(14, 'Juanchi', '/imagenes/avatares/default.png', '1234', 1, 0),
+(15, 'ByViruzz', '/imagenes/avatares/default.png', '1234', 1, 0),
+(16, 'ColoPerez', '/imagenes/avatares/default.png', '1234', 1, 0),
+(17, 'TobiLED', '/imagenes/avatares/default.png', '1234', 1, 0),
+(18, 'MyM', '/imagenes/avatares/default.png', '1234', 1, 0),
+(19, 'Dylan', '/imagenes/avatares/default.png', '1234', 1, 0),
+(20, 'Santi', '/imagenes/avatares/default.png', '1234', 1, 0),
+(21, 'Diego', '/imagenes/avatares/default.png', '1234', 1, 0),
+(22, 'Almidonte', '/imagenes/avatares/default.png', '1234', 1, 0),
+(23, 'R1', '/imagenes/avatares/default.png', '1234', 1, 0),
+(24, 'R2', '/imagenes/avatares/default.png', '1234', 1, 0),
+(25, 'BautiTwink', '/imagenes/avatares/default.png', '1234', 1, 0),
+(26, 'Batata', '/imagenes/avatares/default.png', '1234', 1, 0),
+(28, 'Horacio', '../images/avatares/default-avatar.png', '$2y$10$ShFHurJuBmXPY3qCnqm.JO524fsU2csJ25.He7DCBLhiUiiS9OsN.', 1, 1200),
+(29, 'Valentin', '../images/avatares/default-avatar.png', '$2y$10$sX6/Fj0XPvD1WB3F1GLbcO02NqCstfzo36zfS6.f1vPYT1O/eov9G', 1, 1200);
 
 -- --------------------------------------------------------
 
@@ -394,6 +427,23 @@ INSERT INTO `roles` (`ID_ROLES`, `ROL_DESCRIPCION`) VALUES
 (1, 'JUGADOR'),
 (9, 'DEV');
 
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `contactos`
+--
+
+CREATE TABLE `contactos` (
+  `ID_CONTACTOS` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `NOMBRE` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_spanish_ci NOT NULL,
+  `CORREO_ELECTRONICO` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_spanish_ci NOT NULL,
+  `ASUNTO` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_spanish_ci NOT NULL,
+  `MENSAJE` text CHARACTER SET utf8mb4 COLLATE utf8mb4_spanish_ci NOT NULL,
+  PRIMARY KEY (`ID_CONTACTOS`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_spanish_ci;
+
+-- --------------------------------------------------------
+
 --
 -- Índices para tablas volcadas
 --
@@ -461,7 +511,7 @@ ALTER TABLE `canchas`
 -- AUTO_INCREMENT de la tabla `estadisticas`
 --
 ALTER TABLE `estadisticas`
-  MODIFY `ID_ESTADISTICAS` int(3) NOT NULL AUTO_INCREMENT;
+  MODIFY `ID_ESTADISTICAS` int(3) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
 
 --
 -- AUTO_INCREMENT de la tabla `eventos`
@@ -473,7 +523,13 @@ ALTER TABLE `eventos`
 -- AUTO_INCREMENT de la tabla `jugadores`
 --
 ALTER TABLE `jugadores`
-  MODIFY `ID_JUGADORES` int(3) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
+  MODIFY `ID_JUGADORES` int(3) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=30;
+
+--
+-- AUTO_INCREMENT de la tabla `partidos`
+--
+ALTER TABLE `partidos`
+  MODIFY `ID_PARTIDOS` int(3) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT de la tabla `recolector_eventos`
@@ -486,6 +542,12 @@ ALTER TABLE `recolector_eventos`
 --
 ALTER TABLE `roles`
   MODIFY `ID_ROLES` int(1) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+
+--
+-- AUTO_INCREMENT de la tabla `contactos`
+--
+ALTER TABLE `contactos`
+  MODIFY `id_contactos` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
 
 --
 -- Restricciones para tablas volcadas
