@@ -10,12 +10,16 @@
     background: var(--bg-card);
     border: 1px solid var(--border-light);
     border-radius: var(--radius-md);
-    padding: 0.7rem 0.875rem;
+    padding: 0.85rem 1rem;
     color: var(--text-primary);
-    font-size: 0.83rem;
-    font-weight: 500;
+    font-size: 0.92rem;
+    font-weight: 600;
     cursor: pointer;
-    transition: border-color var(--transition-fast);
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.filter-select:hover {
+    border-color: var(--border-medium);
 }
 
 .filter-select:focus {
@@ -29,23 +33,29 @@
     background: var(--bg-card);
     border-radius: var(--radius-lg);
     overflow: hidden;
+    overflow-x: auto;
     border: 1px solid var(--border-color);
+    transition: border-color var(--transition-normal);
+}
+
+.ranking-table-container:hover {
+    border-color: var(--border-light);
 }
 
 .ranking-table {
     width: 100%;
     border-collapse: collapse;
-    font-size: 0.78rem;
+    font-size: 0.86rem;
 }
 
 .ranking-table th {
     background: var(--bg-tertiary);
     color: var(--text-tertiary);
     font-weight: 700;
-    font-size: 0.68rem;
-    letter-spacing: 0.06em;
+    font-size: 0.72rem;
+    letter-spacing: 0.07em;
     text-transform: uppercase;
-    padding: 0.75rem 0.5rem;
+    padding: 0.875rem 0.625rem;
     text-align: center;
     position: sticky;
     top: 0;
@@ -54,11 +64,12 @@
 }
 
 .ranking-table td {
-    padding: 0.75rem 0.5rem;
+    padding: 0.875rem 0.625rem;
     text-align: center;
     border-bottom: 1px solid var(--border-color);
     color: var(--text-secondary);
     transition: background var(--transition-fast);
+    font-variant-numeric: tabular-nums;
 }
 
 .ranking-table tr:last-child td {
@@ -76,7 +87,7 @@
 }
 
 .ranking-table td:first-child {
-    font-weight: 700;
+    font-weight: 800;
     color: var(--text-secondary);
 }
 
@@ -86,8 +97,8 @@
 }
 
 .ranking-table td:last-child {
-    font-weight: 700;
-    color: var(--text-primary);
+    font-weight: 800;
+    color: var(--green-primary);
 }
 
 /* Top 3 */
@@ -95,7 +106,7 @@
 .top-2 td:first-child { color: #94a3b8; }
 .top-3 td:first-child { color: #b45309; }
 
-.top-1 { background: rgba(251, 191, 36, 0.03); }
+.top-1 { background: rgba(251, 191, 36, 0.04); }
 
 /* ── Summary cards ──────────────────────────── */
 .summary-cards-grid {
@@ -108,10 +119,16 @@
     background: var(--bg-card);
     border: 1px solid var(--border-color);
     border-radius: var(--radius-md);
-    padding: 0.875rem 0.75rem;
+    padding: 1rem 0.875rem;
     display: flex;
     flex-direction: column;
-    gap: 0.2rem;
+    gap: 0.25rem;
+    transition: border-color var(--transition-fast), transform var(--transition-fast);
+}
+
+.stat-summary-card:hover {
+    border-color: var(--green-border);
+    transform: translateY(-2px);
 }
 
 .stat-summary-icon {
@@ -121,17 +138,18 @@
 }
 
 .stat-summary-val {
-    font-size: 1rem;
+    font-size: 1.1rem;
     font-weight: 800;
     color: var(--text-primary);
     letter-spacing: -0.01em;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    font-variant-numeric: tabular-nums;
 }
 
 .stat-summary-label {
-    font-size: 0.68rem;
+    font-size: 0.74rem;
     color: var(--text-tertiary);
     font-weight: 500;
     white-space: nowrap;
@@ -165,9 +183,101 @@
     height: 100%;
     background: var(--green-primary);
     border-radius: 2px;
-    transition: width 0.4s ease;
+    transition: width 0.5s ease;
 }
 
 .top-1 .rank-bar-fill { background: #fbbf24; }
 .top-2 .rank-bar-fill { background: #94a3b8; }
 .top-3 .rank-bar-fill { background: #b45309; }
+
+/* ══════════════════════════════════════════════════════════
+   TABLET (≥860px) — sigue en una columna, más aire y
+   tipografía más grande. No se toca global.css.
+══════════════════════════════════════════════════════════ */
+@media (min-width: 860px) {
+    .app-container {
+        max-width: 720px;
+    }
+
+    .main-content {
+        padding: 1.5rem 1.5rem 1rem;
+        gap: 1.25rem;
+    }
+
+    .header h1 {
+        font-size: 1.6rem;
+    }
+
+    .ranking-table {
+        font-size: 0.92rem;
+    }
+
+    .ranking-table th {
+        font-size: 0.76rem;
+        padding: 0.95rem 0.7rem;
+    }
+
+    .ranking-table td {
+        padding: 0.95rem 0.7rem;
+    }
+
+    .stat-summary-val {
+        font-size: 1.2rem;
+    }
+}
+
+/* ══════════════════════════════════════════════════════════
+   DESKTOP (≥1200px) — dos columnas: a la izquierda un
+   panel angosto con el resumen + filtros (apilados), a la
+   derecha la tabla de ranking, que es lo principal.
+══════════════════════════════════════════════════════════ */
+@media (min-width: 1200px) {
+    .app-container {
+        max-width: 1180px;
+    }
+
+    .main-content {
+        display: grid;
+        grid-template-columns: 320px 1fr;
+        grid-template-areas:
+            "summary table"
+            "filters table";
+        align-items: start;
+        gap: 1.5rem;
+        padding: 2rem 1.5rem 1.5rem;
+    }
+
+    .summary-cards-grid { grid-area: summary; }
+    .filters             { grid-area: filters; flex-direction: column; margin-bottom: 0; }
+    .ranking-table-container { grid-area: table; }
+
+    .header h1 {
+        font-size: 1.85rem;
+    }
+
+    .ranking-table {
+        font-size: 0.96rem;
+    }
+
+    .ranking-table th {
+        font-size: 0.78rem;
+        padding: 1rem 0.75rem;
+    }
+
+    .ranking-table td {
+        padding: 1rem 0.75rem;
+    }
+
+    .stat-summary-val {
+        font-size: 1.3rem;
+    }
+
+    .stat-summary-label {
+        font-size: 0.76rem;
+    }
+
+    .filter-select {
+        font-size: 0.95rem;
+        padding: 0.85rem 1.05rem;
+    }
+}

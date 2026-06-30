@@ -300,10 +300,10 @@ function updateTimeline() {
         var html   = '';
 
         if (ev.type === 'goal') {
-            var assist = ev.assist ? '<span class="tl-assist">\uD83C\uDFAF ' + ev.assist + '</span>' : '';
-            html = '\u26BD <strong>' + ev.player + '</strong>' + assist;
+            var assist = ev.assist ? '<span class="tl-assist"><i class="fa-solid fa-bullseye"></i> ' + ev.assist + '</span>' : '';
+            html = '<i class="fa-solid fa-futbol"></i> <strong>' + ev.player + '</strong>' + assist;
         } else if (ev.type === 'substitution') {
-            html = '<span class="tl-sub">\uD83D\uDD04 ' + ev.playerIn + ' \u21D4 ' + ev.playerOut + '</span>';
+            html = '<span class="tl-sub"><i class="fa-solid fa-arrows-rotate"></i> ' + ev.playerIn + ' \u21D4 ' + ev.playerOut + '</span>';
         }
 
         return '<div class="tl-row">' +
@@ -363,7 +363,7 @@ function confirmBack() {
 }
 
 // ── FINALIZAR ────────────────────────────────────────────────
-function finishMatch() {
+async function finishMatch() {
     if (!confirm('¿Finalizar el partido?')) return;
     if (isRunning) pauseTimer();
 
@@ -372,10 +372,81 @@ function finishMatch() {
 
     saveMatchProgress();
 
+    try {
+        var result = await uploadMatchEvents(currentMatch);
+        if (result.ok) {
+            showToast('Eventos guardados en la DB local');
+        } else {
+            showToast('No se pudieron guardar los eventos: ' + (result.error || 'Error desconocido'), 'error');
+        }
+    } catch (e) {
+        console.warn('Error guardando eventos en DB:', e);
+        showToast('No se pudieron guardar los eventos en la DB', 'error');
+    }
+
     try { updateStatsAfterMatch(currentMatch); } catch(e) { console.warn('Stats:', e); }
     try { exportMatchToTXT(currentMatch); } catch(e) { console.warn('TXT:', e); }
 
     showSummaryScreen();
+}
+
+async function uploadMatchEvents(match) {
+    var payload = buildMatchEventPayload(match);
+    if (!payload) {
+        return { ok: false, error: 'No hay datos válidos para enviar' };
+    }
+
+    var response = await fetch('../api/saveMatchEvents.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+    });
+
+    if (!response.ok) {
+        var text = await response.text();
+        return { ok: false, error: 'HTTP ' + response.status + ' - ' + text };
+    }
+
+    return await response.json();
+}
+
+function buildMatchEventPayload(match) {
+    if (!match || !Array.isArray(match.events)) return null;
+
+    var players = getPlayers();
+    var byName = {};
+    players.forEach(function(player) {
+        if (player && typeof player.name === 'string') {
+            byName[player.name] = player.id;
+        }
+    });
+
+    var eventItems = [];
+    match.events.forEach(function(ev) {
+        if (!ev || !ev.type || !ev.team) return;
+        var team = ev.team === 'white' ? 'white' : 'black';
+
+        if (ev.type === 'goal') {
+            var scorerId = byName[ev.player] || null;
+            if (scorerId !== null) {
+                eventItems.push({ type: 'goal', playerId: scorerId, assistId: ev.assist ? (byName[ev.assist] || null) : null, team: team });
+            }
+        } else if (ev.type === 'substitution') {
+            var inId = byName[ev.playerIn] || null;
+            if (inId !== null) {
+                eventItems.push({ type: 'substitution', playerInId: inId, playerOutId: byName[ev.playerOut] || null, team: team });
+            }
+        }
+    });
+
+    return {
+        match: {
+            date:   match.date || null,
+            format: match.format || 'F5',
+            venue:  match.venue || null
+        },
+        events: eventItems
+    };
 }
 
 // ── PANTALLA DE RESUMEN ──────────────────────────────────────
@@ -386,8 +457,8 @@ function showSummaryScreen() {
     var bs = currentMatch.blackScore;
 
     var winner = '';
-    if      (ws > bs) winner = t1 + ' ganó 🏆';
-    else if (bs > ws) winner = t2 + ' ganó 🏆';
+    if      (ws > bs) winner = t1 + ' ganó <i class="fa-solid fa-trophy"></i>';
+    else if (bs > ws) winner = t2 + ' ganó <i class="fa-solid fa-trophy"></i>';
     else              winner = 'Empate';
 
     var stats = {};
@@ -422,9 +493,9 @@ function showSummaryScreen() {
             var html   = '';
             if (ev.type === 'goal') {
                 var assist = ev.assist ? ' <span style="color:var(--text-tertiary)">· ' + ev.assist + '</span>' : '';
-                html = '⚽ <strong>' + ev.player + '</strong>' + assist;
+                html = '<i class="fa-solid fa-futbol"></i> <strong>' + ev.player + '</strong>' + assist;
             } else {
-                html = '<span style="color:var(--text-tertiary)">🔄 ' + ev.playerIn + ' ↔ ' + ev.playerOut + '</span>';
+                html = '<span style="color:var(--text-tertiary)"><i class="fa-solid fa-arrows-rotate"></i> ' + ev.playerIn + ' \u2194 ' + ev.playerOut + '</span>';
             }
             return '<div class="tl-row">' +
                 '<div class="tl-event-left">'  + (isLeft  ? html : '') + '</div>' +
@@ -458,7 +529,7 @@ function showSummaryScreen() {
                 '</div>' +
             '</div>' +
 
-            '<div class="sum-duration">⏱ Duración: ' + duration + '</div>' +
+            '<div class="sum-duration"><i class="fa-solid fa-stopwatch"></i> Duración: ' + duration + '</div>' +
 
             '<div class="sum-section">' +
                 '<div class="sum-section-label">Goleadores y asistentes</div>' +
@@ -477,7 +548,7 @@ function showSummaryScreen() {
         '</main>' +
 
         '<div class="bottom-actions">' +
-            '<button type="button" class="action-btn" onclick="window.location.href=\'crear-partido.html\'">⚽ Partidos</button>' +
-            '<button type="button" class="action-btn primary" onclick="window.location.href=\'home.html\'">🏠 Inicio</button>' +
+            '<button type="button" class="action-btn" onclick="window.location.href=\'crear-partido.html\'"><i class="fa-solid fa-futbol"></i> Partidos</button>' +
+            '<button type="button" class="action-btn primary" onclick="window.location.href=\'home.html\'"><i class="fa-solid fa-house"></i> Inicio</button>' +
         '</div>';
 }

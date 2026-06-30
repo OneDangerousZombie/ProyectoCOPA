@@ -7,8 +7,6 @@ let npState = {
 
 // ── Helpers ─────────────────────────────────────────────────
 function loadPlayersFromApi() {
-    console.log("[TRACK] 3. loadPlayersFromApi() iniciada. Sincronizando con base de datos...");
-
     return Promise.resolve(typeof dataReady !== 'undefined' ? dataReady : Promise.reject(new Error('dataReady no definido')))
         .then(function() {
             const players = getPlayersByRole(1);
@@ -24,7 +22,7 @@ function loadPlayersFromApi() {
             });
         })
         .catch(function(error) {
-            console.warn('[TRACK] Fallback directo a la API en nuevo-partido:', error);
+            console.warn('Fallback directo a la API en nuevo-partido:', error);
             return fetch('../api/traerJugadores.php')
                 .then(function(response) {
                     if (!response.ok) {
@@ -52,11 +50,7 @@ function loadPlayersFromApi() {
 }
 
 // ── Init ────────────────────────────────────────────────────
-console.log("[TRACK] 1. Script cargado en memoria. Esperando a DOMContentLoaded...");
-
 window.addEventListener('DOMContentLoaded', function() {
-    console.log("[TRACK] 2. Evento DOMContentLoaded disparado. Inicializando vista...");
-
     var today = new Date().toISOString().split('T')[0];
     document.getElementById('npDate').value = today;
 
@@ -66,13 +60,12 @@ window.addEventListener('DOMContentLoaded', function() {
 
     loadPlayersFromApi()
         .then(function(players) {
-            console.log("[TRACK] 7A. Promesa cumplida con éxito. Jugadores cargados en npState:", players);
             npState.allPlayers = players;
             renderPlayerList();
             validateForm();
         })
         .catch(function(error) {
-            console.error("[TRACK] 7B. ¡ERROR EN EL FLUJO! Capturado en .catch():", error.message);
+            console.error('Error cargando jugadores en nuevo-partido:', error.message);
             npState.allPlayers = [];
             renderPlayerList();
             validateForm();
@@ -98,6 +91,10 @@ window.addEventListener('DOMContentLoaded', function() {
     document.getElementById('newPlayerInput').onkeypress = function(e) {
         if (e.key === 'Enter') addNewPlayer();
     };
+
+    // ── Agregados de la combinación con crear-partido.js ──────
+    document.getElementById('balanceTeamsBtn')?.addEventListener('click', balanceTeams);
+    document.getElementById('addGuestBtn')?.addEventListener('click', addGuestPlaceholder);
 
     renderPlayerList();
     validateForm();
@@ -132,6 +129,15 @@ function addNewPlayer() {
     validateForm();
 }
 
+// ── Agregar invitado (placeholder, sin función todavía) ──────
+// Pedido explícito: un botón visible que por ahora no hace nada real,
+// distinto de "Agregar jugador nuevo" (que sí funciona y se deja igual).
+function addGuestPlaceholder() {
+    if (typeof showToast === 'function') {
+        showToast('Agregar invitado: próximamente', 'error');
+    }
+}
+
 // ── Asignar jugador ─────────────────────────────────────────
 function assignPlayer(name, team) {
     if (team === 1) {
@@ -151,6 +157,35 @@ function assignPlayer(name, team) {
     }
     renderPlayerList();
     validateForm();
+}
+
+// ── Balancear equipos por ELO (combinado desde crear-partido.js) ──
+// Toma los jugadores YA asignados a algún equipo (team1 + team2) y los
+// redistribuye parejos según ELO, igual que balanceTeams() en
+// crear-partido.js, adaptado a la forma de npState.
+function balanceTeams() {
+    var combined = npState.team1.concat(npState.team2);
+    if (combined.length === 0) {
+        if (typeof showToast === 'function') showToast('Asigná jugadores a algún equipo primero', 'error');
+        return;
+    }
+
+    var sorted = combined
+        .map(function(name) {
+            return npState.allPlayers.find(function(p) { return p.name === name; }) || { name: name, elo: 1200 };
+        })
+        .sort(function(a, b) { return (b.elo || 1200) - (a.elo || 1200); });
+
+    npState.team1 = [];
+    npState.team2 = [];
+    sorted.forEach(function(player, i) {
+        if (i % 2 === 0) npState.team1.push(player.name);
+        else             npState.team2.push(player.name);
+    });
+
+    renderPlayerList();
+    validateForm();
+    if (typeof showToast === 'function') showToast('Equipos balanceados por ELO');
 }
 
 // ── Quitar jugador ──────────────────────────────────────────
@@ -242,6 +277,12 @@ function validateForm() {
 }
 
 // ── Guardar e iniciar ────────────────────────────────────────
+// CAMBIO CLAVE de la combinación: antes redirigía directo a
+// anotador.html. Ahora el partido queda guardado como pendiente
+// (ya se guardaba con completed:false) y se vuelve a crear-partido.html,
+// donde loadUpcomingMatches() (en crear-partido.js, sin tocar) ya lo
+// va a mostrar automáticamente con sus botones de "Ver equipos" e
+// "Iniciar" (este último sí lleva a anotador.html cuando corresponda).
 function saveAndStart() {
     var date   = document.getElementById('npDate').value;
     var time   = document.getElementById('npTime').value;
@@ -271,6 +312,8 @@ function saveAndStart() {
     };
 
     saveMatch(newMatch);
-    sessionStorage.setItem('currentMatchId', newMatch.id);
-    window.location.href = 'anotador.html';
+
+    if (typeof showToast === 'function') showToast('Partido creado, queda pendiente de iniciar');
+
+    window.location.href = 'crear-partido.html';
 }

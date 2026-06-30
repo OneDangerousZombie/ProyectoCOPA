@@ -4,21 +4,28 @@
     padding: 1.25rem 1rem 0.5rem;
 }
 
+/* El elemento real es un <img> (perfil.js le asigna .src dinámicamente).
+   Antes el tamaño/recorte vivía en un style="" inline en el HTML — se
+   movió acá para que sea consistente con el resto del proyecto, sin
+   cambiar el elemento ni su id. */
 .profile-avatar {
-    width: 76px;
-    height: 76px;
+    display: block;
+    width: 84px;
+    height: 84px;
     background: var(--bg-elevated);
     border: 2px solid var(--border-light);
     border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 2.25rem;
+    object-fit: cover;
     margin: 0 auto 0.875rem;
+    transition: border-color var(--transition-fast);
+}
+
+.profile-header:hover .profile-avatar {
+    border-color: var(--green-border);
 }
 
 .profile-header h2 {
-    font-size: 1.375rem;
+    font-size: 1.4rem;
     font-weight: 800;
     letter-spacing: -0.02em;
     margin-bottom: 0.3rem;
@@ -49,33 +56,64 @@
 .stat-card {
     background: var(--bg-card);
     border-radius: var(--radius-md);
-    padding: 0.875rem 1rem;
+    padding: 0.95rem 1rem;
     text-align: center;
     border: 1px solid var(--border-color);
-    transition: border-color var(--transition-fast);
+    transition: border-color var(--transition-fast), transform var(--transition-fast);
 }
 
 .stat-card:hover {
-    border-color: var(--border-light);
+    border-color: var(--green-border);
+    transform: translateY(-2px);
 }
 
 .stat-value {
     display: block;
-    font-size: 1.625rem;
+    font-size: 1.75rem;
     font-weight: 800;
     color: var(--text-primary);
     letter-spacing: -0.03em;
     line-height: 1;
+    font-variant-numeric: tabular-nums;
 }
 
 .stat-label {
     display: block;
-    font-size: 0.68rem;
+    font-size: 0.7rem;
     font-weight: 600;
     letter-spacing: 0.06em;
     text-transform: uppercase;
     color: var(--text-tertiary);
     margin-top: 0.3rem;
+}
+
+/* ── Botón de cerrar sesión (visible en todos los tamaños de pantalla) ── */
+.profile-logout-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    width: 100%;
+    padding: 0.8rem 1rem;
+    margin-bottom: 1.25rem;
+    background: transparent;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    border-radius: var(--radius-md);
+    color: #f87171;
+    font-size: 0.85rem;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.profile-logout-btn:hover {
+    background: rgba(239, 68, 68, 0.1);
+    border-color: rgba(239, 68, 68, 0.5);
+}
+
+.profile-logout-btn:active {
+    transform: scale(0.98);
 }
 
 /* ── Achievements ───────────────────────────── */
@@ -84,7 +122,7 @@
 }
 
 .achievements h3 {
-    font-size: 0.72rem;
+    font-size: 0.74rem;
     font-weight: 700;
     letter-spacing: 0.07em;
     text-transform: uppercase;
@@ -99,14 +137,21 @@
 }
 
 .achievement {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
     background: var(--bg-card);
-    padding: 0.4rem 0.75rem;
+    padding: 0.5rem 0.875rem;
     border-radius: 999px;
-    font-size: 0.78rem;
-    font-weight: 500;
+    font-size: 0.8rem;
+    font-weight: 600;
     border: 1px solid var(--border-color);
     color: var(--text-secondary);
-    transition: border-color var(--transition-fast);
+    transition: border-color var(--transition-fast), color var(--transition-fast);
+}
+
+.achievement i {
+    color: var(--green-primary);
 }
 
 .achievement:hover {
@@ -120,7 +165,7 @@
 }
 
 .match-history h3 {
-    font-size: 0.72rem;
+    font-size: 0.74rem;
     font-weight: 700;
     letter-spacing: 0.07em;
     text-transform: uppercase;
@@ -131,11 +176,15 @@
 .history-item {
     background: var(--bg-card);
     border-radius: var(--radius-md);
-    padding: 0.75rem 0.875rem;
+    padding: 0.85rem 1rem;
     margin-bottom: 0.4rem;
     border: 1px solid var(--border-color);
     border-left: 3px solid var(--green-primary);
-    transition: border-color var(--transition-fast);
+    transition: border-color var(--transition-fast), transform var(--transition-fast);
+}
+
+.history-item:hover {
+    transform: translateX(3px);
 }
 
 .history-item.loss {
@@ -144,4 +193,80 @@
 
 .history-item.draw {
     border-left-color: #f59e0b;
+}
+
+/* ══════════════════════════════════════════════════════════
+   TABLET (≥860px) — sigue en una columna, más aire y
+   tipografía más grande.
+══════════════════════════════════════════════════════════ */
+@media (min-width: 860px) {
+    .app-container {
+        max-width: 640px;
+    }
+
+    .header h1 {
+        font-size: 1.6rem;
+    }
+
+    .main-content {
+        padding: 1.5rem 1.5rem 1rem;
+    }
+
+    .profile-avatar {
+        width: 100px;
+        height: 100px;
+    }
+
+    .profile-header h2 {
+        font-size: 1.6rem;
+    }
+
+    .stat-value {
+        font-size: 2rem;
+    }
+}
+
+/* ══════════════════════════════════════════════════════════
+   DESKTOP (≥1200px) — dos columnas: a la izquierda la
+   identidad del jugador (avatar + stats), a la derecha logros
+   + historial de partidos. .profile-layout es un wrapper nuevo
+   y puramente aditivo (no rompe ningún id que use perfil.js).
+══════════════════════════════════════════════════════════ */
+@media (min-width: 1200px) {
+    .app-container {
+        max-width: 1100px;
+    }
+
+    .main-content {
+        padding: 2rem 1.5rem 1.5rem;
+    }
+
+    .header h1 {
+        font-size: 1.85rem;
+    }
+
+    .profile-layout {
+        display: grid;
+        grid-template-columns: 320px 1fr;
+        align-items: start;
+        gap: 1.75rem;
+    }
+
+    .profile-col-side {
+        position: sticky;
+        top: 85px;
+    }
+
+    .profile-header {
+        padding: 0.5rem 1rem 1rem;
+    }
+
+    .profile-avatar {
+        width: 110px;
+        height: 110px;
+    }
+
+    .profile-stats {
+        margin-bottom: 0;
+    }
 }
