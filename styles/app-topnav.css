@@ -1,0 +1,238 @@
+/* ============================================================================
+   app-topnav.css — Navbar de desktop/tablet COMPARTIDO para las páginas de
+   la Aplicación (pages/). Pensado para reusarse en home.html, liga.html,
+   perfil.html, estadisticas.html, crear-partido.html, etc. — no es
+   exclusivo de una sola página.
+
+   Reemplaza visualmente al .bottom-nav (mobile) a partir de 860px, con el
+   mismo lenguaje del navbar de la Landing (logo izquierda, links centro,
+   usuario derecha) pero usando los nav-items reales de la Aplicación.
+
+   No modifica global.css: todo lo que pisa (.bottom-nav, .app-container)
+   lo hace desde acá, vía media query, sin tocar el archivo compartido.
+
+   Esta hoja no tiene --ease-premium disponible (esa variable solo existe
+   en index.css, de la Landing) — usa los tokens de global.css
+   (--transition-fast/normal/slow) y curvas cubic-bezier propias donde
+   hace falta una animación más particular.
+   ============================================================================ */
+
+.app-topnav {
+    display: none; /* mobile: el bottom-nav sigue siendo la navegación */
+}
+
+@media (min-width: 860px) {
+
+    /* ── Swap mobile → desktop: oculta el bottom-nav, libera el padding
+       que el app-container reservaba para él, y deja lugar arriba para
+       el navbar sticky nuevo. No se toca global.css, todo el override
+       vive acá. ── */
+    .bottom-nav {
+        display: none !important;
+    }
+
+    .app-container {
+        padding-bottom: 0;
+    }
+
+    .app-topnav {
+        display: block;
+        position: sticky;
+        top: 0;
+        z-index: 200;
+        background: rgba(8, 8, 8, 0.92);
+        backdrop-filter: blur(24px);
+        -webkit-backdrop-filter: blur(24px);
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .app-topnav-inner {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 0.875rem 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1.5rem;
+    }
+
+    /* ── Marca ── */
+    .app-topnav-brand {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        text-decoration: none;
+        color: var(--text-primary);
+        flex-shrink: 0;
+    }
+
+    .app-topnav-brand-icon {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: var(--bg-elevated);
+        border: 1px solid var(--green-border);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1rem;
+    }
+
+    .app-topnav-brand-text {
+        font-size: 1.1rem;
+        font-weight: 800;
+        letter-spacing: -0.01em;
+    }
+
+    /* ── Links — reutiliza .nav-item / .nav-icon / .active de global.css,
+       solo cambia la orientación (fila en vez de columna) y el tamaño
+       dentro de este contexto. El color activo, el glow del ícono y el
+       hover ya vienen heredados de global.css sin tocar ese archivo. ── */
+    .app-topnav-links {
+        display: flex;
+        align-items: center;
+        gap: 1.75rem;
+    }
+
+    .app-topnav-links .nav-item {
+        flex-direction: row;
+        gap: 0.4rem;
+        font-size: 0.85rem;
+        padding: 0.3rem 0;
+        min-width: 0;
+    }
+
+    .app-topnav-links .nav-item .nav-icon {
+        font-size: 0.95rem;
+    }
+
+    /* Subrayado animado al hover/activo, mismo lenguaje que el navbar
+       de la Landing. */
+    .app-topnav-links .nav-item {
+        position: relative;
+    }
+
+    .app-topnav-links .nav-item::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        bottom: -6px;
+        width: 100%;
+        height: 1.5px;
+        background: var(--green-primary);
+        transform: scaleX(0);
+        transform-origin: left;
+        transition: transform 0.25s ease;
+    }
+
+    .app-topnav-links .nav-item:hover::after,
+    .app-topnav-links .nav-item.active::after {
+        transform: scaleX(1);
+    }
+
+    /* ── Usuario (arriba a la derecha) ── */
+    .app-topnav-user {
+        position: relative;
+        flex-shrink: 0;
+    }
+
+    .app-topnav-user-trigger {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: var(--bg-elevated);
+        border: 1px solid var(--border-light);
+        border-radius: var(--radius-sm);
+        padding: 0.35rem 0.75rem 0.35rem 0.35rem;
+        cursor: pointer;
+        font-family: inherit;
+        transition: all var(--transition-fast);
+    }
+
+    .app-topnav-user-trigger:hover {
+        border-color: var(--green-border);
+    }
+
+    .app-topnav-user-avatar {
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        background: var(--bg-card);
+        border: 1px solid var(--border-light);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.8rem;
+        color: var(--text-primary);
+    }
+
+    .app-topnav-user-name {
+        font-size: 0.83rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        max-width: 110px;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
+
+    .app-topnav-user-caret {
+        font-size: 0.65rem;
+        color: var(--text-tertiary);
+        transition: transform 0.25s ease;
+    }
+
+    .app-topnav-user-trigger[aria-expanded="true"] .app-topnav-user-caret {
+        transform: rotate(180deg);
+    }
+
+    .app-topnav-user-menu {
+        position: absolute;
+        top: calc(100% + 0.625rem);
+        right: 0;
+        min-width: 180px;
+        background: var(--bg-elevated);
+        border: 1px solid var(--border-light);
+        border-radius: var(--radius-sm);
+        box-shadow: var(--shadow-lg);
+        padding: 0.4rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.15rem;
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(8px) scale(0.97);
+        transform-origin: top right;
+        transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s ease;
+    }
+
+    .app-topnav-user-menu.active {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0) scale(1);
+    }
+
+    .app-topnav-user-menu-item {
+        background: none;
+        border: none;
+        width: 100%;
+        text-align: left;
+        padding: 0.55rem 0.7rem;
+        border-radius: var(--radius-xs);
+        font-size: 0.82rem;
+        font-weight: 500;
+        font-family: inherit;
+        color: var(--text-primary);
+        text-decoration: none;
+        cursor: pointer;
+        transition: background var(--transition-fast);
+    }
+
+    .app-topnav-user-menu-item:hover {
+        background: var(--bg-card-hover);
+    }
+
+    .app-topnav-user-menu-item-danger {
+        color: #f87171;
+    }
+}

@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Estadísticas — COPA</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="../styles/global.css">
+    <link rel="stylesheet" href="../styles/components.css">
+    <link rel="stylesheet" href="../styles/app-topnav.css">
+    <link rel="stylesheet" href="../styles/app-footer.css">
+    <link rel="stylesheet" href="../styles/estadisticas.css">
+</head>
+<body>
+
+    <!-- Navbar de desktop/tablet (≥860px) — mismo componente compartido
+         que home.html, mismo truco: navigation.js ya detecta estos
+         .nav-item[data-page] solo, sin tocar ese archivo. -->
+    <header class="app-topnav">
+        <div class="app-topnav-inner">
+            <a href="../index.html" class="app-topnav-brand">
+                <span class="app-topnav-brand-icon"><i class="fa-solid fa-futbol"></i></span>
+                <span class="app-topnav-brand-text">COPA</span>
+            </a>
+
+            <nav class="app-topnav-links">
+                <div class="nav-item" data-page="home">
+                    <span class="nav-icon"><i class="fa-solid fa-house"></i></span>
+                    Inicio
+                </div>
+                <div class="nav-item" data-page="liga">
+                    <span class="nav-icon"><i class="fa-solid fa-users"></i></span>
+                    Liga
+                </div>
+                <div class="nav-item" data-page="crear-partido">
+                    <span class="nav-icon"><i class="fa-solid fa-futbol"></i></span>
+                    Partidos
+                </div>
+                <div class="nav-item active" data-page="estadisticas">
+                    <span class="nav-icon"><i class="fa-solid fa-chart-column"></i></span>
+                    Stats
+                </div>
+            </nav>
+
+            <div class="app-topnav-user">
+                <button type="button" class="app-topnav-user-trigger" id="userTrigger" aria-expanded="false">
+                    <span class="app-topnav-user-avatar" id="navUserAvatar"><i class="fa-solid fa-user"></i></span>
+                    <span class="app-topnav-user-name" id="navUserName">Usuario</span>
+                    <i class="fa-solid fa-chevron-down app-topnav-user-caret"></i>
+                </button>
+                <div class="app-topnav-user-menu" id="userMenu">
+                    <a href="perfil.html" class="app-topnav-user-menu-item">Mi cuenta</a>
+                    <button type="button" class="app-topnav-user-menu-item app-topnav-user-menu-item-danger" id="logoutBtn">Cerrar sesión</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="app-container">
+        <div class="header">
+            <h1>Estadísticas</h1>
+        </div>
+
+        <main class="main-content">
+            <!-- Cards resumen -->
+            <div class="summary-cards-grid" id="summaryCards"></div>
+            <div class="filters">
+                <select id="statFilter" class="filter-select">
+                    <option value="points">Puntos</option>
+                    <option value="goals">Goles</option>
+                    <option value="assists">Asistencias</option>
+                    <option value="won">Ganados</option>
+                    <option value="lost">Perdidos</option>
+                    <option value="draw">Empatados</option>
+                    <option value="streak">Racha</option>
+                </select>
+                <select id="dateFilter" class="filter-select">
+                    <option value="all">Todas las Fechas</option>
+                    <option value="1">Fecha 1</option>
+                    <option value="2">Fecha 2</option>
+                    <option value="3">Fecha 3</option>
+                    <option value="4">Fecha 4</option>
+                    <option value="5">Fecha 5</option>
+                    <option value="6">Fecha 6</option>
+                    <option value="7">Fecha 7</option>
+                </select>
+            </div>
+
+            <div class="ranking-table-container">
+                <table class="ranking-table" id="rankingTable">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Jugador</th>
+                            <th>PJ</th>
+                            <th>G</th>
+                            <th>E</th>
+                            <th>P</th>
+                            <th>Goles</th>
+                            <th>Asis</th>
+                            <th>Pts</th>
+                        </tr>
+                    </thead>
+                    <tbody id="rankingBody">
+                        <!-- JS popula -->
+                    </tbody>
+                </table>
+            </div>
+        </main>
+
+        <nav class="bottom-nav">
+            <div class="nav-item" data-page="home"><span class="nav-icon"><i class="fa-solid fa-house"></i></span>Inicio</div>
+            <div class="nav-item" data-page="liga"><span class="nav-icon"><i class="fa-solid fa-users"></i></span>Liga</div>
+            <div class="nav-item" data-page="crear-partido"><span class="nav-icon"><i class="fa-solid fa-futbol"></i></span>Partidos</div>
+            <div class="nav-item active" data-page="estadisticas"><span class="nav-icon"><i class="fa-solid fa-chart-column"></i></span>Stats</div>
+            <div class="nav-item" data-page="perfil"><span class="nav-icon"><i class="fa-solid fa-user"></i></span>Perfil</div>
+        </nav>
+    </div>
+
+    <!-- Footer de desktop/tablet — FUERA de .app-container a propósito,
+         así ocupa el 100% del ancho de la pantalla y queda siempre
+         pegado abajo (ver app-footer.css, patrón sticky-footer). -->
+    <footer class="app-footer">
+        <div class="app-footer-inner">
+            <div class="app-footer-top">
+                <div class="app-footer-brand">
+                    <span class="app-footer-brand-icon"><i class="fa-solid fa-futbol"></i></span>
+                    <span class="app-footer-brand-text">COPA</span>
+                </div>
+                <nav class="app-footer-links">
+                    <a href="home.html">Inicio</a>
+                    <a href="liga.html">Liga</a>
+                    <a href="crear-partido.html">Partidos</a>
+                    <a href="estadisticas.html">Estadísticas</a>
+                    <a href="perfil.html">Mi cuenta</a>
+                    <a href="../index.html">Volver al sitio</a>
+                </nav>
+            </div>
+            <div class="app-footer-bottom">© 2026 COPA — Proyecto académico</div>
+        </div>
+    </footer>
+
+    <script src="../scripts/data.js"></script>
+    <script src="../scripts/utils.js"></script>
+    <script src="../scripts/navigation.js"></script>
+    <script src="../scripts/app-topnav.js"></script>
+    <script src="../scripts/estadisticas.js"></script>
+</body>
+</html>

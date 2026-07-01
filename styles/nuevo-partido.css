@@ -1,0 +1,443 @@
+/* ── Header con botón volver ─────────────────── */
+.header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.back-btn {
+    width: 36px;
+    height: 36px;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-sm);
+    color: var(--text-primary);
+    font-size: 1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--transition-fast);
+    flex-shrink: 0;
+}
+
+.back-btn:hover {
+    border-color: var(--green-border);
+    color: var(--green-primary);
+}
+
+.header h1 {
+    flex: 1;
+    text-align: center;
+    font-size: 1.05rem;
+}
+
+.header-spacer {
+    width: 36px;
+    flex-shrink: 0;
+}
+
+/* ── Secciones ──────────────────────────────── */
+.np-section {
+    background: var(--bg-card);
+    border-radius: var(--radius-lg);
+    padding: 1rem 1.125rem;
+    border: 1px solid var(--border-color);
+    margin-bottom: 1rem;
+}
+
+.np-section-label {
+    font-size: 0.74rem;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+    margin-bottom: 0.875rem;
+}
+
+.np-field {
+    margin-bottom: 0.875rem;
+}
+
+.np-field:last-child {
+    margin-bottom: 0;
+}
+
+.np-field label {
+    display: block;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--text-tertiary);
+    margin-bottom: 0.4rem;
+}
+
+.np-field input {
+    width: 100%;
+}
+
+/* ── Equipos: nombres ───────────────────────── */
+.team-names-row {
+    display: flex;
+    align-items: flex-end;
+    gap: 0.625rem;
+}
+
+.np-field-flex {
+    flex: 1;
+    margin-bottom: 0;
+}
+
+.team-names-vs {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--text-tertiary);
+    padding-bottom: 0.875rem;
+    flex-shrink: 0;
+}
+
+/* ── Formato ────────────────────────────────── */
+.format-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+}
+
+.format-btn {
+    padding: 0.8rem 0.5rem;
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-md);
+    background: var(--bg-tertiary);
+    color: var(--text-secondary);
+    font-size: 0.86rem;
+    font-weight: 700;
+    cursor: pointer;
+    text-align: center;
+    transition: all var(--transition-fast);
+}
+
+.format-btn:active { transform: scale(0.96); }
+
+.format-btn.selected {
+    border-color: var(--green-primary);
+    background: var(--green-glow);
+    color: var(--green-primary);
+}
+
+/* ── Estado de jugadores ────────────────────── */
+.players-status {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.82rem;
+    color: var(--text-tertiary);
+    margin-bottom: 0.4rem;
+}
+
+.players-status-count strong {
+    color: var(--green-primary);
+    font-size: 0.95rem;
+    font-variant-numeric: tabular-nums;
+}
+
+.players-progress-bar {
+    height: 3px;
+    background: var(--border-color);
+    border-radius: 2px;
+    margin-bottom: 0.875rem;
+    overflow: hidden;
+}
+
+.players-progress-fill {
+    height: 100%;
+    background: var(--green-primary);
+    border-radius: 2px;
+    transition: width var(--transition-normal);
+    width: 0%;
+}
+
+/* ── Balancear equipos (nuevo) ──────────────── */
+.balance-btn-np {
+    width: 100%;
+    padding: 0.8rem;
+    background: var(--green-primary);
+    border: none;
+    border-radius: var(--radius-md);
+    color: #000;
+    font-weight: 700;
+    font-size: 0.86rem;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    margin-bottom: 0.75rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+}
+
+.balance-btn-np:hover {
+    background: var(--green-bright);
+    box-shadow: var(--shadow-green);
+}
+
+.balance-btn-np:active {
+    transform: scale(0.98);
+}
+
+/* ── Agregar jugador / invitado ─────────────── */
+.add-player-row {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 0.625rem;
+}
+
+.add-player-row input {
+    flex: 1;
+}
+
+.add-player-btn {
+    padding: 0 1rem;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-md);
+    color: var(--text-primary);
+    font-size: 0.83rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-family: inherit;
+}
+
+.add-player-btn:hover {
+    border-color: var(--green-border);
+    color: var(--green-primary);
+}
+
+/* Agregar invitado: placeholder, mismo estilo "outline" para que se vea
+   disponible, pero claramente secundario (sin función todavía). */
+.add-guest-btn {
+    width: 100%;
+    padding: 0.7rem;
+    background: transparent;
+    border: 1px dashed var(--border-medium);
+    border-radius: var(--radius-md);
+    color: var(--text-tertiary);
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    margin-bottom: 1rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    font-family: inherit;
+}
+
+.add-guest-btn:hover {
+    border-color: var(--green-border);
+    color: var(--green-primary);
+}
+
+/* ── Lista de asignación de jugadores ───────── */
+.players-assign-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    max-height: 360px;
+    overflow-y: auto;
+}
+
+.player-assign-row {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 0.7rem 0.85rem;
+    transition: border-color var(--transition-fast);
+}
+
+.player-assign-row.assigned-1 {
+    border-color: rgba(255, 255, 255, 0.25);
+}
+
+.player-assign-row.assigned-2 {
+    border-color: var(--green-border);
+}
+
+.player-assign-name {
+    flex: 1;
+    min-width: 0;
+    font-weight: 600;
+    font-size: 0.88rem;
+    color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.player-assign-elo {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--green-primary);
+    flex-shrink: 0;
+    font-variant-numeric: tabular-nums;
+}
+
+.player-assign-btns {
+    display: flex;
+    gap: 0.35rem;
+    flex-shrink: 0;
+}
+
+.assign-btn {
+    padding: 0.4rem 0.625rem;
+    border-radius: var(--radius-xs);
+    font-size: 0.74rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    border: 1px solid var(--border-light);
+    background: var(--bg-elevated);
+    color: var(--text-secondary);
+    font-family: inherit;
+}
+
+.assign-btn.btn-t1-active {
+    background: var(--bg-elevated);
+    border-color: rgba(255, 255, 255, 0.4);
+    color: var(--text-primary);
+}
+
+.assign-btn.btn-t2-active {
+    background: var(--green-glow);
+    border-color: var(--green-primary);
+    color: var(--green-primary);
+}
+
+.assign-btn:hover {
+    border-color: var(--border-medium);
+}
+
+.remove-player-btn {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-light);
+    color: var(--text-tertiary);
+    cursor: pointer;
+    font-size: 1rem;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--transition-fast);
+}
+
+.remove-player-btn:hover {
+    border-color: #ef4444;
+    color: #f87171;
+}
+
+/* ── CTA final ──────────────────────────────── */
+.np-cta {
+    position: sticky;
+    bottom: 0;
+    background: var(--bg-primary);
+    padding-top: 0.75rem;
+}
+
+.np-cta-info {
+    text-align: center;
+    font-size: 0.8rem;
+    color: var(--text-tertiary);
+    margin-bottom: 0.625rem;
+}
+
+.np-cta-btn {
+    width: 100%;
+    padding: 0.95rem;
+    background: var(--green-primary);
+    border: none;
+    border-radius: var(--radius-md);
+    color: #000;
+    font-weight: 800;
+    font-size: 0.92rem;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.np-cta-btn:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+}
+
+.np-cta-btn:hover:not(:disabled) {
+    background: var(--green-bright);
+    box-shadow: var(--shadow-green);
+}
+
+/* ══════════════════════════════════════════════════════════
+   TABLET (≥860px) — sigue en una columna, más aire y
+   tipografía más grande.
+══════════════════════════════════════════════════════════ */
+@media (min-width: 860px) {
+    .app-container {
+        max-width: 720px;
+    }
+
+    .header h1 {
+        font-size: 1.3rem;
+    }
+
+    .np-main {
+        padding: 1.5rem 1.5rem 1rem;
+    }
+
+    .np-section {
+        padding: 1.25rem 1.375rem;
+    }
+}
+
+/* ══════════════════════════════════════════════════════════
+   DESKTOP (≥1200px) — dos columnas: a la izquierda datos del
+   partido + equipos, a la derecha la selección de jugadores
+   (la parte más larga), con el CTA final ocupando todo el
+   ancho abajo.
+══════════════════════════════════════════════════════════ */
+@media (min-width: 1200px) {
+    .app-container {
+        max-width: 1100px;
+    }
+
+    .np-main {
+        padding: 2rem 1.5rem 1.5rem;
+        display: grid;
+        grid-template-columns: 360px 1fr;
+        grid-template-areas:
+            "datos jugadores"
+            "equipos jugadores"
+            "cta cta";
+        gap: 1.25rem;
+        align-items: start;
+    }
+
+    .np-section:nth-of-type(1) { grid-area: datos; }
+    .np-section:nth-of-type(2) { grid-area: equipos; }
+    .np-section:nth-of-type(3) { grid-area: jugadores; }
+    .np-cta { grid-area: cta; }
+
+    .players-assign-list {
+        max-height: 520px;
+    }
+}

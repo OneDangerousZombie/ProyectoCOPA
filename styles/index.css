@@ -1,0 +1,2450 @@
+/* ===========================================================================
+   index.css — Estilos compartidos por TODAS las páginas públicas de COPA
+   (index, ligas, caracteristicas, ayuda, sobre-nosotros).
+   Depende de las variables y clases base de global.css. No redefine esos
+   tokens, solo los usa con más intención (más niveles de profundidad,
+   jerarquía tipográfica más marcada).
+
+   DIRECCIÓN VISUAL — "Scoreboard editorial":
+   Motivo de identidad: marcadores cuadrados sin redondear (eyebrows,
+   posición de ranking, resultado destacado) como contraste deliberado
+   contra el resto de la UI, que sigue redondeada. Composición más
+   asimétrica y con fondos alternados a propósito, no todo apilado igual.
+
+   Mobile-first. Breakpoints: 600px (tablet chica) / 860px (tablet ancha)
+   / 1200px (desktop).
+   =========================================================================== */
+
+html {
+    scroll-behavior: smooth;
+}
+
+:root {
+    --ease-premium: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ===== TIPOGRAFÍA ===== */
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif;
+}
+
+/* ===== UTILIDADES (sesión) ===== */
+.is-hidden {
+    display: none !important;
+}
+
+/* ===== ACCESIBILIDAD: foco visible ===== */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible {
+    outline: 2px solid var(--green-primary);
+    outline-offset: 3px;
+    border-radius: var(--radius-xs);
+}
+
+/* ===== LAYOUT BASE ===== */
+.section-container {
+    max-width: 1240px;
+    margin: 0 auto;
+    padding: 0 1.25rem;
+}
+
+.section-padding {
+    padding: 3.5rem 0;
+}
+
+.section-alt {
+    background: var(--bg-secondary);
+}
+
+.section-header {
+    text-align: center;
+    max-width: 600px;
+    margin: 0 auto 2.5rem;
+}
+
+.section-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    font-size: 0.7rem;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--green-primary);
+    margin-bottom: 0.875rem;
+}
+
+.section-eyebrow::before {
+    content: '';
+    width: 7px;
+    height: 7px;
+    background: var(--green-primary);
+    flex-shrink: 0;
+}
+
+.section-title {
+    font-size: 1.75rem;
+    font-weight: 800;
+    letter-spacing: -0.025em;
+    color: var(--text-primary);
+    line-height: 1.15;
+}
+
+.section-subtitle {
+    margin-top: 0.75rem;
+    font-size: 0.95rem;
+    color: var(--text-primary);
+    opacity: 0.7;
+    line-height: 1.6;
+}
+
+/* ===== PAGE HERO (header de páginas secundarias) ===== */
+.page-hero {
+    padding: 2.25rem 0 0.5rem;
+    text-align: center;
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.page-hero .section-eyebrow {
+    justify-content: center;
+}
+
+.page-hero-title {
+    font-size: 2rem;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    color: var(--text-primary);
+    margin-bottom: 0.875rem;
+}
+
+.page-hero-subtitle {
+    font-size: 0.95rem;
+    color: var(--text-primary);
+    opacity: 0.7;
+    max-width: 560px;
+    margin: 0 auto;
+    line-height: 1.6;
+}
+
+/* ===== NAVBAR =====
+   Superficie más sólida que antes (menos transparencia), mayor jerarquía
+   tipográfica en los links, indicador de sección activa más marcado. */
+.landing-navbar {
+    position: sticky;
+    top: 0;
+    z-index: 200;
+    background: rgba(15, 15, 15, 0.88);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border-color);
+    transition: background 0.3s var(--ease-premium), border-color 0.3s var(--ease-premium), box-shadow 0.3s var(--ease-premium);
+}
+
+.landing-navbar.is-scrolled {
+    background: rgba(10, 10, 10, 0.96);
+    border-color: var(--border-light);
+    box-shadow: var(--shadow-md);
+}
+
+.nav-container {
+    max-width: 1240px;
+    margin: 0 auto;
+    padding: 1rem 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.nav-logo {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    text-decoration: none;
+    color: var(--text-primary);
+    flex-shrink: 0;
+}
+
+.nav-logo-icon {
+    position: relative;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: var(--bg-elevated);
+    border: 1px solid var(--green-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+}
+
+/* Punto "en vivo" — puramente decorativo, reutiliza la animación pulse
+   de global.css, que estaba definida pero sin uso. */
+.nav-logo-icon::after {
+    content: '';
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--green-primary);
+    border: 1.5px solid var(--bg-primary);
+    animation: pulse 2.4s ease-in-out infinite;
+}
+
+.nav-logo-text {
+    font-size: 1.15rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+}
+
+.nav-links {
+    display: none;
+    align-items: center;
+    gap: 2rem;
+}
+
+.nav-link {
+    position: relative;
+    font-size: 0.86rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    color: var(--text-primary);
+    opacity: 0.65;
+    text-decoration: none;
+    transition: opacity 0.2s var(--ease-premium), color 0.2s var(--ease-premium);
+}
+
+.nav-link::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -8px;
+    width: 100%;
+    height: 2px;
+    background: var(--green-primary);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.25s var(--ease-premium);
+}
+
+.nav-link:hover {
+    opacity: 1;
+}
+
+.nav-link:hover::after {
+    transform: scaleX(1);
+}
+
+.nav-link.active {
+    opacity: 1;
+    color: var(--green-primary);
+}
+
+.nav-link.active::after {
+    transform: scaleX(1);
+}
+
+.nav-dropdown {
+    position: relative;
+}
+
+.nav-dropdown-trigger {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: none;
+    border: none;
+    font-family: inherit;
+    padding: 0;
+    cursor: pointer;
+}
+
+.nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.nav-user-menu {
+    position: relative;
+}
+
+.nav-user-trigger {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-sm);
+    padding: 0.4rem 0.8rem 0.4rem 0.4rem;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.nav-user-trigger:hover {
+    border-color: var(--green-border);
+    background: var(--bg-card-hover);
+}
+
+.nav-user-avatar {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: var(--bg-card);
+    border: 1px solid var(--border-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+}
+
+.nav-user-name {
+    font-size: 0.83rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    max-width: 110px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.dropdown-caret {
+    font-size: 0.65rem;
+    transition: transform 0.3s var(--ease-premium);
+    color: var(--text-primary);
+    opacity: 0.7;
+}
+
+[aria-expanded="true"] .dropdown-caret {
+    transform: rotate(180deg);
+}
+
+.dropdown-menu {
+    position: absolute;
+    top: calc(100% + 0.875rem);
+    right: 0;
+    min-width: 210px;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow-lg);
+    padding: 0.4rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(10px) scale(0.94);
+    transform-origin: top right;
+    transition: opacity 0.25s var(--ease-premium), transform 0.25s var(--ease-premium), visibility 0.25s var(--ease-premium);
+}
+
+.dropdown-menu.active {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0) scale(1);
+}
+
+.dropdown-item {
+    background: none;
+    border: none;
+    font-family: inherit;
+    width: 100%;
+    text-align: left;
+    padding: 0.6rem 0.8rem;
+    border-radius: var(--radius-xs);
+    font-size: 0.83rem;
+    font-weight: 500;
+    color: var(--text-primary);
+    opacity: 0.85;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.dropdown-item:hover {
+    background: var(--bg-card-hover);
+    opacity: 1;
+}
+
+.dropdown-item-danger {
+    color: #f87171;
+    opacity: 1;
+}
+
+.btn-nav {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    padding: 0.6rem 1.1rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.83rem;
+    font-weight: 700;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    white-space: nowrap;
+    border: none;
+    overflow: hidden;
+}
+
+.btn-nav-outline {
+    background: transparent;
+    color: var(--text-primary);
+    border: 1px solid var(--border-light);
+}
+
+.btn-nav-outline:hover {
+    border-color: var(--green-border);
+    background: var(--bg-elevated);
+}
+
+.btn-nav-cta {
+    background: linear-gradient(135deg, var(--green-bright), var(--green-primary));
+    color: #000;
+}
+
+.btn-nav-cta::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(115deg, transparent 30%, rgba(255, 255, 255, 0.35) 50%, transparent 70%);
+    transform: translateX(-120%);
+    transition: transform 0.55s var(--ease-premium);
+}
+
+.btn-nav-cta:hover::after {
+    transform: translateX(120%);
+}
+
+.btn-nav-cta:hover {
+    box-shadow: var(--shadow-green);
+}
+
+.btn-nav:active {
+    transform: scale(0.96);
+}
+
+.nav-hamburger {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 4px;
+    width: 38px;
+    height: 38px;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    padding: 0 9px;
+}
+
+.nav-hamburger span {
+    display: block;
+    width: 100%;
+    height: 2px;
+    background: var(--text-primary);
+    border-radius: 2px;
+    transition: all var(--transition-fast);
+}
+
+.nav-hamburger[aria-expanded="true"] span:nth-child(1) {
+    transform: translateY(6px) rotate(45deg);
+}
+
+.nav-hamburger[aria-expanded="true"] span:nth-child(2) {
+    opacity: 0;
+}
+
+.nav-hamburger[aria-expanded="true"] span:nth-child(3) {
+    transform: translateY(-6px) rotate(-45deg);
+}
+
+/* ── Menú mobile: drawer que sale desde la izquierda, no un panel que
+   empuja el contenido. Llega hasta más o menos la mitad de la pantalla,
+   no a pantalla completa. El resto de la página se oscurece con
+   .mobile-menu-backdrop (elemento nuevo, separado del panel). ── */
+.mobile-menu-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 250;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.35s var(--ease-premium), visibility 0.35s var(--ease-premium);
+}
+
+.mobile-menu-backdrop.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.mobile-menu-panel {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: min(80vw, 300px);
+    height: 58vh;
+    background: var(--bg-elevated);
+    border-right: 1px solid var(--border-light);
+    border-radius: 0 0 var(--radius-md) 0;
+    box-shadow: var(--shadow-lg);
+    z-index: 260;
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    padding: 1.75rem 1.25rem 1.5rem;
+    overflow-y: auto;
+    transform: translateX(-100%);
+    visibility: hidden;
+    transition: transform 0.35s var(--ease-premium), visibility 0.35s var(--ease-premium);
+}
+
+.mobile-menu-panel.active {
+    transform: translateX(0);
+    visibility: visible;
+}
+
+.mobile-link {
+    background: none;
+    border: none;
+    font-family: inherit;
+    text-align: left;
+    width: 100%;
+    padding: 0.7rem 0.5rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    opacity: 0.8;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.mobile-link:hover,
+.mobile-link.active {
+    opacity: 1;
+}
+
+.mobile-link.active {
+    color: var(--green-primary);
+}
+
+.mobile-link-danger {
+    color: #f87171;
+    opacity: 1;
+}
+
+/* Empuja todo lo que viene después (login/cuenta/usuario) al fondo del
+   drawer, para que quede "arriba las opciones, abajo el usuario" sin
+   reordenar el HTML. */
+.mobile-divider {
+    height: 1px;
+    background: var(--border-color);
+    margin-top: auto;
+    margin-bottom: 0.5rem;
+}
+
+.mobile-full {
+    width: 100%;
+    margin-top: 0.5rem;
+}
+
+/* ===== HERO =====
+   Composición asimétrica: texto a la izquierda con escala tipográfica
+   grande, mockup a la derecha con profundidad real (tarjetas apiladas
+   detrás, no una sola card plana). */
+.hero-section {
+    padding: 3rem 0 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-section::before {
+    content: '';
+    position: absolute;
+    top: -10%;
+    left: -10%;
+    width: 60%;
+    height: 70%;
+    background: radial-gradient(circle, rgba(34, 197, 94, 0.1) 0%, transparent 65%);
+    pointer-events: none;
+}
+
+.hero-container {
+    position: relative;
+    max-width: 1240px;
+    margin: 0 auto;
+    padding: 2.5rem 1.25rem 3.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+}
+
+.hero-content {
+    text-align: center;
+}
+
+.hero-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--green-primary);
+    background: var(--green-glow);
+    border: 1px solid var(--green-border);
+    padding: 0.4rem 0.9rem;
+    border-radius: 999px;
+    margin-bottom: 1.5rem;
+}
+
+.hero-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    line-height: 1.04;
+    color: var(--text-primary);
+    margin-bottom: 1.25rem;
+}
+
+.hero-description {
+    font-size: 1rem;
+    line-height: 1.65;
+    color: var(--text-primary);
+    opacity: 0.72;
+    max-width: 480px;
+    margin: 0 auto 2rem;
+}
+
+.hero-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    align-items: center;
+}
+
+.btn-landing {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 1rem 1.875rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.92rem;
+    font-weight: 700;
+    text-decoration: none;
+    cursor: pointer;
+    overflow: hidden;
+    transition: background 0.2s var(--ease-premium), border-color 0.2s var(--ease-premium),
+                box-shadow 0.25s var(--ease-premium), transform 0.2s var(--ease-premium);
+    width: 100%;
+    border: none;
+}
+
+.btn-landing-solid {
+    background: linear-gradient(135deg, var(--green-bright), var(--green-primary));
+    color: #000;
+}
+
+.btn-landing-solid::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(115deg, transparent 30%, rgba(255, 255, 255, 0.4) 50%, transparent 70%);
+    transform: translateX(-130%);
+    transition: transform 0.6s var(--ease-premium);
+}
+
+.btn-landing-solid:hover::after {
+    transform: translateX(130%);
+}
+
+.btn-landing-solid:hover {
+    box-shadow: var(--shadow-green);
+    transform: translateY(-3px);
+}
+
+.btn-landing-outline {
+    background: transparent;
+    color: var(--text-primary);
+    border: 1px solid var(--border-light);
+}
+
+.btn-landing-outline:hover {
+    border-color: var(--green-border);
+    background: var(--bg-elevated);
+    transform: translateY(-3px);
+}
+
+.btn-landing:active {
+    transform: scale(0.97);
+}
+
+.hero-visual {
+    position: relative;
+    display: flex;
+    justify-content: center;
+}
+
+.mock-phone {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    max-width: 320px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-md);
+    padding: 1.625rem 1.375rem 1.375rem;
+    box-shadow: var(--shadow-lg);
+    transition: transform 0.4s var(--ease-premium);
+}
+
+/* Profundidad real: dos tarjetas fantasma apiladas detrás del mock,
+   en vez de un único resplandor circular. */
+.mock-phone::before,
+.mock-phone::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: var(--radius-md);
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    z-index: -1;
+}
+
+.mock-phone::before {
+    transform: rotate(-4deg) translateY(6px);
+    opacity: 0.7;
+}
+
+.mock-phone::after {
+    transform: rotate(5deg) translateY(10px);
+    opacity: 0.4;
+}
+
+.hero-visual:hover .mock-phone {
+    transform: translateY(-4px) rotate(-1deg);
+}
+
+.mock-phone-notch {
+    width: 64px;
+    height: 5px;
+    background: var(--border-medium);
+    border-radius: 3px;
+    margin: 0 auto 1.25rem;
+}
+
+.mock-match-card {
+    position: relative;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    padding: 0.9rem 1rem;
+    margin-bottom: 0.875rem;
+}
+
+/* Punto "en vivo" en el mock, reutiliza la misma animación pulse */
+.mock-match-card::before {
+    content: '';
+    position: absolute;
+    top: 0.9rem;
+    right: 1rem;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--green-primary);
+    animation: pulse 2s ease-in-out infinite;
+}
+
+.mock-match-label {
+    display: block;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    color: var(--green-primary);
+    margin-bottom: 0.625rem;
+}
+
+.mock-match-teams {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    color: var(--text-primary);
+    opacity: 0.85;
+    text-transform: uppercase;
+}
+
+.mock-match-score {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums;
+    opacity: 1;
+}
+
+.mock-stat-row {
+    display: flex;
+    gap: 0.625rem;
+    margin-bottom: 0.875rem;
+}
+
+.mock-stat-chip {
+    flex: 1;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-xs);
+    padding: 0.625rem;
+    text-align: center;
+}
+
+.mock-stat-value {
+    display: block;
+    font-size: 1.25rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums;
+    color: var(--green-primary);
+}
+
+.mock-stat-label {
+    display: block;
+    font-size: 0.62rem;
+    color: var(--text-primary);
+    opacity: 0.6;
+    margin-top: 0.15rem;
+}
+
+.mock-bar-row {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.mock-bar {
+    height: 5px;
+    background: var(--border-color);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.mock-bar-fill {
+    height: 100%;
+    background: var(--green-primary);
+    border-radius: 3px;
+}
+
+/* ===== FRANJA DE CREDIBILIDAD (ad-banner) =====
+   Antes era una card más, igual a cualquier otra. Ahora es una franja
+   angosta pegada directamente debajo del hero — el dato funciona como
+   "puente" entre el hero y el resto del contenido, no como otra sección. */
+.hero-section + section[data-auth="guest"] {
+    margin-top: -1px;
+}
+
+.hero-section + section[data-auth="guest"] .section-container {
+    padding: 0 1.25rem;
+}
+
+.ad-banner {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    align-items: center;
+    text-align: center;
+    background: var(--bg-elevated);
+    border-top: 1px solid var(--green-border);
+    border-bottom: 1px solid var(--green-border);
+    padding: 1.125rem 1.25rem;
+}
+
+.ad-banner-text {
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    opacity: 0.85;
+}
+
+.ad-banner-text strong {
+    color: var(--green-primary);
+    opacity: 1;
+}
+
+.ad-banner .btn-landing {
+    width: auto;
+    padding: 0.65rem 1.375rem;
+    font-size: 0.82rem;
+}
+
+/* ===== PROMO / CTA de cierre ===== */
+.promo-card {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(160deg, var(--bg-card-hover), var(--bg-card));
+    border: 1px solid var(--green-border);
+    border-radius: var(--radius-md);
+    padding: 2.25rem 1.75rem;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    align-items: center;
+    box-shadow: var(--shadow-green);
+    transition: box-shadow 0.3s var(--ease-premium), transform 0.3s var(--ease-premium);
+}
+
+.promo-card:hover {
+    transform: translateY(-3px);
+}
+
+.promo-decor {
+    position: absolute;
+    right: -1.5rem;
+    bottom: -2.5rem;
+    font-size: 9rem;
+    color: var(--green-primary);
+    opacity: 0.07;
+    transform: rotate(-12deg);
+    pointer-events: none;
+}
+
+.promo-title {
+    position: relative;
+    font-size: 1.4rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: var(--text-primary);
+    margin-bottom: 0.7rem;
+}
+
+.promo-description {
+    position: relative;
+    font-size: 0.9rem;
+    color: var(--text-primary);
+    opacity: 0.75;
+    line-height: 1.6;
+    max-width: 460px;
+}
+
+.promo-actions {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    width: 100%;
+    max-width: 320px;
+}
+
+/* ===== CÓMO FUNCIONA (steps) ===== */
+.steps-row {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.step-item {
+    position: relative;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    padding: 1.375rem;
+    flex: 1;
+    transition: border-color 0.25s var(--ease-premium), box-shadow 0.25s var(--ease-premium), transform 0.25s var(--ease-premium);
+}
+
+.step-item:hover {
+    border-color: var(--green-border);
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-5px);
+}
+
+.step-number {
+    display: block;
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: var(--green-border);
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.02em;
+}
+
+.step-title {
+    font-size: 0.98rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 0.4rem;
+}
+
+.step-description {
+    font-size: 0.82rem;
+    color: var(--text-primary);
+    opacity: 0.7;
+    line-height: 1.55;
+}
+
+/* ===== CARACTERÍSTICAS ===== */
+.features-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.feature-card {
+    flex: 1 1 100%;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    padding: 1.5rem;
+    transition: border-color 0.25s var(--ease-premium), box-shadow 0.25s var(--ease-premium), transform 0.25s var(--ease-premium);
+}
+
+.feature-card:hover {
+    border-color: var(--green-border);
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-5px);
+}
+
+.feature-card:hover .feature-icon {
+    transform: scale(1.1);
+    border-color: var(--green-primary);
+    background: var(--green-glow);
+}
+
+.feature-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 46px;
+    height: 46px;
+    font-size: 1.3rem;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-sm);
+    margin-bottom: 1rem;
+    transition: transform 0.25s var(--ease-premium), border-color 0.25s var(--ease-premium), background 0.25s var(--ease-premium);
+}
+
+.feature-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 0.4rem;
+}
+
+.feature-description {
+    font-size: 0.84rem;
+    color: var(--text-primary);
+    opacity: 0.7;
+    line-height: 1.55;
+}
+
+/* ===== ACCESOS RÁPIDOS — bento (1 destacado + 3 chicos en desktop) ===== */
+.quick-access-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+}
+
+.quick-access-card {
+    position: relative;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    padding: 1.25rem;
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.625rem;
+    transition: border-color 0.25s var(--ease-premium), background 0.25s var(--ease-premium), transform 0.25s var(--ease-premium);
+}
+
+.quick-access-card:hover {
+    border-color: var(--green-border);
+    background: var(--bg-card-hover);
+    transform: translateY(-4px);
+}
+
+.quick-access-card:active {
+    transform: scale(0.98);
+}
+
+.quick-access-icon {
+    font-size: 1.4rem;
+    color: var(--green-primary);
+}
+
+.quick-access-title {
+    font-size: 0.92rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.quick-access-desc {
+    font-size: 0.78rem;
+    color: var(--text-primary);
+    opacity: 0.65;
+}
+
+/* ── Card de perfil (la grande del bento): foto + datos, en vez de
+   ícono + título + descripción como las otras tres. ── */
+.profile-card-avatar {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: var(--bg-elevated);
+    border: 2px solid var(--green-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.75rem;
+    color: var(--green-primary);
+    margin-bottom: 0.25rem;
+    transition: border-color 0.25s var(--ease-premium);
+}
+
+.quick-access-card--profile:hover .profile-card-avatar {
+    border-color: var(--green-primary);
+}
+
+.profile-card-name {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    letter-spacing: -0.015em;
+}
+
+.profile-card-meta {
+    font-size: 0.78rem;
+    color: var(--text-primary);
+    opacity: 0.6;
+}
+
+.profile-card-meta strong {
+    color: var(--green-primary);
+    opacity: 1;
+    font-weight: 700;
+}
+
+/* ===== GALERÍA DE CAPTURAS (al costado del título de Características) =====
+   .gallery-placeholder ahora se usa como "marco de pantalla" individual;
+   se reutiliza para cualquier otro placeholder de imagen futuro. */
+.page-hero-media-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    align-items: center;
+}
+
+.page-hero-media-text {
+    text-align: center;
+}
+
+.page-hero-media-gallery {
+    position: relative;
+    width: 100%;
+    max-width: 320px;
+    height: 220px;
+}
+
+.gallery-placeholder {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    width: 78%;
+    height: 100%;
+    padding: 1.5rem;
+    background: var(--bg-card);
+    border: 1.5px dashed var(--border-medium);
+    border-radius: var(--radius-md);
+    color: var(--text-primary);
+    opacity: 0.65;
+    transition: opacity 0.25s var(--ease-premium), border-color 0.25s var(--ease-premium);
+}
+
+.page-hero-media-gallery:hover .gallery-placeholder {
+    opacity: 0.9;
+    border-color: var(--green-border);
+}
+
+/* Segundo marco, apenas detrás y desplazado — sugiere "más de una
+   captura" sin necesidad de contenido real todavía. */
+.page-hero-media-gallery .gallery-placeholder:first-child {
+    left: 0;
+    top: 0;
+    transform: rotate(-3deg);
+    z-index: 2;
+}
+
+.page-hero-media-gallery .gallery-placeholder:last-child {
+    right: 0;
+    bottom: 0;
+    transform: rotate(4deg);
+    z-index: 1;
+    opacity: 0.4;
+}
+
+.gallery-placeholder-icon {
+    font-size: 1.75rem;
+}
+
+.gallery-placeholder-text {
+    font-size: 0.78rem;
+    font-weight: 500;
+    text-align: center;
+}
+
+/* ===== LIGAS ===== */
+.observer-note {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    justify-content: center;
+    max-width: 560px;
+    margin: 0 auto 1.75rem;
+    padding: 0.75rem 1rem;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-sm);
+    font-size: 0.8rem;
+    color: var(--text-primary);
+    opacity: 0.85;
+    text-align: center;
+}
+
+.ligas-search-bar {
+    position: relative;
+    max-width: 460px;
+    margin: 0 auto 1.75rem;
+}
+
+.ligas-search-icon {
+    position: absolute;
+    left: 1.125rem;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 0.9rem;
+    opacity: 0.6;
+    pointer-events: none;
+    transition: color 0.2s var(--ease-premium), opacity 0.2s var(--ease-premium);
+}
+
+.ligas-search-bar:focus-within .ligas-search-icon {
+    color: var(--green-primary);
+    opacity: 1;
+}
+
+.ligas-search-bar input {
+    width: 100%;
+    padding: 0.95rem 1rem 0.95rem 2.75rem;
+}
+
+.ligas-search-bar input:focus {
+    box-shadow: 0 0 0 3px var(--green-glow), var(--shadow-md);
+}
+
+.ligas-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.liga-card {
+    flex: 1 1 100%;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    padding: 1.375rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    transition: border-color 0.25s var(--ease-premium), box-shadow 0.25s var(--ease-premium), transform 0.25s var(--ease-premium);
+}
+
+.liga-card:hover {
+    border-color: var(--green-border);
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-5px);
+}
+
+.liga-card-name {
+    font-size: 1.2rem;
+    font-weight: 800;
+    letter-spacing: -0.015em;
+    color: var(--text-primary);
+}
+
+.liga-card-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    font-size: 0.82rem;
+    color: var(--text-primary);
+    opacity: 0.6;
+}
+
+.liga-card-meta strong {
+    color: var(--green-primary);
+    opacity: 1;
+    font-weight: 800;
+    font-size: 1rem;
+    font-variant-numeric: tabular-nums;
+}
+
+.liga-card-btn {
+    margin-top: 0.25rem;
+    width: 100%;
+    padding: 0.65rem;
+    background: transparent;
+    border: 1px solid var(--green-border);
+    border-radius: var(--radius-sm);
+    color: var(--green-primary);
+    font-size: 0.83rem;
+    font-weight: 700;
+    text-decoration: none;
+    text-align: center;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    transition: background 0.2s var(--ease-premium), transform 0.2s var(--ease-premium);
+}
+
+.liga-card-btn i {
+    transition: transform 0.25s var(--ease-premium);
+}
+
+.liga-card-btn:hover {
+    background: var(--green-glow);
+}
+
+.liga-card-btn:hover i {
+    transform: translateX(4px);
+}
+
+.liga-card-btn:active {
+    transform: scale(0.97);
+}
+
+.ligas-empty {
+    display: none;
+    text-align: center;
+    color: var(--text-primary);
+    opacity: 0.6;
+    font-size: 0.85rem;
+    margin-top: 1.5rem;
+}
+
+.ligas-empty.active {
+    display: block;
+}
+
+/* ===== NOTICIAS =====
+   El resultado más reciente se separa del resto: deja de ser "un ítem
+   con borde verde" y pasa a ser un bloque propio, con su propio fondo.
+   La sidebar usa un tono distinto al de la columna principal para que
+   se perciba como un panel secundario, no una repetición. */
+.noticias-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.noticias-main,
+.noticias-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.news-block {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    padding: 1.25rem 1.375rem;
+    transition: background 0.35s var(--ease-premium), border-color 0.35s var(--ease-premium), transform 0.25s var(--ease-premium);
+}
+
+.news-block:hover {
+    background: var(--bg-primary);
+    border-color: var(--border-light);
+    transform: translateY(-2px);
+}
+
+.noticias-sidebar .news-block,
+.noticias-sidebar .locked-card {
+    background: var(--bg-elevated);
+}
+
+.noticias-sidebar .news-block:hover {
+    background: var(--bg-tertiary);
+}
+
+.news-block-title {
+    font-size: 0.74rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-primary);
+    opacity: 0.6;
+    margin-bottom: 1rem;
+}
+
+.news-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+}
+
+.news-list-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    padding-bottom: 0.625rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.news-list-item:last-child {
+    padding-bottom: 0;
+    border-bottom: none;
+}
+
+/* Resultado más reciente: bloque propio, no un ítem con borde. */
+.noticias-main .news-block:first-child .news-list-item:first-child {
+    position: relative;
+    margin: -0.25rem -0.5rem 0.5rem;
+    padding: 1rem 1.25rem 1rem 1.5rem;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--green-border);
+    border-bottom: 1px solid var(--green-border);
+    border-radius: var(--radius-xs);
+    font-size: 1.05rem;
+}
+
+.noticias-main .news-block:first-child .news-list-item:first-child::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.875rem;
+    width: 5px;
+    height: calc(100% - 1.75rem);
+    background: var(--green-primary);
+}
+
+.news-list-meta {
+    font-size: 0.73rem;
+    font-weight: 500;
+    color: var(--text-primary);
+    opacity: 0.55;
+}
+
+.news-list-item-simple {
+    font-size: 0.84rem;
+    color: var(--text-primary);
+    opacity: 0.85;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.news-list-item-simple:last-child {
+    padding-bottom: 0;
+    border-bottom: none;
+}
+
+.news-list-item-simple strong {
+    color: var(--green-primary);
+    opacity: 1;
+}
+
+/* ===== RANKINGS Y ESTADÍSTICAS (panel doble) =====
+   .liga-numbers-pair une visualmente las dos secciones; cada una conserva
+   su propio fondo (una usa .section-alt, la otra no), así que el panel
+   ya nace con dos tonos distintos en vez de uno solo repetido. */
+.liga-numbers-pair {
+    display: flex;
+    flex-direction: column;
+}
+
+.liga-numbers-pair > section {
+    flex: 1;
+}
+
+/* ── "Cristal con luz verde detrás": el recuadro cambia de tono y un
+   resplandor verde sigue al cursor mientras se mueve por encima.
+   --spot-x/--spot-y los actualiza index.js en cada mousemove. ── */
+.liga-numbers-pair .locked-card {
+    --spot-x: 50%;
+    --spot-y: 50%;
+    overflow: hidden;
+    background: var(--bg-tertiary);
+    transition: background 0.4s var(--ease-premium), border-color 0.4s var(--ease-premium);
+}
+
+.liga-numbers-pair .locked-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at var(--spot-x) var(--spot-y),
+        rgba(34, 197, 94, 0.32) 0%,
+        rgba(34, 197, 94, 0.1) 30%,
+        transparent 65%);
+    opacity: 0;
+    transition: opacity 0.4s var(--ease-premium);
+    pointer-events: none;
+}
+
+.liga-numbers-pair .locked-card.is-glowing {
+    background: var(--bg-elevated);
+    border-color: var(--green-border);
+}
+
+.liga-numbers-pair .locked-card.is-glowing::before {
+    opacity: 1;
+}
+
+.ranking-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.ranking-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-xs);
+    padding: 0.75rem 0.9rem;
+    transition: border-color 0.2s var(--ease-premium), background 0.2s var(--ease-premium);
+}
+
+.ranking-item:hover {
+    border-color: var(--green-border);
+    background: var(--bg-elevated);
+}
+
+.ranking-position {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 24px;
+    height: 24px;
+    font-weight: 800;
+    font-size: 0.82rem;
+    color: var(--green-primary);
+    background: var(--green-glow);
+    font-variant-numeric: tabular-nums;
+}
+
+.ranking-name {
+    flex: 1;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--text-primary);
+}
+
+.ranking-points {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--green-primary);
+    background: var(--green-glow);
+    padding: 0.2rem 0.6rem;
+    border-radius: 999px;
+    font-variant-numeric: tabular-nums;
+}
+
+.stat-highlight-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+.stat-highlight {
+    flex: 1 1 calc(50% - 0.375rem);
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-xs);
+    padding: 1rem;
+    text-align: center;
+    transition: border-color 0.2s var(--ease-premium), background 0.2s var(--ease-premium), transform 0.2s var(--ease-premium);
+}
+
+.stat-highlight:hover {
+    border-color: var(--green-border);
+    background: var(--bg-elevated);
+    transform: translateY(-2px);
+}
+
+.stat-highlight-value {
+    display: block;
+    font-size: 1.75rem;
+    font-weight: 800;
+    color: var(--green-primary);
+    letter-spacing: -0.03em;
+    font-variant-numeric: tabular-nums;
+}
+
+.stat-highlight-label {
+    display: block;
+    font-size: 0.7rem;
+    color: var(--text-primary);
+    opacity: 0.65;
+    margin-top: 0.3rem;
+}
+
+/* ── Bloqueo de contenido (locked-card) ── */
+.locked-card {
+    position: relative;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    padding: 1.375rem;
+}
+
+.locked-content {
+    position: relative;
+    transition: filter var(--transition-normal), opacity var(--transition-normal);
+}
+
+.locked-overlay {
+    display: none;
+    position: absolute;
+    inset: 0;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.625rem;
+    text-align: center;
+    padding: 1.5rem;
+    background: rgba(8, 8, 8, 0.82);
+    border-radius: var(--radius-sm);
+}
+
+.locked-overlay-icon {
+    font-size: 1.5rem;
+    color: var(--green-primary);
+}
+
+.locked-overlay-text {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    max-width: 260px;
+}
+
+.locked-overlay-btn {
+    width: auto;
+    padding: 0.65rem 1.375rem;
+}
+
+body:not(.is-authenticated) .locked-card .locked-content {
+    filter: blur(5px);
+    opacity: 0.4;
+    pointer-events: none;
+    user-select: none;
+}
+
+body:not(.is-authenticated) .locked-card .locked-overlay {
+    display: flex;
+}
+
+/* ===== AYUDA (página de contacto) =====
+   Ya no hay banner .page-hero acá: el título y la bajada van directo en
+   la columna izquierda, alineados a la izquierda. */
+.help-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 1.75rem;
+}
+
+.help-intro {
+    text-align: left;
+}
+
+.help-intro .page-hero-subtitle {
+    margin: 0.75rem 0 0;
+    max-width: none;
+}
+
+.help-map {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.625rem;
+    margin: 1.75rem 0;
+    aspect-ratio: 16 / 9;
+    background: var(--bg-tertiary);
+    border: 1.5px dashed var(--border-medium);
+    border-radius: var(--radius-sm);
+    color: var(--text-primary);
+    opacity: 0.6;
+}
+
+.help-map {
+    margin: 1.75rem 0;
+    aspect-ratio: 16 / 9;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    opacity: 1;
+}
+
+.help-map iframe {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.help-info,
+.help-form-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    padding: 1.625rem;
+}
+
+.help-info-block {
+    margin-bottom: 1.5rem;
+    padding: 0.375rem 0.5rem 1.25rem;
+    border-bottom: 1px solid var(--border-color);
+    border-radius: var(--radius-xs);
+    transition: transform 0.25s var(--ease-premium);
+}
+
+.help-info-block:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+}
+
+.help-info-block:hover {
+    transform: scale(1.02);
+}
+
+.help-info-title {
+    font-size: 0.97rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.help-info-text {
+    font-size: 0.85rem;
+    color: var(--text-primary);
+    opacity: 0.75;
+    line-height: 1.6;
+}
+
+.help-contact-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.help-contact-item {
+    font-size: 0.85rem;
+    color: var(--text-primary);
+    opacity: 0.85;
+    text-decoration: none;
+}
+
+.help-contact-item:hover {
+    color: var(--green-primary);
+    opacity: 1;
+}
+
+.help-form-card .help-info-title {
+    margin-bottom: 1rem;
+}
+
+.help-form-card .form-group {
+    margin-bottom: 1rem;
+}
+
+.help-form-card .form-group label {
+    display: block;
+    margin-bottom: 0.4rem;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    opacity: 0.85;
+}
+
+/* Pedido explícito: todos los inputs ocupan el ancho completo del
+   recuadro que los contiene (antes solo el textarea lo hacía). */
+.help-form-card input,
+.help-form-card select,
+.help-form-card textarea {
+    width: 100%;
+}
+
+.help-form-card textarea {
+    min-height: 120px;
+    resize: vertical;
+}
+
+.form-success {
+    display: none;
+    align-items: center;
+    gap: 0.5rem;
+    background: var(--green-glow);
+    border: 1px solid var(--green-border);
+    border-radius: var(--radius-xs);
+    color: var(--green-primary);
+    font-size: 0.83rem;
+    font-weight: 600;
+    padding: 0.7rem 0.875rem;
+    margin-bottom: 1rem;
+}
+
+.form-success.active {
+    display: flex;
+}
+
+/* ===== SOBRE NOSOTROS ===== */
+.about-block {
+    max-width: 720px;
+    margin: 0 auto 2.5rem;
+    text-align: left;
+}
+
+.about-text {
+    font-size: 0.94rem;
+    color: var(--text-primary);
+    opacity: 0.78;
+    line-height: 1.7;
+}
+
+.team-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.team-card {
+    flex: 1 1 100%;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    padding: 1.375rem;
+    text-align: center;
+    transition: border-color 0.25s var(--ease-premium), box-shadow 0.25s var(--ease-premium), transform 0.25s var(--ease-premium);
+}
+
+.team-card:hover {
+    border-color: var(--green-border);
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-5px);
+}
+
+.team-card:hover .team-card-icon {
+    transform: scale(1.1);
+    border-color: var(--green-primary);
+    background: var(--green-glow);
+}
+
+.team-card-icon {
+    width: 50px;
+    height: 50px;
+    margin: 0 auto 0.875rem;
+    border-radius: 50%;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.35rem;
+    transition: transform 0.25s var(--ease-premium), border-color 0.25s var(--ease-premium), background 0.25s var(--ease-premium);
+}
+
+.team-card-role {
+    font-size: 0.97rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 0.4rem;
+}
+
+.team-card-desc {
+    font-size: 0.81rem;
+    color: var(--text-primary);
+    opacity: 0.7;
+    line-height: 1.55;
+}
+
+/* ===== CTA de cierre (páginas secundarias) ===== */
+.page-cta-banner {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    align-items: center;
+    text-align: center;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    padding: 1.875rem 1.625rem;
+}
+
+.page-cta-text {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+/* ===== BOTÓN DE PRUEBA (temporal) ===== */
+.test-toggle-btn {
+    position: fixed;
+    bottom: 1.25rem;
+    left: 1.25rem;
+    z-index: 300;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-medium);
+    border-radius: 999px;
+    padding: 0.55rem 1rem;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    cursor: pointer;
+    box-shadow: var(--shadow-lg);
+    transition: all var(--transition-fast);
+}
+
+.test-toggle-btn:hover {
+    border-color: var(--green-border);
+}
+
+.test-toggle-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--text-tertiary);
+}
+
+body.is-authenticated .test-toggle-dot {
+    background: var(--green-primary);
+    box-shadow: 0 0 6px rgba(34, 197, 94, 0.6);
+}
+
+/* ===== FOOTER =====
+   Tono propio (más oscuro que cualquier sección de contenido), wordmark
+   fantasma de marca de fondo, línea de acento superior. Ya no comparte
+   fondo con ninguna otra sección de la página. */
+.landing-footer {
+    position: relative;
+    overflow: hidden;
+    border-top: 1px solid var(--border-color);
+    background: var(--bg-primary);
+    padding: 4rem 0 1.75rem;
+}
+
+.landing-footer::before {
+    content: '';
+    position: absolute;
+    top: -1px;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--green-border), transparent);
+}
+
+.footer-wordmark {
+    position: absolute;
+    bottom: -0.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 9rem;
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    color: var(--text-primary);
+    opacity: 0.025;
+    pointer-events: none;
+    white-space: nowrap;
+    line-height: 1;
+}
+
+.footer-container {
+    position: relative;
+    max-width: 1240px;
+    margin: 0 auto;
+    padding: 0 1.25rem;
+}
+
+.footer-top {
+    display: flex;
+    flex-direction: column;
+    gap: 2.25rem;
+    margin-bottom: 2.5rem;
+}
+
+.footer-brand-text {
+    margin-top: 0.75rem;
+    font-size: 0.85rem;
+    color: var(--text-primary);
+    opacity: 0.6;
+    max-width: 240px;
+    line-height: 1.6;
+}
+
+.footer-column {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.footer-column-title {
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--text-primary);
+    opacity: 0.65;
+    margin-bottom: 0.4rem;
+}
+
+.footer-link {
+    display: inline-block;
+    font-size: 0.86rem;
+    color: var(--text-primary);
+    opacity: 0.7;
+    text-decoration: none;
+    transition: color 0.2s var(--ease-premium), opacity 0.2s var(--ease-premium), transform 0.2s var(--ease-premium);
+}
+
+.footer-link:hover {
+    color: var(--green-primary);
+    opacity: 1;
+    transform: translateX(4px);
+}
+
+.footer-bottom {
+    position: relative;
+    padding-top: 1.75rem;
+    border-top: 1px solid var(--border-color);
+    font-size: 0.78rem;
+    color: var(--text-primary);
+    opacity: 0.5;
+    text-align: center;
+}
+
+/* ===== ANIMACIONES DE SCROLL (con stagger) ===== */
+.reveal {
+    opacity: 0;
+    transform: translateY(18px);
+    transition: opacity 0.55s ease, transform 0.55s ease;
+}
+
+.reveal.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Aparición progresiva dentro de grillas repetidas */
+.features-grid .reveal:nth-child(2),
+.steps-row .reveal:nth-child(2),
+.team-grid .reveal:nth-child(2),
+.ligas-grid .reveal:nth-child(2) { transition-delay: 0.06s; }
+.features-grid .reveal:nth-child(3),
+.steps-row .reveal:nth-child(3),
+.team-grid .reveal:nth-child(3),
+.ligas-grid .reveal:nth-child(3) { transition-delay: 0.12s; }
+.features-grid .reveal:nth-child(4),
+.steps-row .reveal:nth-child(4) { transition-delay: 0.18s; }
+.features-grid .reveal:nth-child(5) { transition-delay: 0.24s; }
+.features-grid .reveal:nth-child(6) { transition-delay: 0.3s; }
+
+@media (prefers-reduced-motion: reduce) {
+    html {
+        scroll-behavior: auto;
+    }
+    .reveal {
+        opacity: 1;
+        transform: none;
+        transition: none;
+    }
+    .nav-logo-icon::after,
+    .mock-match-card::before {
+        animation: none;
+    }
+}
+
+/* ===== MEDIA QUERIES ===== */
+
+/* ── Tablet chica (≥600px) ── */
+@media (min-width: 600px) {
+    .hero-actions {
+        flex-direction: row;
+        justify-content: center;
+    }
+
+    .btn-landing {
+        width: auto;
+    }
+
+    .feature-card,
+    .liga-card,
+    .team-card {
+        flex: 1 1 calc(50% - 0.5rem);
+    }
+
+    .quick-access-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .promo-actions {
+        flex-direction: row;
+    }
+
+    .ad-banner {
+        flex-direction: row;
+        justify-content: space-between;
+        text-align: left;
+    }
+
+    .help-layout {
+        flex-direction: row;
+    }
+
+    .help-info,
+    .help-form-card {
+        flex: 1;
+    }
+}
+
+/* ── Tablet ancha / netbook (≥860px) ── */
+@media (min-width: 860px) {
+
+    .section-padding {
+        padding: 4.5rem 0;
+    }
+
+    .nav-links {
+        display: flex;
+    }
+
+    .nav-hamburger {
+        display: none;
+    }
+
+    .mobile-menu-panel {
+        display: none !important;
+    }
+
+    .mobile-menu-backdrop {
+        display: none !important;
+    }
+
+    .section-title {
+        font-size: 2.25rem;
+    }
+
+    .page-hero-title {
+        font-size: 2.5rem;
+    }
+
+    .hero-container {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        gap: 2.5rem;
+        padding: 4rem 1.25rem 4.5rem;
+    }
+
+    .hero-content {
+        text-align: left;
+        flex: 1;
+    }
+
+    .hero-eyebrow {
+        margin-bottom: 1.25rem;
+    }
+
+    .hero-description {
+        margin: 0 0 1.75rem;
+    }
+
+    .hero-actions {
+        flex-direction: row;
+        justify-content: flex-start;
+    }
+
+    .hero-title {
+        font-size: 3.1rem;
+        letter-spacing: -0.04em;
+    }
+
+    .hero-visual {
+        flex: 1;
+        justify-content: flex-end;
+    }
+
+    .mock-phone {
+        max-width: 340px;
+        padding: 1.75rem 1.5rem 1.5rem;
+    }
+
+    .steps-row {
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+
+    .step-item {
+        flex: 1 1 calc(50% - 0.625rem);
+    }
+
+    .liga-card {
+        flex: 1 1 calc(33.333% - 0.667rem);
+    }
+
+    .noticias-layout {
+        flex-direction: row;
+        align-items: flex-start;
+    }
+
+    .noticias-main {
+        flex: 1.6;
+    }
+
+    .noticias-sidebar {
+        flex: 1;
+    }
+
+    .liga-numbers-pair {
+        flex-direction: row;
+        align-items: stretch;
+    }
+
+    .liga-numbers-pair > section + section {
+        border-left: 1px solid var(--border-color);
+    }
+
+    .promo-card {
+        flex-direction: row;
+        justify-content: space-between;
+        text-align: left;
+        padding: 2.25rem 2.5rem;
+    }
+
+    .promo-content {
+        flex: 1;
+    }
+
+    .promo-actions {
+        flex: none;
+        width: auto;
+    }
+
+    .page-cta-banner {
+        flex-direction: row;
+        justify-content: space-between;
+        text-align: left;
+        padding: 2rem 2.25rem;
+    }
+
+    .footer-top {
+        flex-direction: row;
+        justify-content: space-between;
+        gap: 2.25rem;
+    }
+
+    .footer-brand {
+        flex: 1.2;
+    }
+
+    /* Características: galería al costado del título, no debajo */
+    .page-hero-media-layout {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        text-align: left;
+        gap: 2.5rem;
+    }
+
+    .page-hero-media-text {
+        text-align: left;
+    }
+
+    .page-hero-media-gallery {
+        flex-shrink: 0;
+    }
+}
+
+/* ── Desktop (≥1200px) ── */
+@media (min-width: 1200px) {
+
+    .section-padding {
+        padding: 6rem 0;
+    }
+
+    .nav-container {
+        padding: 1.25rem 1.25rem;
+    }
+
+    .nav-logo-icon {
+        width: 38px;
+        height: 38px;
+        font-size: 1.15rem;
+    }
+
+    .nav-logo-text {
+        font-size: 1.3rem;
+    }
+
+    .section-header {
+        margin: 0 auto 3.5rem;
+    }
+
+    .section-title {
+        font-size: 2.75rem;
+    }
+
+    .page-hero {
+        padding: 3rem 0 1.25rem;
+    }
+
+    .page-hero-title {
+        font-size: 3rem;
+    }
+
+    .hero-container {
+        padding: 5rem 1.25rem 6rem;
+        gap: 3.5rem;
+    }
+
+    .hero-title {
+        font-size: 4.25rem;
+        letter-spacing: -0.045em;
+    }
+
+    .mock-phone {
+        max-width: 380px;
+        padding: 2rem 1.75rem 1.75rem;
+    }
+
+    .steps-row {
+        flex-wrap: nowrap;
+    }
+
+    .step-item {
+        flex: 1;
+    }
+
+    .feature-card {
+        flex: 1 1 calc(50% - 0.5rem);
+    }
+
+    .liga-card {
+        flex: 1 1 calc(33.333% - 0.667rem);
+    }
+
+    .team-card {
+        flex: 1 1 calc(33.333% - 0.667rem);
+    }
+
+    /* Bento: primer acceso rápido destacado, los otros tres apilados */
+    .quick-access-grid {
+        grid-template-columns: 1.5fr 1fr;
+        grid-template-rows: repeat(3, 1fr);
+        gap: 1.125rem;
+    }
+
+    .quick-access-card:nth-child(1) {
+        grid-column: 1;
+        grid-row: 1 / span 3;
+        align-items: flex-start;
+        justify-content: center;
+        padding: 2rem;
+    }
+
+    .quick-access-card:nth-child(1) .profile-card-avatar {
+        width: 80px;
+        height: 80px;
+        font-size: 2.1rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .quick-access-card:nth-child(1) .profile-card-name {
+        font-size: 1.4rem;
+    }
+
+    .quick-access-card:nth-child(2) { grid-column: 2; grid-row: 1; }
+    .quick-access-card:nth-child(3) { grid-column: 2; grid-row: 2; }
+    .quick-access-card:nth-child(4) { grid-column: 2; grid-row: 3; }
+
+    .noticias-main {
+        flex: 1.7;
+    }
+
+    .promo-card {
+        padding: 2.5rem 3rem;
+    }
+
+    .page-cta-banner {
+        padding: 2.25rem 2.75rem;
+    }
+
+    .footer-top {
+        gap: 3rem;
+    }
+
+    .footer-brand {
+        flex: 1.4;
+    }
+
+    .footer-wordmark {
+        font-size: 13rem;
+    }
+}
+
+/* ===========================================================================
+   FONDO DE PÁGINA — comportamiento especial en la Landing
+   ===========================================================================
+   La base (fondo fijo, cubre toda la pantalla) vive en global.css y es la
+   que usan las páginas de la Aplicación. Acá la pisamos solo para las
+   páginas de la Landing: en vez de cubrir toda la pantalla, el fondo vive
+   arriba del todo (detrás del hero) y se va difuminando hasta desaparecer
+   en el color normal de la página a medida que se scrollea.
+   Selector ":has()" para no depender de una clase nueva en <body>: se
+   activa automáticamente en cualquier página que tenga .landing-navbar
+   (es decir, las 5 páginas públicas). Soportado en todos los navegadores
+   modernos (Chrome/Edge/Safari/Firefox actuales).
+   NOTA: como hoy no hay imagen real todavía (background-image: none en
+   global.css), este bloque no se ve hasta que se complete esa línea —
+   una vez agregada la imagen, puede que el % del difuminado (85% acá
+   abajo) necesite un ajuste fino a ojo.
+   =========================================================================== */
+body:has(.landing-navbar) .page-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 100vh;
+    mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0) 85%);
+    -webkit-mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0) 85%);
+}
+
+body:has(.landing-navbar) .page-background::after {
+    background: rgba(8, 8, 8, 0.85);
+}
