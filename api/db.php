@@ -9,8 +9,8 @@
 $DB_HOST = 'localhost';
 $DB_USER = 'root';
 $DB_PASS = '';
-$DB_NAME = 'copados';
-// cambiar nombre de base de datos de acuerdo con la que tenes en tu localhost
+$DB_NAME = 'copa';
+// usar el nombre de la base de datos importada desde db/copa.sql
 
 $conn = new mysqli($DB_HOST, $DB_USER, $DB_PASS, $DB_NAME);
 
