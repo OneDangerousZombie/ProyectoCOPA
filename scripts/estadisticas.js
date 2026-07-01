@@ -54,10 +54,10 @@ function loadSummaryCards() {
     var wr = topWinRate ? Math.round((topWinRate.wins / topWinRate.matches) * 100) : 0;
 
     cards.innerHTML =
-        summaryCard('⚽', totalGoals, 'Goles en la liga') +
-        summaryCard('🥇', topScorer ? topScorer.playerName : '—', 'Máximo goleador · ' + (topScorer ? topScorer.goals : 0) + ' goles') +
-        summaryCard('🎯', topAssist ? topAssist.playerName : '—', 'Más asistencias · ' + (topAssist ? topAssist.assists : 0)) +
-        summaryCard('📈', topWinRate ? topWinRate.playerName : '—', 'Mejor win rate · ' + wr + '%');
+        summaryCard('<i class="fa-solid fa-futbol"></i>', totalGoals, 'Goles en la liga') +
+        summaryCard('<i class="fa-solid fa-trophy"></i>', topScorer ? topScorer.playerName : '—', 'Máximo goleador · ' + (topScorer ? topScorer.goals : 0) + ' goles') +
+        summaryCard('<i class="fa-solid fa-bullseye"></i>', topAssist ? topAssist.playerName : '—', 'Más asistencias · ' + (topAssist ? topAssist.assists : 0)) +
+        summaryCard('<i class="fa-solid fa-chart-line"></i>', topWinRate ? topWinRate.playerName : '—', 'Mejor win rate · ' + wr + '%');
 }
 
 function summaryCard(icon, val, label) {

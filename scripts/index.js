@@ -1,7 +1,15 @@
 /* ===========================================================================
    index.js — Lógica compartida por TODAS las páginas públicas de COPA
-   (index, ligas, caracteristicas, como-funciona, ayuda, sobre-nosotros).
+   (index, ligas, caracteristicas, ayuda, sobre-nosotros).
    Vanilla JS, sin dependencias. Todo dentro de DOMContentLoaded.
+
+   Fusión aplicada:
+   - Dropdown genérico (usuario + ¿Quiénes Somos?) e íconos Font Awesome:
+     tomados de la versión post-rediseño.
+   - Envío real del formulario de contacto (fetch + manejo de error):
+     restaurado desde la versión anterior al rediseño, que se había
+     perdido en el merge.
+   - Lógica de acordeón: eliminada (ya no existe en ayuda.html / index.css).
    =========================================================================== */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -54,7 +62,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (nameEl) nameEl.textContent = (user && user.username) ? user.username : 'Usuario';
 
         const avatarEl = document.getElementById('navUserAvatar');
-        if (avatarEl) avatarEl.textContent = (user && user.avatar) ? user.avatar : '👤';
+        if (avatarEl) avatarEl.innerHTML = (user && user.avatar) ? user.avatar : '<i class="fa-solid fa-user"></i>';
 
         document.querySelectorAll('[data-auth="guest"]').forEach((el) => {
             el.classList.toggle('is-hidden', isLoggedIn);
@@ -79,50 +87,70 @@ document.addEventListener('DOMContentLoaded', () => {
     /* ===== NAVBAR ===== */
 
     /* Resalta el link activo comparando el archivo actual con data-page,
-       mismo patrón que ya usa navigation.js para el bottom-nav de la app. */
+       mismo patrón que ya usa navigation.js para el bottom-nav de la app.
+       Si el link activo vive dentro de un dropdown (ej. ¿Quiénes Somos?),
+       también resalta el botón que lo abre. */
     function highlightActiveNav() {
         const path = window.location.pathname;
         const currentPage = path.split('/').pop().replace('.html', '') || 'index';
 
         document.querySelectorAll('[data-page]').forEach((link) => {
-            link.classList.toggle('active', link.getAttribute('data-page') === currentPage);
+            const isActive = link.getAttribute('data-page') === currentPage;
+            link.classList.toggle('active', isActive);
+
+            if (isActive) {
+                const parentDropdown = link.closest('.nav-dropdown');
+                if (parentDropdown) {
+                    const trigger = parentDropdown.querySelector('.nav-dropdown-trigger');
+                    if (trigger) trigger.classList.add('active');
+                }
+            }
         });
     }
 
     highlightActiveNav();
 
 
-    /* ===== DROPDOWNS ===== */
-    const userTrigger = document.getElementById('userTrigger');
-    const userMenu = document.getElementById('userMenu');
+    /* ===== DROPDOWNS =====
+       Maneja cualquier par trigger/menu presente en la página (usuario,
+       ¿Quiénes Somos?, o futuros menús) sin necesidad de tocar este código
+       al agregar uno nuevo: alcanza con que comparta la misma estructura. */
+    const dropdowns = [
+        { trigger: document.getElementById('userTrigger'), menu: document.getElementById('userMenu') },
+        { trigger: document.getElementById('aboutTrigger'), menu: document.getElementById('aboutMenu') }
+    ].filter(({ trigger, menu }) => trigger && menu);
 
     function closeAllDropdowns() {
-        if (userMenu) userMenu.classList.remove('active');
-        if (userTrigger) userTrigger.setAttribute('aria-expanded', 'false');
-    }
-
-    if (userTrigger && userMenu) {
-        userTrigger.addEventListener('click', (event) => {
-            event.stopPropagation();
-            const isOpen = userMenu.classList.contains('active');
-            closeAllDropdowns();
-            if (!isOpen) {
-                userMenu.classList.add('active');
-                userTrigger.setAttribute('aria-expanded', 'true');
-            }
+        dropdowns.forEach(({ trigger, menu }) => {
+            menu.classList.remove('active');
+            trigger.setAttribute('aria-expanded', 'false');
         });
     }
+
+    dropdowns.forEach(({ trigger, menu }) => {
+        trigger.addEventListener('click', (event) => {
+            event.stopPropagation();
+            const isOpen = menu.classList.contains('active');
+            closeAllDropdowns();
+            if (!isOpen) {
+                menu.classList.add('active');
+                trigger.setAttribute('aria-expanded', 'true');
+            }
+        });
+    });
 
     document.addEventListener('click', closeAllDropdowns);
 
     /* ── Menú mobile ── */
     const hamburger = document.getElementById('navHamburger');
     const mobilePanel = document.getElementById('mobileMenuPanel');
+    const mobileBackdrop = document.getElementById('mobileMenuBackdrop');
 
     function closeMobileMenu() {
         if (!hamburger || !mobilePanel) return;
         mobilePanel.classList.remove('active');
         hamburger.setAttribute('aria-expanded', 'false');
+        if (mobileBackdrop) mobileBackdrop.classList.remove('active');
     }
 
     if (hamburger && mobilePanel) {
@@ -133,12 +161,17 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 mobilePanel.classList.add('active');
                 hamburger.setAttribute('aria-expanded', 'true');
+                if (mobileBackdrop) mobileBackdrop.classList.add('active');
             }
         });
 
         mobilePanel.querySelectorAll('.mobile-link, .btn-nav').forEach((el) => {
             el.addEventListener('click', closeMobileMenu);
         });
+
+        if (mobileBackdrop) {
+            mobileBackdrop.addEventListener('click', closeMobileMenu);
+        }
     }
 
 
@@ -169,7 +202,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <span><strong>${liga.jugadores}</strong> jugadores</span>
                     <span>Último partido: ${liga.ultimoPartido}</span>
                 </div>
-                <a href="pages/liga.html" class="liga-card-btn">Ver Liga →</a>
+                <a href="pages/liga.html" class="liga-card-btn">Ver Liga <i class="fa-solid fa-arrow-right"></i></a>
             </div>
         `).join('');
 
@@ -187,8 +220,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     /* ===== FORMULARIO (ayuda.html) =====
-       Sin backend todavía: valida, muestra confirmación y limpia el form.
-       Los campos ya tienen los "name" listos para un futuro <form action="...php">. */
+       Envía por fetch al endpoint indicado en contactForm.action.
+       PENDIENTE: todavía no nos pasaron a dónde debe apuntar ese endpoint
+       (el <form> en ayuda.html no tiene "action" definido todavía). Hasta
+       que llegue ese dato, el fetch va a fallar y se va a mostrar el
+       mensaje de "Error de conexión" — es el comportamiento esperado, no
+       un bug. Avisar si esto se resuelve y no se actualizó acá. */
     const contactForm = document.getElementById('contactForm');
     const formSuccess = document.getElementById('formSuccess');
 
@@ -252,13 +289,13 @@ document.addEventListener('DOMContentLoaded', () => {
         btn.type = 'button';
         btn.id = 'testToggleBtn';
         btn.className = 'test-toggle-btn';
-        btn.innerHTML = '<span class="test-toggle-dot"></span><span id="testToggleLabel">Modo: Invitado</span>';
+        btn.innerHTML = '<i class="fa-solid fa-flask"></i><span class="test-toggle-dot"></span><span id="testToggleLabel">Modo: Invitado</span>';
 
         btn.addEventListener('click', () => {
             if (isLoggedIn) {
                 setSession(null);
             } else {
-                setSession({ username: 'Brandon', avatar: '👤' });
+                setSession({ username: 'Brandon' });
             }
         });
 
@@ -292,5 +329,46 @@ document.addEventListener('DOMContentLoaded', () => {
 
         revealElements.forEach((el) => observer.observe(el));
     }
+
+
+    /* ===== NAVBAR: profundidad al hacer scroll =====
+       Puramente decorativo, clase nueva (is-scrolled) que no es leída por
+       ningún otro archivo. No reemplaza ni interfiere con highlightActiveNav
+       ni con los dropdowns. */
+    const landingNavbar = document.querySelector('.landing-navbar');
+    if (landingNavbar) {
+        const updateNavbarElevation = () => {
+            landingNavbar.classList.toggle('is-scrolled', window.scrollY > 8);
+        };
+        updateNavbarElevation();
+        window.addEventListener('scroll', updateNavbarElevation, { passive: true });
+    }
+
+
+    /* ===== BLOOM QUE SIGUE AL CURSOR (Top Liga / Estadísticas) =====
+       Solo en los locked-card dentro de .liga-numbers-pair (Rankings y
+       Estadísticas) — no afecta al locked-card de goleadores en la
+       sidebar de noticias, que no pidió este efecto. Actualiza dos
+       variables CSS (--spot-x/--spot-y) que index.css usa en un
+       radial-gradient; la clase "is-glowing" solo prende/apaga la
+       opacidad del resplandor con una transición suave. */
+    const glowCards = document.querySelectorAll('.liga-numbers-pair .locked-card');
+    glowCards.forEach((card) => {
+        card.addEventListener('mousemove', (event) => {
+            const rect = card.getBoundingClientRect();
+            const x = ((event.clientX - rect.left) / rect.width) * 100;
+            const y = ((event.clientY - rect.top) / rect.height) * 100;
+            card.style.setProperty('--spot-x', x + '%');
+            card.style.setProperty('--spot-y', y + '%');
+        });
+
+        card.addEventListener('mouseenter', () => {
+            card.classList.add('is-glowing');
+        });
+
+        card.addEventListener('mouseleave', () => {
+            card.classList.remove('is-glowing');
+        });
+    });
 
 });

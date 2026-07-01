@@ -1,3 +1,9 @@
+/* ── Tipografía ──────────────────────────────
+   Inter, consistente con el resto del proyecto. */
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif;
+}
+
 /* ── Layout ─────────────────────────────────── */
 body {
     background: var(--bg-primary);
@@ -6,6 +12,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
+    padding: 1.5rem;
 }
 
 body::before {
@@ -22,7 +29,6 @@ body::before {
     z-index: 1;
     width: 100%;
     max-width: 380px;
-    padding: 2rem 1.75rem;
 }
 
 /* ── Header ─────────────────────────────────── */
@@ -41,6 +47,7 @@ body::before {
     background: var(--green-primary);
     border-radius: 16px;
     font-size: 1.6rem;
+    color: #000;
     margin-bottom: 1.25rem;
     box-shadow: 0 0 0 1px rgba(34,197,94,0.3), 0 12px 32px rgba(34,197,94,0.18);
 }
@@ -64,6 +71,10 @@ body::before {
     flex-direction: column;
     gap: 0.75rem;
     animation: fadeInUp 0.4s cubic-bezier(0.32, 0.72, 0, 1) 0.08s both;
+}
+
+.league-join-wrap {
+    position: relative;
 }
 
 .league-btn {
@@ -97,12 +108,25 @@ body::before {
     display: flex;
     flex-direction: column;
     gap: 0.15rem;
+    flex: 1;
 }
 
 .league-btn-text span {
     font-size: 0.72rem;
     font-weight: 500;
     opacity: 0.65;
+}
+
+/* Caret del botón "Unirme a una Liga" — rota al abrir el dropdown */
+.league-join-caret {
+    font-size: 0.8rem;
+    opacity: 0.6;
+    transition: transform var(--transition-fast);
+    flex-shrink: 0;
+}
+
+.league-btn[aria-expanded="true"] .league-join-caret {
+    transform: rotate(180deg);
 }
 
 /* Primario */
@@ -157,4 +181,195 @@ body::before {
     flex: 1;
     height: 1px;
     background: var(--border-color);
+}
+
+/* ── Dropdown "Unirme a una Liga" ─────────────────────────────
+   Mismo lenguaje de apertura que el resto del proyecto (fade +
+   translateY + scale), con los tokens disponibles en esta página
+   (global.css no define --ease-premium, así que se usa una curva
+   propia equivalente). */
+.league-dropdown {
+    position: absolute;
+    top: calc(100% + 0.625rem);
+    left: 0;
+    right: 0;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-lg);
+    padding: 0.5rem;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(8px) scale(0.97);
+    transform-origin: top center;
+    transition: opacity 0.22s cubic-bezier(0.32, 0.72, 0, 1),
+                transform 0.22s cubic-bezier(0.32, 0.72, 0, 1),
+                visibility 0.22s ease;
+    z-index: 20;
+    max-height: 260px;
+    overflow-y: auto;
+}
+
+.league-dropdown.active {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0) scale(1);
+}
+
+.league-dropdown-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+}
+
+.league-dropdown-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    padding: 0.65rem 0.75rem;
+    border-radius: var(--radius-sm);
+    text-decoration: none;
+    transition: background var(--transition-fast);
+}
+
+.league-dropdown-item:hover {
+    background: var(--bg-card-hover);
+}
+
+.league-dropdown-name {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.league-dropdown-meta {
+    font-size: 0.72rem;
+    color: var(--text-tertiary);
+}
+
+.league-dropdown-empty {
+    padding: 0.75rem;
+    font-size: 0.8rem;
+    color: var(--text-tertiary);
+    text-align: center;
+}
+
+/* ── Modal "Crear Liga" ─────────────────────────────────────
+   .modal / .modal-content / .modal-header / .modal-handle /
+   .close-modal ya vienen de global.css (mismo patrón bottom-sheet
+   que usa el resto de la Aplicación). Acá solo el contenido propio. */
+.create-league-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    margin-bottom: 1.25rem;
+}
+
+.create-league-field label {
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+}
+
+.create-league-code {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.3rem;
+    text-align: center;
+    background: var(--green-glow);
+    border: 1px solid var(--green-border);
+    border-radius: var(--radius-md);
+    padding: 1rem;
+    margin-bottom: 1.25rem;
+}
+
+.create-league-code.active {
+    display: flex;
+}
+
+.create-league-code-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--green-primary);
+}
+
+.create-league-code-value {
+    font-size: 1.5rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    color: var(--text-primary);
+}
+
+.create-league-code-hint {
+    font-size: 0.72rem;
+    color: var(--text-tertiary);
+}
+
+.create-league-submit {
+    justify-content: center;
+    text-align: center;
+}
+
+/* ══════════════════════════════════════════════════════════
+   TABLET ANCHA (≥860px) — las dos opciones lado a lado,
+   separadas pero no demasiado (gap moderado, no todo el ancho).
+══════════════════════════════════════════════════════════ */
+@media (min-width: 860px) {
+    .selection-container {
+        max-width: 620px;
+    }
+
+    .page-header h1 {
+        font-size: 1.85rem;
+    }
+
+    .buttons-container {
+        flex-direction: row;
+        align-items: stretch;
+        gap: 1.25rem;
+    }
+
+    .league-join-wrap {
+        flex: 1;
+        display: flex;
+    }
+
+    .league-btn {
+        flex: 1;
+    }
+
+    /* El divisor pasa de línea horizontal con "o" en el medio a línea
+       vertical con "o" en el medio, mismo HTML, solo cambia el eje. */
+    .or-divider {
+        flex-direction: column;
+        width: auto;
+    }
+
+    .or-divider::before,
+    .or-divider::after {
+        width: 1px;
+        height: auto;
+    }
+}
+
+/* ══════════════════════════════════════════════════════════
+   DESKTOP (≥1200px)
+══════════════════════════════════════════════════════════ */
+@media (min-width: 1200px) {
+    .selection-container {
+        max-width: 700px;
+    }
+
+    .page-header h1 {
+        font-size: 2.1rem;
+    }
+
+    .league-btn {
+        padding: 1.375rem 1.5rem;
+    }
 }

@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
     <title>Anotador — COPA</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="../styles/global.css">
     <link rel="stylesheet" href="../styles/anotador.css">
 </head>
@@ -12,7 +16,7 @@
 
         <!-- Header -->
         <div class="header">
-            <button type="button" class="back-btn" onclick="confirmBack()">‹</button>
+            <button type="button" class="back-btn" onclick="confirmBack()"><i class="fa-solid fa-chevron-left"></i></button>
             <h1>En curso</h1>
             <div class="header-spacer"></div>
         </div>
@@ -23,9 +27,9 @@
             <div class="timer-section">
                 <div class="timer" id="timer">00:00</div>
                 <div class="timer-controls">
-                    <button type="button" class="timer-btn" id="startTimer">▶ Iniciar</button>
-                    <button type="button" class="timer-btn timer-btn-pause hidden" id="pauseTimer">⏸ Pausar</button>
-                    <button type="button" class="timer-btn hidden" id="resumeTimer">▶ Continuar</button>
+                    <button type="button" class="timer-btn" id="startTimer"><i class="fa-solid fa-play"></i> Iniciar</button>
+                    <button type="button" class="timer-btn timer-btn-pause hidden" id="pauseTimer"><i class="fa-solid fa-pause"></i> Pausar</button>
+                    <button type="button" class="timer-btn hidden" id="resumeTimer"><i class="fa-solid fa-play"></i> Continuar</button>
                 </div>
             </div>
 
@@ -33,27 +37,27 @@
             <div class="scoreboard">
                 <!-- Equipo 1 -->
                 <div class="team-block">
-                    <div class="team-shield">⬜</div>
+                    <span class="team-shield-block team-shield-white"></span>
                     <div class="team-label" id="team1Label">BLANCO</div>
                     <div class="team-score-num" id="whiteScore">0</div>
                     <button type="button" class="goal-team-btn goal-btn-1" id="goalBtn1" onclick="openGoalModal('white')">
-                        ⚽ GOL
+                        <i class="fa-solid fa-futbol"></i> GOL
                     </button>
                 </div>
 
                 <div class="scoreboard-center">
-                    <div class="scoreboard-center-spacer team-shield">⬜</div>
+                    <span class="scoreboard-center-spacer team-shield-block"></span>
                     <div class="scoreboard-center-spacer team-label">VS</div>
                     <div class="scoreboard-dash">—</div>
                 </div>
 
                 <!-- Equipo 2 -->
                 <div class="team-block">
-                    <div class="team-shield">⬛</div>
+                    <span class="team-shield-block team-shield-black"></span>
                     <div class="team-label" id="team2Label">NEGRO</div>
                     <div class="team-score-num" id="blackScore">0</div>
                     <button type="button" class="goal-team-btn goal-btn-2" id="goalBtn2" onclick="openGoalModal('black')">
-                        ⚽ GOL
+                        <i class="fa-solid fa-futbol"></i> GOL
                     </button>
                 </div>
             </div>
@@ -61,11 +65,11 @@
             <!-- Cambio unificado -->
             <div class="sub-bar">
                 <button type="button" class="sub-bar-btn" id="subBtn1" onclick="openSubModal('white')">
-                    🔄 Cambio <span id="subBtnLabel1">Blanco</span>
+                    <i class="fa-solid fa-arrows-rotate"></i> Cambio <span id="subBtnLabel1">Blanco</span>
                 </button>
                 <div class="sub-bar-divider"></div>
                 <button type="button" class="sub-bar-btn" id="subBtn2" onclick="openSubModal('black')">
-                    🔄 Cambio <span id="subBtnLabel2">Negro</span>
+                    <i class="fa-solid fa-arrows-rotate"></i> Cambio <span id="subBtnLabel2">Negro</span>
                 </button>
             </div>
 
@@ -85,8 +89,8 @@
 
         <!-- Bottom actions -->
         <div class="bottom-actions">
-            <button type="button" class="action-btn" id="undoBtn">↩ Deshacer</button>
-            <button type="button" class="action-btn primary" id="finishMatchBtn">🏁 Finalizar</button>
+            <button type="button" class="action-btn" id="undoBtn"><i class="fa-solid fa-rotate-left"></i> Deshacer</button>
+            <button type="button" class="action-btn primary" id="finishMatchBtn"><i class="fa-solid fa-flag-checkered"></i> Finalizar</button>
         </div>
 
     </div>

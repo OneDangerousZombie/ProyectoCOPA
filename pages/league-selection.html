@@ -6,20 +6,26 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>COPA — Seleccionar Liga</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="../styles/global.css">
     <link rel="stylesheet" href="../styles/league-selection.css">
 </head>
 <body>
     <div class="selection-container">
         <div class="page-header">
-            <div class="logo-mark">⚽</div>
+            <div class="logo-mark"><i class="fa-solid fa-futbol"></i></div>
             <h1>Bienvenido a COPA</h1>
             <p>¿Qué querés hacer hoy?</p>
         </div>
 
         <div class="buttons-container">
-            <button class="league-btn primary" onclick="window.location.href='home.html'">
-                <div class="league-btn-icon">➕</div>
+
+            <!-- ===== Crear Liga ===== -->
+            <button type="button" class="league-btn primary" id="createLeagueBtn">
+                <div class="league-btn-icon"><i class="fa-solid fa-plus"></i></div>
                 <div class="league-btn-text">
                     Crear Liga
                     <span>Empezá tu propia liga de amigos</span>
@@ -28,14 +34,58 @@
 
             <div class="or-divider">o</div>
 
-            <button class="league-btn secondary" onclick="window.location.href='home.html'">
-                <div class="league-btn-icon">🤝</div>
-                <div class="league-btn-text">
-                    Unirme a una Liga
-                    <span>Ingresá con un código de invitación</span>
+            <!-- ===== Unirme a una Liga (despliega lista) ===== -->
+            <div class="league-join-wrap">
+                <button type="button" class="league-btn secondary" id="joinLeagueBtn" aria-expanded="false">
+                    <div class="league-btn-icon"><i class="fa-solid fa-handshake"></i></div>
+                    <div class="league-btn-text">
+                        Unirme a una Liga
+                        <span>Ingresá con un código de invitación</span>
+                    </div>
+                    <i class="fa-solid fa-chevron-down league-join-caret"></i>
+                </button>
+
+                <!-- BACKEND: hoy no existe ninguna tabla "ligas" en la base —
+                     esta lista es de ejemplo (hardcodeada en league-selection.js)
+                     hasta que exista un endpoint real que la traiga. Cada item
+                     ya redirige a home.html, como se pidió. -->
+                <div class="league-dropdown" id="leagueDropdown">
+                    <div class="league-dropdown-list" id="leagueDropdownList"></div>
                 </div>
-            </button>
+            </div>
+
         </div>
     </div>
+
+    <!-- ===== Modal: Crear Liga (reutiliza .modal / .modal-content de global.css,
+         el mismo patrón bottom-sheet que ya usa el resto de la Aplicación) ===== -->
+    <div class="modal" id="createLeagueModal">
+        <div class="modal-content">
+            <div class="modal-handle"></div>
+            <div class="modal-header">
+                <h3>Crear tu liga</h3>
+                <button type="button" class="close-modal" id="closeCreateLeagueModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="create-league-field">
+                    <label for="newLeagueName">Nombre de la liga</label>
+                    <input type="text" id="newLeagueName" placeholder="Ej: Liga 5 Estrellas" autocomplete="off">
+                </div>
+
+                <!-- Aparece recién después de generar el código -->
+                <div class="create-league-code" id="createLeagueCodeBox">
+                    <span class="create-league-code-label">Código de invitación</span>
+                    <span class="create-league-code-value" id="createLeagueCodeValue"></span>
+                    <span class="create-league-code-hint">Compartilo para que se unan a tu liga</span>
+                </div>
+
+                <button type="button" class="league-btn primary create-league-submit" id="createLeagueSubmitBtn">
+                    Crear liga
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../scripts/league-selection.js"></script>
 </body>
 </html>

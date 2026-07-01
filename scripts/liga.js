@@ -44,7 +44,7 @@ function buildCard(player, playerStats) {
     const card = document.createElement('div');
     card.className = 'player-card';
     card.innerHTML = `
-        <div class="player-avatar">👤</div>
+        <div class="player-avatar"><i class="fa-solid fa-user"></i></div>
         <div class="player-info">
             <div class="player-name">${player.name}</div>
             <div class="player-elo">ELO: ${player.elo}</div>
