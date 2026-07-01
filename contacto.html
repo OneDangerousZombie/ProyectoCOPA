@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <meta name="description" content="¿Necesitás ayuda con COPA? Escribinos y te respondemos a la brevedad.">
-    <title>Ayuda — COPA</title>
+    <meta name="description" content="Contactá con COPA para consultas, soporte o feedback.">
+    <title>Contacto — COPA</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -13,13 +13,8 @@
     <link rel="stylesheet" href="styles/index.css">
 </head>
 <body>
-    <!-- Background reservado para la app (sin imagen todavía). Ver el
-         comentario completo en styles/global.css (.page-background) y el
-         comportamiento especial de Landing en styles/index.css. -->
     <div class="page-background" aria-hidden="true"></div>
 
-
-    <!-- ============================ NAVBAR ============================ -->
     <header class="landing-navbar">
         <div class="nav-container">
             <a href="index.html" class="nav-logo">
@@ -30,6 +25,7 @@
             <nav class="nav-links">
                 <a href="ligas.html" class="nav-link" data-page="ligas">Ligas</a>
                 <a href="caracteristicas.html" class="nav-link" data-page="caracteristicas">Características</a>
+                <a href="contacto.html" class="nav-link" data-page="contacto">Contacto</a>
                 <div class="nav-dropdown">
                     <button type="button" class="nav-link nav-dropdown-trigger" id="aboutTrigger" aria-expanded="false">
                         ¿Quiénes Somos?
@@ -37,7 +33,6 @@
                     </button>
                     <div class="dropdown-menu" id="aboutMenu">
                         <a href="sobre-nosotros.html" class="dropdown-item" data-page="sobre-nosotros">Sobre Nosotros</a>
-                        <a href="ayuda.html" class="dropdown-item" data-page="ayuda">Necesito Ayuda</a>
                     </div>
                 </div>
             </nav>
@@ -70,8 +65,8 @@
         <div class="mobile-menu-panel" id="mobileMenuPanel">
             <a href="ligas.html" class="mobile-link" data-page="ligas">Ligas</a>
             <a href="caracteristicas.html" class="mobile-link" data-page="caracteristicas">Características</a>
+            <a href="contacto.html" class="mobile-link" data-page="contacto">contacto</a>
             <a href="sobre-nosotros.html" class="mobile-link" data-page="sobre-nosotros">Sobre Nosotros</a>
-            <a href="ayuda.html" class="mobile-link" data-page="ayuda">Necesito Ayuda</a>
 
             <div class="mobile-divider"></div>
 
@@ -85,16 +80,12 @@
     </header>
 
     <main>
-
-        <!-- ============================ AYUDA: INFO + FORMULARIO ============================ -->
         <section class="section-padding" id="formulario-contacto">
             <div class="section-container">
                 <div class="help-layout">
-
-                    <!-- IZQUIERDA: título + mapa + medios de contacto -->
                     <div class="help-info reveal">
                         <div class="help-intro">
-                            <h1 class="page-hero-title">¿En qué te podemos ayudar?</h1>
+                            <h1 class="page-hero-title">Contacto</h1>
                             <p class="page-hero-subtitle">
                                 Contanos qué necesitás y te respondemos a la brevedad.
                             </p>
@@ -102,13 +93,13 @@
 
                         <div class="help-map">
                             <iframe
-                                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3282.5589694887376!2d-58.60460592324168!3d-34.64058387294099!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x95bc951c0fe2d9f5%3A0x9f1c540898efecbe!2sUTN%20HAEDO!5e0!3m2!1ses-419!2sar!4v1782784254217!5m2!1ses-419!2sar" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="strict-origin-when-cross-origin">
-                                width="100%"
-                                height="100%"
+                                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3282.5589694887376!2d-58.60460592324168!3d-34.64058387294099!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x95bc951c0fe2d9f5%3A0x9f1c540898efecbe!2sUTN%20HAEDO!5e0!3m2!1ses-419!2sar!4v1782784254217!5m2!1ses-419!2sar"
+                                width="600"
+                                height="450"
                                 style="border:0;"
                                 allowfullscreen=""
                                 loading="lazy"
-                                referrerpolicy="no-referrer-when-downgrade">
+                                referrerpolicy="strict-origin-when-cross-origin">
                             </iframe>
                         </div>
 
@@ -121,9 +112,6 @@
                         </div>
                     </div>
 
-
-                    <!-- DERECHA: formulario de contacto (sin cambios de contenido,
-                         los inputs ahora ocupan todo el ancho del recuadro) -->
                     <div class="help-form-card reveal">
                         <h3 class="help-info-title">Envianos un mensaje</h3>
 
@@ -158,14 +146,11 @@
                             <button type="submit" class="btn-landing btn-landing-solid">Enviar mensaje</button>
                         </form>
                     </div>
-
                 </div>
             </div>
         </section>
-
     </main>
 
-    <!-- ============================ FOOTER ============================ -->
     <footer class="landing-footer">
         <span class="footer-wordmark" aria-hidden="true">COPA</span>
         <div class="footer-container">
@@ -187,8 +172,8 @@
 
                 <div class="footer-column">
                     <h4 class="footer-column-title">Soporte</h4>
-                    <a href="ayuda.html" class="footer-link">Necesito ayuda</a>
-                    <a href="ayuda.html#formulario-contacto" class="footer-link">Contáctanos</a>
+                    <a href="contacto.html" class="footer-link">contacto</a>
+                    <a href="contacto.html#formulario-contacto" class="footer-link">Contáctanos</a>
                 </div>
 
                 <div class="footer-column">
