@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="description" content="Conocé la misión y el equipo detrás de COPA, la plataforma para organizar ligas de fútbol amateur.">
+    <title>Sobre nosotros — COPA</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="styles/global.css">
+    <link rel="stylesheet" href="styles/index.css">
+</head>
+<body>
+    <!-- Background reservado para la app (sin imagen todavía). Ver el
+         comentario completo en styles/global.css (.page-background) y el
+         comportamiento especial de Landing en styles/index.css. -->
+    <div class="page-background" aria-hidden="true"></div>
+
+
+    <!-- ============================ NAVBAR ============================ -->
+    <header class="landing-navbar">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">
+                <span class="nav-logo-icon"><i class="fa-solid fa-futbol"></i></span>
+                <span class="nav-logo-text">COPA</span>
+            </a>
+
+            <nav class="nav-links">
+                <a href="ligas.html" class="nav-link" data-page="ligas">Ligas</a>
+                <a href="caracteristicas.html" class="nav-link" data-page="caracteristicas">Características</a>
+                <div class="nav-dropdown">
+                    <button type="button" class="nav-link nav-dropdown-trigger" id="aboutTrigger" aria-expanded="false">
+                        ¿Quiénes Somos?
+                        <i class="fa-solid fa-chevron-down dropdown-caret"></i>
+                    </button>
+                    <div class="dropdown-menu" id="aboutMenu">
+                        <a href="sobre-nosotros.html" class="dropdown-item" data-page="sobre-nosotros">Sobre Nosotros</a>
+                        <a href="ayuda.html" class="dropdown-item" data-page="ayuda">Necesito Ayuda</a>
+                    </div>
+                </div>
+            </nav>
+
+            <div class="nav-actions">
+                <a href="pages/login.html" class="btn-nav btn-nav-outline" data-auth="guest">Iniciar sesión</a>
+
+                <div class="nav-user-menu" data-auth="user">
+                    <button type="button" class="nav-user-trigger" id="userTrigger" aria-expanded="false">
+                        <span class="nav-user-avatar" id="navUserAvatar"><i class="fa-solid fa-user"></i></span>
+                        <span class="nav-user-name" id="navUserName">Usuario</span>
+                        <i class="fa-solid fa-chevron-down dropdown-caret"></i>
+                    </button>
+                    <div class="dropdown-menu" id="userMenu">
+                        <a href="pages/perfil.html" class="dropdown-item">Mi cuenta</a>
+                        <a href="pages/perfil.html" class="dropdown-item">Configuración del perfil</a>
+                        <button type="button" class="dropdown-item dropdown-item-danger" id="logoutBtn">Cerrar sesión</button>
+                    </div>
+                </div>
+
+                <a href="pages/home.html" class="btn-nav btn-nav-cta" data-auth="user"><i class="fa-solid fa-futbol"></i> Iniciar App</a>
+
+                <button type="button" class="nav-hamburger" id="navHamburger" aria-label="Abrir menú" aria-expanded="false">
+                    <span></span><span></span><span></span>
+                </button>
+            </div>
+        </div>
+
+        <div class="mobile-menu-backdrop" id="mobileMenuBackdrop"></div>
+        <div class="mobile-menu-panel" id="mobileMenuPanel">
+            <a href="ligas.html" class="mobile-link" data-page="ligas">Ligas</a>
+            <a href="caracteristicas.html" class="mobile-link" data-page="caracteristicas">Características</a>
+            <a href="sobre-nosotros.html" class="mobile-link" data-page="sobre-nosotros">Sobre Nosotros</a>
+            <a href="ayuda.html" class="mobile-link" data-page="ayuda">Necesito Ayuda</a>
+
+            <div class="mobile-divider"></div>
+
+            <a href="pages/login.html" class="mobile-link" data-auth="guest">Iniciar sesión</a>
+            <a href="pages/perfil.html" class="mobile-link" data-auth="user">Mi cuenta</a>
+            <a href="pages/perfil.html" class="mobile-link" data-auth="user">Configuración del perfil</a>
+            <button type="button" class="mobile-link mobile-link-danger" data-auth="user" id="mobileLogoutBtn">Cerrar sesión</button>
+
+            <a href="pages/home.html" class="btn-nav btn-nav-cta mobile-full" data-auth="user"><i class="fa-solid fa-futbol"></i> Iniciar App</a>
+        </div>
+    </header>
+
+    <main>
+
+        <!-- ============================ PAGE HERO ============================ -->
+        <div class="page-hero">
+            <div class="section-container">
+                <h1 class="page-hero-title">Hicimos COPA porque jugábamos al picado todas las semanas</h1>
+            </div>
+        </div>
+
+        <!-- ============================ MISIÓN ============================ -->
+        <section class="section-padding" id="sobre-nosotros">
+            <div class="section-container">
+                <div class="about-block reveal">
+                    <p class="about-text">
+                        COPA nació como proyecto académico a partir de un problema bien
+                        conocido por cualquiera que organiza un picado semanal: armar
+                        equipos parejos, anotar los resultados y no perder de vista quién
+                        viene jugando bien. Lo que empezó como una planilla compartida
+                        terminó convirtiéndose en una plataforma completa para administrar
+                        ligas de fútbol amateur, con balanceo automático de equipos,
+                        estadísticas y rankings en tiempo real.
+                    </p>
+                </div>
+
+                <div class="about-block reveal">
+                    <h2 class="section-title" style="margin-bottom: 0.75rem;">Nuestro objetivo</h2>
+                    <p class="about-text">
+                        Que cualquier grupo de amigos pueda tener su propia liga, sin
+                        depender de planillas sueltas ni discusiones sobre quién juega
+                        con quién. Equipos parejos, estadísticas claras y toda la
+                        información de la temporada en un solo lugar.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================ EQUIPO ============================ -->
+        <section class="section-padding section-alt">
+            <div class="section-container">
+                <div class="section-header reveal">
+                    <span class="section-eyebrow">El equipo</span>
+                    <h2 class="section-title">Quiénes hacemos COPA</h2>
+                </div>
+
+                <div class="team-grid">
+                    <div class="team-card reveal">
+                        <div class="team-card-icon"><i class="fa-solid fa-laptop-code"></i></div>
+                        <h3 class="team-card-role">Desarrollo</h3>
+                        <p class="team-card-desc">Arquitectura, lógica de balanceo de equipos y toda la plataforma.</p>
+                    </div>
+                    <div class="team-card reveal">
+                        <div class="team-card-icon"><i class="fa-solid fa-palette"></i></div>
+                        <h3 class="team-card-role">Diseño</h3>
+                        <p class="team-card-desc">La identidad visual y la experiencia de uso, pensadas mobile-first.</p>
+                    </div>
+                    <div class="team-card reveal">
+                        <div class="team-card-icon"><i class="fa-solid fa-chart-pie"></i></div>
+                        <h3 class="team-card-role">Datos y estadísticas</h3>
+                        <p class="team-card-desc">El sistema de puntos, rankings y métricas de rendimiento.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================ CTA DE CIERRE ============================ -->
+        <section class="section-padding">
+            <div class="section-container">
+                <div class="page-cta-banner reveal">
+                    <p class="page-cta-text">¿Tenés dudas sobre el proyecto?</p>
+                    <a href="ayuda.html" class="btn-landing btn-landing-outline">Contactanos</a>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ============================ FOOTER ============================ -->
+    <footer class="landing-footer">
+        <span class="footer-wordmark" aria-hidden="true">COPA</span>
+        <div class="footer-container">
+            <div class="footer-top">
+                <div class="footer-brand">
+                    <a href="index.html" class="nav-logo">
+                        <span class="nav-logo-icon"><i class="fa-solid fa-futbol"></i></span>
+                        <span class="nav-logo-text">COPA</span>
+                    </a>
+                    <p class="footer-brand-text">Tu liga de fútbol amateur, organizada.</p>
+                </div>
+
+                <div class="footer-column">
+                    <h4 class="footer-column-title">Producto</h4>
+                    <a href="caracteristicas.html" class="footer-link">Características</a>
+                    <a href="ligas.html" class="footer-link">Ligas</a>
+                    <a href="pages/estadisticas.html" class="footer-link">Estadísticas</a>
+                </div>
+
+                <div class="footer-column">
+                    <h4 class="footer-column-title">Soporte</h4>
+                    <a href="ayuda.html" class="footer-link">Necesito ayuda</a>
+                    <a href="ayuda.html#formulario-contacto" class="footer-link">Contáctanos</a>
+                </div>
+
+                <div class="footer-column">
+                    <h4 class="footer-column-title">Redes</h4>
+                    <a href="#" class="footer-link">Instagram</a>
+                    <a href="#" class="footer-link">X</a>
+                    <a href="#" class="footer-link">Discord</a>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <span>© 2026 COPA — Proyecto académico</span>
+            </div>
+        </div>
+    </footer>
+
+    <script src="scripts/index.js"></script>
+</body>
+</html>
