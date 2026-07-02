@@ -60,7 +60,7 @@ try {
     // --- PASO A: Insertar en la tabla 'jugadores' ---
     // Incluyo AVATAR_URL (de tu consulta anterior) y VALOR_ELO (de tu archivo actual)
     $stmtJugador = $conn->prepare(
-        'INSERT INTO jugadores (NOMBRE, CLAVE, AVATAR_URL, ROL, VALOR_ELO) VALUES (?, ?, ?, 1, 1200)'
+        'INSERT INTO jugadores (NOMBRE, CLAVE, AVATAR_URL, ROL) VALUES (?, ?, ?, 1)'
     );
     $stmtJugador->bind_param('sss', $nombre, $clave_hasheada, $avatar_url);
     
@@ -101,7 +101,6 @@ try {
             'id'     => (int) $nuevoId,
             'nombre' => $nombre,
             'rol'    => 1,
-            'elo'    => 0,
             'avatar' => $avatar_url
         ]
     ]);

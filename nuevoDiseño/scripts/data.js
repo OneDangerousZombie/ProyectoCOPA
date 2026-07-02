@@ -17,7 +17,7 @@ function fetchPlayersFromDb() {
                 return {
                     id: parseInt(player.id, 10) || null,
                     name: player.nombre,
-                    elo: parseInt(player.valor_elo, 10) || 1200,
+                    elo: parseInt(player.valor_elo, 10) || 1000,
                     role: player.rol || null,
                     avatar: player.avatar || ''
                 };
@@ -32,16 +32,19 @@ function normalizePlayersFromDb(dbPlayers) {
         existingByName[player.name] = player;
     });
 
-    const nextIdBase = existingPlayers.reduce(function(max, player) {
-        return Math.max(max, typeof player.id === 'number' ? player.id : -1);
-    }, -1) + 1;
-
-    return dbPlayers.map(function(player, index) {
+    return dbPlayers.map(function(player) {
         const existing = existingByName[player.name];
+        // IMPORTANTE: el ID_JUGADORES SIEMPRE debe salir de la base de datos
+        // (fuente de verdad), nunca del ID cacheado en localStorage.
+        // Antes se reusaba existing.id cuando el nombre coincidía con un
+        // registro cacheado; si un jugador se borraba y se recreaba con el
+        // mismo nombre (nuevo ID_JUGADORES), el caché seguía apuntando al ID
+        // viejo para siempre, y todo el ELO/eventos de ese jugador terminaban
+        // registrándose sobre el ID incorrecto. Este era el bug reportado.
         return {
-            id: existing ? existing.id : (player.id !== null ? player.id : nextIdBase + index),
+            id: player.id,
             name: player.name,
-            elo: player.elo || 1200,
+            elo: player.elo || 1000,
             role: existing && existing.role ? existing.role : (player.role || null),
             avatar: existing && existing.avatar ? existing.avatar : (player.avatar || ''),
             stats: existing && existing.stats ? existing.stats : {

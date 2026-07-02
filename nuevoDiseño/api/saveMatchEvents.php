@@ -27,6 +27,16 @@ $formato = isset($match['format']) && trim($match['format']) !== '' ? trim($matc
 $venue  = isset($match['venue']) ? trim($match['venue']) : '';
 $canchaId = isset($match['canchaId']) && is_numeric($match['canchaId']) ? (int) $match['canchaId'] : null;
 
+// Roster completo del partido (TODOS los jugadores de cada equipo, tengan o
+// no contribución). Se usa para registrar el evento NGNA (ID_EVENTO_PARTIDO
+// = 6) a quien participó del partido pero no tuvo GOL/ASISTENCIA/CAMBIO.
+$rosterWhite = isset($match['rosterWhite']) && is_array($match['rosterWhite'])
+    ? array_values(array_unique(array_map('intval', $match['rosterWhite'])))
+    : [];
+$rosterBlack = isset($match['rosterBlack']) && is_array($match['rosterBlack'])
+    ? array_values(array_unique(array_map('intval', $match['rosterBlack'])))
+    : [];
+
 function findCanchaId($conn, $venue) {
     if ($venue === '') {
         return 1;
@@ -102,7 +112,6 @@ try {
             }
         } elseif ($event['type'] === 'substitution') {
             $tipoEvento = 3;
-            $inserted = false;
 
             if (isset($event['playerOutId']) && is_numeric($event['playerOutId'])) {
                 $outId = (int) $event['playerOutId'];
@@ -110,7 +119,6 @@ try {
                 if (!$insertEvento->execute()) {
                     throw new Exception('Error al insertar cambio (sale): ' . $insertEvento->error);
                 }
-                $inserted = true;
             }
 
             if (isset($event['playerInId']) && is_numeric($event['playerInId'])) {
@@ -119,11 +127,44 @@ try {
                 if (!$insertEvento->execute()) {
                     throw new Exception('Error al insertar cambio (entra): ' . $insertEvento->error);
                 }
-                $inserted = true;
             }
+        }
+    }
 
-            if (!$inserted) {
-                continue;
+    // Registrar NGNA (ID_EVENTO_PARTIDO = 6) para TODO jugador del roster
+    // completo del partido que no haya quedado con ningún evento real
+    // (GOL, ASISTENCIA o CAMBIO). Así, absolutamente todos los jugadores
+    // que participaron del partido -tengan o no contribución- terminan
+    // con al menos una fila en recolector_eventos, y por lo tanto
+    // calcularELOPartido() los va a incluir y modificar su ELO.
+    $rosterCompleto = [];
+    foreach ($rosterWhite as $id) {
+        $rosterCompleto[$id] = 1;
+    }
+    foreach ($rosterBlack as $id) {
+        $rosterCompleto[$id] = 2;
+    }
+
+    if (count($rosterCompleto) > 0) {
+        $idsList = implode(',', array_keys($rosterCompleto));
+        $resultJugadores = $conn->query("SELECT DISTINCT ID_JUGADOR_EVENTO FROM recolector_eventos WHERE ID_PARTIDO = $partidoId AND ID_JUGADOR_EVENTO IN ($idsList)");
+        if (!$resultJugadores) {
+            throw new Exception('Error verificando jugadores con eventos: ' . $conn->error);
+        }
+
+        $jugadoresConEventos = [];
+        while ($row = $resultJugadores->fetch_assoc()) {
+            $jugadoresConEventos[] = (int) $row['ID_JUGADOR_EVENTO'];
+        }
+        $resultJugadores->free();
+
+        $tipoEventoNoParticipacion = 6;
+        foreach ($rosterCompleto as $jugadorId => $equipoId) {
+            if (!in_array($jugadorId, $jugadoresConEventos, true)) {
+                $insertEvento->bind_param('iiii', $partidoId, $jugadorId, $tipoEventoNoParticipacion, $equipoId);
+                if (!$insertEvento->execute()) {
+                    throw new Exception('Error al insertar NGNA para jugador ' . $jugadorId . ': ' . $insertEvento->error);
+                }
             }
         }
     }
@@ -171,6 +212,14 @@ function actualizarEstadisticasJugador($conn, $partidoId) {
     while ($playerRow = $playersResult->fetch_assoc()) {
         $jugadorId = (int) $playerRow['ID_JUGADOR_EVENTO'];
         $equipo = (int) $playerRow['EQUIPO_EVENTO'];
+        
+        // Usar MAX(EQUIPO_EVENTO) para obtener el equipo consistente (en caso de cambios)
+        $equipoRow = $conn->query("SELECT MAX(EQUIPO_EVENTO) AS equipo FROM recolector_eventos WHERE ID_PARTIDO = $partidoId AND ID_JUGADOR_EVENTO = $jugadorId LIMIT 1");
+        if ($equipoRow) {
+            $equipoData = $equipoRow->fetch_assoc();
+            $equipo = (int) $equipoData['equipo'];
+            $equipoRow->free();
+        }
 
         $resultado = 0.5;
         if ($equipo === 1) {
@@ -281,10 +330,11 @@ function calcularELOPartido($conn, $partidoId) {
 
 function obtenerJugadoresPartido($conn, $partidoId) {
     $partidoId = (int) $partidoId;
-    $sql = "SELECT DISTINCT re.ID_JUGADOR_EVENTO AS id_jugador, re.EQUIPO_EVENTO AS equipo, j.VALOR_ELO AS elo
+    $sql = "SELECT re.ID_JUGADOR_EVENTO AS id_jugador, MAX(re.EQUIPO_EVENTO) AS equipo, j.VALOR_ELO AS elo
             FROM recolector_eventos re
             JOIN jugadores j ON re.ID_JUGADOR_EVENTO = j.ID_JUGADORES
-            WHERE re.ID_PARTIDO = $partidoId";
+            WHERE re.ID_PARTIDO = $partidoId
+            GROUP BY re.ID_JUGADOR_EVENTO, j.ID_JUGADORES, j.VALOR_ELO";
 
     $result = $conn->query($sql);
     if (!$result) {
@@ -305,7 +355,7 @@ function obtenerJugadoresPartido($conn, $partidoId) {
 
 function promedioELO(array $jugadores) {
     if (count($jugadores) === 0) {
-        return 1200.0;
+        return 1000.0;
     }
     $suma = 0.0;
     foreach ($jugadores as $jugador) {

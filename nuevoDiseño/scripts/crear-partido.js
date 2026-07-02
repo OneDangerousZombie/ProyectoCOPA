@@ -259,7 +259,7 @@ function updateStep2Counters() {
 function balanceTeams() {
     var players  = getPlayers();
     var selected = selectedPlayers
-        .map(function(name) { return players.find(function(p) { return p.name === name; }) || { name: name, elo: 1200 }; })
+        .map(function(name) { return players.find(function(p) { return p.name === name; }) || { name: name, elo: 1000 }; })
         .sort(function(a, b) { return b.elo - a.elo; });
     currentWhiteTeam = [];
     currentBlackTeam = [];
@@ -282,7 +282,7 @@ function updateTeamsDisplay() {
     var eloSum  = function(team) {
         return team.reduce(function(s, name) {
             var p = players.find(function(pl) { return pl.name === name; });
-            return s + (p ? p.elo : 1200);
+            return s + (p ? p.elo : 1000);
         }, 0);
     };
     var diff    = Math.abs(eloSum(currentWhiteTeam) - eloSum(currentBlackTeam));

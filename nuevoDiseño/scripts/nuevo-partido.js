@@ -227,9 +227,9 @@ function balanceTeams() {
 
     var sorted = combined
         .map(function(name) {
-            return npState.allPlayers.find(function(p) { return p.name === name; }) || { name: name, elo: 1200 };
+            return npState.allPlayers.find(function(p) { return p.name === name; }) || { name: name, elo: 1000 };
         })
-        .sort(function(a, b) { return (b.elo || 1200) - (a.elo || 1200); });
+        .sort(function(a, b) { return (b.elo || 1000) - (a.elo || 1000); });
 
     npState.team1 = [];
     npState.team2 = [];

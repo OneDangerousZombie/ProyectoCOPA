@@ -113,6 +113,7 @@ INSERT INTO `eventos` (`ID_EVENTOS`, `DESCRIPCION`) VALUES
 (2, 'ASISTENCIA'),
 (3, 'CAMBIO JUGAD'),
 (4, 'PENAL'),
+(5, 'PRESENTE'),
 (5, 'TIRO LIBRE'),
 (6, 'NGNA');
 
@@ -128,7 +129,7 @@ CREATE TABLE `jugadores` (
   `AVATAR_URL` varchar(255) DEFAULT '/imagenes/avatares/default.png',
   `CLAVE` varchar(266) CHARACTER SET utf8 COLLATE utf8_spanish_ci NOT NULL,
   `ROL` int(1) UNSIGNED NOT NULL,
-  `VALOR_ELO` int(4) NOT NULL DEFAULT 1200
+  `VALOR_ELO` int(4) NOT NULL DEFAULT 1000
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_spanish_ci;
 
 --

@@ -390,8 +390,29 @@ async function finishMatch() {
     showSummaryScreen();
 }
 
+// Trae la lista de jugadores DIRECTO de la base (no del caché de
+// localStorage) justo antes de guardar el partido. Esto asegura que la
+// resolución nombre → ID_JUGADORES se haga siempre contra el estado actual
+// de la DB y no contra un caché que puede haber quedado desactualizado
+// (por ejemplo si un jugador fue borrado y recreado con el mismo nombre).
+async function fetchFreshPlayersForSave() {
+    try {
+        var response = await fetch('../api/traerJugadores.php', { cache: 'no-store' });
+        if (!response.ok) throw new Error('HTTP ' + response.status);
+        var data = await response.json();
+        if (!data.ok || !Array.isArray(data.jugadores)) throw new Error('Respuesta inválida');
+        return data.jugadores.map(function(p) {
+            return { id: parseInt(p.id, 10), name: p.nombre };
+        });
+    } catch (e) {
+        console.warn('No se pudo refrescar jugadores desde la DB, se usa el caché local:', e);
+        return getPlayers();
+    }
+}
+
 async function uploadMatchEvents(match) {
-    var payload = buildMatchEventPayload(match);
+    var players = await fetchFreshPlayersForSave();
+    var payload = buildMatchEventPayload(match, players);
     if (!payload) {
         return { ok: false, error: 'No hay datos válidos para enviar' };
     }
@@ -410,10 +431,10 @@ async function uploadMatchEvents(match) {
     return await response.json();
 }
 
-function buildMatchEventPayload(match) {
+function buildMatchEventPayload(match, players) {
     if (!match || !Array.isArray(match.events)) return null;
 
-    var players = getPlayers();
+    players = players || getPlayers();
     var byName = {};
     players.forEach(function(player) {
         if (player && typeof player.name === 'string') {
@@ -421,28 +442,41 @@ function buildMatchEventPayload(match) {
         }
     });
 
+    function resolveId(name) {
+        return Object.prototype.hasOwnProperty.call(byName, name) ? byName[name] : null;
+    }
+
     var eventItems = [];
     match.events.forEach(function(ev) {
         if (!ev || !ev.type || !ev.team) return;
         var team = ev.team === 'white' ? 'white' : 'black';
 
         if (ev.type === 'goal') {
-            var scorerId = byName[ev.player] || null;
+            var scorerId = resolveId(ev.player);
             if (scorerId !== null) {
-                eventItems.push({ type: 'goal', playerId: scorerId, assistId: ev.assist ? (byName[ev.assist] || null) : null, team: team });
+                eventItems.push({ type: 'goal', playerId: scorerId, assistId: ev.assist ? resolveId(ev.assist) : null, team: team });
             }
         } else if (ev.type === 'substitution') {
-            var inId = byName[ev.playerIn] || null;
+            var inId = resolveId(ev.playerIn);
             if (inId !== null) {
-                eventItems.push({ type: 'substitution', playerInId: inId, playerOutId: byName[ev.playerOut] || null, team: team });
+                eventItems.push({ type: 'substitution', playerInId: inId, playerOutId: resolveId(ev.playerOut), team: team });
             }
         }
     });
 
+    // Roster COMPLETO del partido (todos los jugadores que estuvieron en
+    // cada equipo, tengan o no algún evento propio). El backend usa esto
+    // para registrar NGNA a quien no tuvo contribución, garantizando que
+    // TODOS los jugadores impacten su ELO.
+    var rosterWhite = (match.whiteTeam || []).map(resolveId).filter(function(id) { return id !== null; });
+    var rosterBlack = (match.blackTeam || []).map(resolveId).filter(function(id) { return id !== null; });
+
     var payloadMatch = {
         date:   match.date || null,
         format: match.format || 'F5',
-        venue:  match.venue || null
+        venue:  match.venue || null,
+        rosterWhite: rosterWhite,
+        rosterBlack: rosterBlack
     };
     if (typeof match.canchaId !== 'undefined' && match.canchaId !== null) {
         payloadMatch.canchaId = match.canchaId;
