@@ -34,6 +34,20 @@ function loadProfileData() {
                 console.log('📋 PASO 5 (Perfil): Inyectando datos de sesión en el DOM...');
                 document.getElementById('profileName').textContent = sesion.NOMBRE;
                 console.log(`   - Nombre de usuario "${sesion.NOMBRE}" inyectado.`);
+
+                if (data.liga && data.liga.nombre) {
+                    const nameEl = document.getElementById('profileName');
+                    let ligaEl = document.getElementById('profileLigaActiva');
+                    if (!ligaEl && nameEl) {
+                        ligaEl = document.createElement('p');
+                        ligaEl.id = 'profileLigaActiva';
+                        ligaEl.style.cssText = 'font-size:0.8rem;color:var(--text-tertiary);margin:0.15rem 0 0';
+                        nameEl.insertAdjacentElement('afterend', ligaEl);
+                    }
+                    if (ligaEl) {
+                        ligaEl.textContent = `${data.liga.nombre} · ELO ${Math.round(data.liga.valor_elo)}`;
+                    }
+                }
                 
                 const avatarImg = document.getElementById('profileAvatar');
                 if (avatarImg && sesion.AVATAR_URL) {
@@ -68,7 +82,10 @@ function loadProfileData() {
                 console.warn('⚠️ ADVERTENCIA (Perfil): El servidor conectó, pero devolvió un error lógico:', data.error);
                 if (data.error === 'Usuario no autenticado') {
                     console.log('❌ ACCIÓN: Redirigiendo al usuario a login.html porque no hay sesión activa.');
-                    window.location.href = 'login.html'; 
+                    window.location.href = 'login.html';
+                } else if (data.code === 'NO_LIGA_ACTIVA' || data.code === 'NO_MIEMBRO') {
+                    console.log('❌ ACCIÓN: Redirigiendo a league-selection.html porque no hay liga activa.');
+                    window.location.href = 'league-selection.html';
                 }
             }
         })

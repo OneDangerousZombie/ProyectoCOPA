@@ -21,6 +21,13 @@
             <p>¿Qué querés hacer hoy?</p>
         </div>
 
+        <!-- ===== Tus ligas (solo aparece si ya pertenecés a alguna) ===== -->
+        <div class="league-join-wrap" id="misLigasWrap" style="display:none; margin-bottom: 1rem;">
+            <div class="league-dropdown active" style="position:static;">
+                <div class="league-dropdown-list" id="misLigasList"></div>
+            </div>
+        </div>
+
         <div class="buttons-container">
 
             <!-- ===== Crear Liga ===== -->
@@ -34,7 +41,7 @@
 
             <div class="or-divider">o</div>
 
-            <!-- ===== Unirme a una Liga (despliega lista) ===== -->
+            <!-- ===== Unirme a una Liga (despliega lista + código) ===== -->
             <div class="league-join-wrap">
                 <button type="button" class="league-btn secondary" id="joinLeagueBtn" aria-expanded="false">
                     <div class="league-btn-icon"><i class="fa-solid fa-handshake"></i></div>
@@ -45,11 +52,15 @@
                     <i class="fa-solid fa-chevron-down league-join-caret"></i>
                 </button>
 
-                <!-- BACKEND: hoy no existe ninguna tabla "ligas" en la base —
-                     esta lista es de ejemplo (hardcodeada en league-selection.js)
-                     hasta que exista un endpoint real que la traiga. Cada item
-                     ya redirige a home.html, como se pidió. -->
                 <div class="league-dropdown" id="leagueDropdown">
+                    <div class="create-league-field" style="padding: 0.75rem 1rem 0;">
+                        <label for="joinLeagueCode">Código de invitación</label>
+                        <div style="display:flex; gap:0.5rem;">
+                            <input type="text" id="joinLeagueCode" placeholder="Ej: A1B2C3" autocomplete="off" maxlength="10" style="flex:1; text-transform:uppercase;">
+                            <button type="button" class="league-btn primary" id="joinByCodeBtn" style="flex:0 0 auto; padding: 0 1rem;">Unirme</button>
+                        </div>
+                    </div>
+                    <div class="or-divider" style="margin: 0.5rem 0;">o elegí una liga pública</div>
                     <div class="league-dropdown-list" id="leagueDropdownList"></div>
                 </div>
             </div>
@@ -72,12 +83,22 @@
                     <input type="text" id="newLeagueName" placeholder="Ej: Liga 5 Estrellas" autocomplete="off">
                 </div>
 
-                <!-- Aparece recién después de generar el código -->
+                <div class="create-league-field">
+                    <label for="newLeaguePrivada">Visibilidad</label>
+                    <select id="newLeaguePrivada">
+                        <option value="0">Pública (cualquiera la puede ver y unirse)</option>
+                        <option value="1">Privada (solo con código de invitación)</option>
+                    </select>
+                </div>
+
+                <!-- Aparece recién después de crear la liga -->
                 <div class="create-league-code" id="createLeagueCodeBox">
                     <span class="create-league-code-label">Código de invitación</span>
                     <span class="create-league-code-value" id="createLeagueCodeValue"></span>
                     <span class="create-league-code-hint">Compartilo para que se unan a tu liga</span>
                 </div>
+
+                <div class="create-league-field" id="createLeagueErrorBox" style="display:none; color:#ef4444; font-size:0.85rem;"></div>
 
                 <button type="button" class="league-btn primary create-league-submit" id="createLeagueSubmitBtn">
                     Crear liga

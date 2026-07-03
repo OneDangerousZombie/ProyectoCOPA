@@ -1,0 +1,874 @@
+/* ==========================================================================
+   dev.css — Estilos compartidos del área DEV (dev-dashboard.html y
+   dev-gestion.html). Misma paleta y tipografía que el resto de la app,
+   con un tono más denso y técnico: tablas con más info, badges de estado,
+   números con font-variant-numeric, controles de ABM.
+
+   No modifica ningún archivo existente. Cargado ADEMÁS de global.css.
+   ========================================================================== */
+
+/* ── Layout base DEV (solo desktop, no hay bottom-nav) ────── */
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.dev-layout {
+    flex: 1;
+    width: 100%;
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 3rem;
+}
+
+/* ── Navbar DEV ─────────────────────────────────────────────── */
+.dev-topnav {
+    position: sticky;
+    top: 0;
+    z-index: 200;
+    background: rgba(8, 8, 8, 0.95);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.dev-topnav-inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+}
+
+.dev-topnav-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    text-decoration: none;
+    color: var(--text-primary);
+    flex-shrink: 0;
+}
+
+.dev-topnav-brand-icon {
+    width: 30px;
+    height: 30px;
+    border-radius: var(--radius-xs);
+    background: var(--green-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    color: #000;
+    flex-shrink: 0;
+}
+
+.dev-topnav-brand-name {
+    font-size: 1rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+}
+
+/* Badge DEV — pequeño pill a la derecha del nombre */
+.dev-badge {
+    font-size: 0.58rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    background: rgba(34, 197, 94, 0.12);
+    color: var(--green-primary);
+    border: 1px solid var(--green-border);
+    padding: 0.15rem 0.45rem;
+    border-radius: var(--radius-xs);
+    margin-left: 0.25rem;
+    vertical-align: middle;
+}
+
+.dev-topnav-links {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    flex: 1;
+}
+
+.dev-nav-link {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.45rem 0.875rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.83rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: all var(--transition-fast);
+    cursor: pointer;
+    background: none;
+    border: none;
+    font-family: inherit;
+    letter-spacing: 0.01em;
+}
+
+.dev-nav-link:hover {
+    background: var(--bg-elevated);
+    color: var(--text-primary);
+}
+
+.dev-nav-link.active {
+    background: var(--bg-elevated);
+    color: var(--green-primary);
+    border: 1px solid var(--border-light);
+}
+
+.dev-nav-link i {
+    font-size: 0.8rem;
+}
+
+/* Usuario y logout (reutiliza las mismas clases que app-topnav.css
+   para que el dropdown funcione con dev-topnav.js) */
+.dev-topnav-user {
+    position: relative;
+    flex-shrink: 0;
+}
+
+.dev-topnav-user .app-topnav-user-trigger {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-sm);
+    padding: 0.35rem 0.75rem 0.35rem 0.35rem;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all var(--transition-fast);
+}
+
+.dev-topnav-user .app-topnav-user-trigger:hover {
+    border-color: var(--green-border);
+}
+
+.dev-topnav-user .app-topnav-user-menu {
+    position: absolute;
+    top: calc(100% + 0.625rem);
+    right: 0;
+    min-width: 180px;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow-lg);
+    padding: 0.4rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(8px) scale(0.97);
+    transform-origin: top right;
+    transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s ease;
+    z-index: 300;
+}
+
+.dev-topnav-user .app-topnav-user-menu.active {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0) scale(1);
+}
+
+.dev-topnav-user .app-topnav-user-menu-item {
+    background: none;
+    border: none;
+    width: 100%;
+    text-align: left;
+    padding: 0.55rem 0.7rem;
+    border-radius: var(--radius-xs);
+    font-size: 0.82rem;
+    font-weight: 500;
+    font-family: inherit;
+    color: var(--text-primary);
+    text-decoration: none;
+    cursor: pointer;
+    transition: background var(--transition-fast);
+    display: block;
+}
+
+.dev-topnav-user .app-topnav-user-menu-item:hover {
+    background: var(--bg-card-hover);
+}
+
+.dev-topnav-user .app-topnav-user-menu-item-danger {
+    color: #f87171;
+}
+
+/* ── Page header ────────────────────────────────────────────── */
+.dev-page-header {
+    margin-bottom: 2rem;
+    padding-bottom: 1.25rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.dev-page-title {
+    font-size: 1.75rem;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    color: var(--text-primary);
+    margin-bottom: 0.3rem;
+}
+
+.dev-page-sub {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+/* ── KPI cards ──────────────────────────────────────────────── */
+.dev-kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.875rem;
+    margin-bottom: 1.75rem;
+}
+
+@media (min-width: 860px) {
+    .dev-kpi-grid { grid-template-columns: repeat(4, 1fr); }
+}
+
+.dev-kpi-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 1.25rem 1.25rem 1rem;
+    transition: border-color var(--transition-fast);
+    position: relative;
+    overflow: hidden;
+}
+
+.dev-kpi-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--green-primary);
+    opacity: 0.4;
+}
+
+.dev-kpi-card:hover { border-color: var(--border-light); }
+
+.dev-kpi-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+    margin-bottom: 0.625rem;
+}
+
+.dev-kpi-value {
+    font-size: 2rem;
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    color: var(--text-primary);
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+}
+
+.dev-kpi-icon {
+    position: absolute;
+    top: 1.25rem;
+    right: 1.25rem;
+    font-size: 1rem;
+    color: var(--green-primary);
+    opacity: 0.5;
+}
+
+/* ── Chart grid ─────────────────────────────────────────────── */
+.dev-charts-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+    margin-bottom: 1.75rem;
+}
+
+@media (min-width: 860px) {
+    .dev-charts-grid { grid-template-columns: 1fr 1fr; }
+    .dev-chart-wide  { grid-column: 1 / -1; }
+}
+
+.dev-chart-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 1.25rem;
+}
+
+.dev-chart-title {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+    margin-bottom: 1.125rem;
+}
+
+.dev-chart-canvas-wrap {
+    position: relative;
+    height: 220px;
+}
+
+.dev-chart-canvas-wrap canvas {
+    display: block;
+}
+
+/* ── ABM: tabla de gestión ──────────────────────────────────── */
+.dev-section {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+}
+
+/* Tabs de sección */
+.dev-tabs {
+    display: flex;
+    border-bottom: 1px solid var(--border-color);
+    background: var(--bg-secondary);
+}
+
+.dev-tab-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.875rem 1.375rem;
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    font-size: 0.83rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-family: inherit;
+    transition: all var(--transition-fast);
+    letter-spacing: 0.01em;
+    margin-bottom: -1px;
+}
+
+.dev-tab-btn:hover { color: var(--text-primary); }
+
+.dev-tab-btn.active {
+    color: var(--green-primary);
+    border-bottom-color: var(--green-primary);
+    background: var(--bg-card);
+}
+
+/* Barra de acciones ABM */
+.dev-action-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.875rem 1.25rem;
+    border-bottom: 1px solid var(--border-color);
+    background: var(--bg-tertiary);
+    flex-wrap: wrap;
+}
+
+.dev-action-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    cursor: pointer;
+    border: 1px solid transparent;
+    font-family: inherit;
+    transition: all var(--transition-fast);
+    /* Estado deshabilitado (sin selección): opaco pero visible */
+    opacity: 0.38;
+    pointer-events: none;
+}
+
+/* Una vez marcado al menos un checkbox (.abm-has-selection en la tabla),
+   todos los botones de esa tabla se activan. */
+.dev-abm-table.abm-has-selection ~ .dev-action-bar .dev-action-btn,
+.dev-action-bar.abm-active .dev-action-btn {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* Colores por acción */
+.dev-action-btn.modificar {
+    background: rgba(59,130,246,0.08);
+    color: #60a5fa;
+    border-color: rgba(59,130,246,0.2);
+}
+.dev-action-btn.modificar:hover { background: rgba(59,130,246,0.15); border-color: rgba(59,130,246,0.4); }
+
+.dev-action-btn.inspeccionar {
+    background: rgba(168,85,247,0.08);
+    color: #c084fc;
+    border-color: rgba(168,85,247,0.2);
+}
+.dev-action-btn.inspeccionar:hover { background: rgba(168,85,247,0.15); border-color: rgba(168,85,247,0.4); }
+
+.dev-action-btn.inhabilitar {
+    background: rgba(251,191,36,0.08);
+    color: #fbbf24;
+    border-color: rgba(251,191,36,0.2);
+}
+.dev-action-btn.inhabilitar:hover { background: rgba(251,191,36,0.15); border-color: rgba(251,191,36,0.4); }
+
+.dev-action-btn.eliminar {
+    background: rgba(239,68,68,0.08);
+    color: #f87171;
+    border-color: rgba(239,68,68,0.2);
+}
+.dev-action-btn.eliminar:hover { background: rgba(239,68,68,0.15); border-color: rgba(239,68,68,0.4); }
+
+/* Contador de selección */
+.dev-selection-count {
+    margin-left: auto;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-tertiary);
+    transition: color var(--transition-fast);
+}
+
+.dev-selection-count.has-selection {
+    color: var(--green-primary);
+}
+
+/* Tabla */
+.dev-abm-wrap {
+    overflow-x: auto;
+}
+
+.dev-abm-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.83rem;
+}
+
+.dev-abm-table th {
+    background: var(--bg-secondary);
+    color: var(--text-tertiary);
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 0.75rem 0.875rem;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+    white-space: nowrap;
+    user-select: none;
+}
+
+.dev-abm-table th.cb-col,
+.dev-abm-table td.cb-col {
+    width: 40px;
+    padding-left: 1.125rem;
+    padding-right: 0;
+}
+
+.dev-abm-table td {
+    padding: 0.8rem 0.875rem;
+    border-bottom: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    vertical-align: middle;
+    transition: background var(--transition-fast);
+    white-space: nowrap;
+}
+
+.dev-abm-table tr:last-child td { border-bottom: none; }
+
+.dev-abm-table tr:hover td { background: var(--bg-elevated); }
+
+.dev-abm-table tr.row-selected td {
+    background: rgba(34,197,94,0.05);
+}
+
+.dev-abm-table td.primary-col {
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+.dev-abm-table td.id-col {
+    color: var(--text-tertiary);
+    font-size: 0.72rem;
+    font-variant-numeric: tabular-nums;
+    font-family: 'Courier New', Courier, monospace;
+}
+
+/* Checkbox custom */
+.dev-cb {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--green-primary);
+    cursor: pointer;
+}
+
+/* Badges */
+.dev-badge-rol {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.2rem 0.5rem;
+    border-radius: var(--radius-xs);
+    font-size: 0.66rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.dev-badge-rol.jugador {
+    background: rgba(34,197,94,0.1);
+    color: var(--green-primary);
+    border: 1px solid var(--green-border);
+}
+
+.dev-badge-rol.dev {
+    background: rgba(251,191,36,0.1);
+    color: #fbbf24;
+    border: 1px solid rgba(251,191,36,0.25);
+}
+
+.dev-elo-chip {
+    font-variant-numeric: tabular-nums;
+    font-weight: 700;
+    color: var(--text-primary);
+    font-size: 0.8rem;
+}
+
+/* Estado vacío */
+.dev-empty-state {
+    text-align: center;
+    padding: 3rem 1.5rem;
+    color: var(--text-tertiary);
+    font-size: 0.85rem;
+}
+
+.dev-empty-state i {
+    display: block;
+    font-size: 2rem;
+    margin-bottom: 0.75rem;
+    opacity: 0.4;
+}
+
+/* Aviso placeholder (ligas) */
+.dev-placeholder-notice {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    margin: 1.25rem;
+    padding: 1rem 1.25rem;
+    background: rgba(251,191,36,0.06);
+    border: 1px solid rgba(251,191,36,0.2);
+    border-radius: var(--radius-md);
+    font-size: 0.82rem;
+    color: #fbbf24;
+    line-height: 1.55;
+}
+
+.dev-placeholder-notice i { flex-shrink: 0; margin-top: 0.1rem; }
+
+/* ── Modales DEV ─────────────────────────────────────────────── */
+/* Reutiliza .modal de global.css, agrega variante centrada */
+.dev-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 500;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.22s ease, visibility 0.22s ease;
+    padding: 1.5rem;
+}
+
+.dev-modal.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.dev-modal-content {
+    background: var(--bg-card);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-xl);
+    padding: 1.75rem;
+    width: 100%;
+    max-width: 480px;
+    box-shadow: var(--shadow-lg);
+    transform: translateY(12px) scale(0.98);
+    transition: transform 0.22s ease;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.dev-modal.active .dev-modal-content {
+    transform: translateY(0) scale(1);
+}
+
+.dev-modal-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 1.25rem;
+    gap: 1rem;
+}
+
+.dev-modal-title {
+    font-size: 1.1rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: var(--text-primary);
+}
+
+.dev-modal-sub {
+    font-size: 0.78rem;
+    color: var(--text-tertiary);
+    margin-top: 0.2rem;
+}
+
+.dev-modal-close {
+    width: 28px; height: 28px;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-light);
+    border-radius: 50%;
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-size: 1rem;
+    display: flex; align-items: center; justify-content: center;
+    transition: all var(--transition-fast);
+    flex-shrink: 0;
+    font-family: inherit;
+}
+
+.dev-modal-close:hover { background: var(--bg-card-hover); color: var(--text-primary); }
+
+.dev-modal-field {
+    margin-bottom: 1rem;
+}
+
+.dev-modal-field label {
+    display: block;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+    margin-bottom: 0.4rem;
+}
+
+.dev-modal-field input,
+.dev-modal-field select {
+    width: 100%;
+}
+
+.dev-modal-field input[readonly],
+.dev-modal-field input:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Inspeccionar: tabla de datos */
+.dev-inspect-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.625rem;
+    margin-bottom: 1.25rem;
+}
+
+.dev-inspect-item {
+    background: var(--bg-tertiary);
+    border-radius: var(--radius-sm);
+    padding: 0.75rem;
+    border: 1px solid var(--border-color);
+}
+
+.dev-inspect-label {
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+    margin-bottom: 0.25rem;
+}
+
+.dev-inspect-value {
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    font-variant-numeric: tabular-nums;
+    word-break: break-word;
+}
+
+/* Confirmación eliminar */
+.dev-confirm-msg {
+    font-size: 0.88rem;
+    color: var(--text-secondary);
+    line-height: 1.55;
+    margin-bottom: 1.5rem;
+}
+
+.dev-confirm-msg strong {
+    color: #f87171;
+}
+
+.dev-modal-actions {
+    display: flex;
+    gap: 0.625rem;
+    justify-content: flex-end;
+}
+
+.dev-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.65rem 1.25rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.83rem;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    border: 1px solid transparent;
+}
+
+.dev-btn-primary {
+    background: var(--green-primary);
+    color: #000;
+}
+.dev-btn-primary:hover { background: var(--green-bright); box-shadow: var(--shadow-green); }
+
+.dev-btn-danger {
+    background: rgba(239,68,68,0.1);
+    color: #f87171;
+    border-color: rgba(239,68,68,0.3);
+}
+.dev-btn-danger:hover { background: rgba(239,68,68,0.18); }
+
+.dev-btn-ghost {
+    background: var(--bg-elevated);
+    color: var(--text-secondary);
+    border-color: var(--border-light);
+}
+.dev-btn-ghost:hover { color: var(--text-primary); border-color: var(--border-medium); }
+
+/* Toast DEV (reutiliza el estilo de utils.js si está cargado,
+   sino tiene su propio fallback) */
+.dev-toast {
+    position: fixed;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 0.75rem 1.5rem;
+    border-radius: var(--radius-md);
+    font-size: 0.83rem;
+    font-weight: 600;
+    z-index: 900;
+    pointer-events: none;
+    animation: devToastIn 0.25s ease forwards;
+}
+
+.dev-toast.success { background: var(--green-primary); color: #000; }
+.dev-toast.error   { background: #ef4444; color: #fff; }
+.dev-toast.warn    { background: #f59e0b; color: #000; }
+
+@keyframes devToastIn {
+    from { opacity: 0; transform: translateX(-50%) translateY(8px); }
+    to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+/* ── Footer DEV ─────────────────────────────────────────────── */
+.dev-footer {
+    border-top: 1px solid var(--border-color);
+    padding: 1.25rem 1.5rem;
+    font-size: 0.75rem;
+    color: var(--text-tertiary);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.dev-footer a {
+    color: var(--text-tertiary);
+    text-decoration: none;
+    transition: color var(--transition-fast);
+}
+
+.dev-footer a:hover { color: var(--green-primary); }
+
+/* ═══════════════════════════════════════════════════════════
+   FIX: Avatar en dev-topnav — mismo comportamiento que 
+   .app-topnav-user-avatar en app-topnav.css
+═══════════════════════════════════════════════════════════ */
+
+#devUserAvatar {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: var(--bg-card);
+    border: 1px solid var(--border-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    color: var(--text-primary);
+    overflow: hidden;          /* ← clave: recorta la imagen al círculo */
+    flex-shrink: 0;
+}
+
+#devUserAvatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    border-radius: 50%;
+}
+
+#devUserAvatar .fa-user {
+    font-size: 0.8rem;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   FIX: Filas de tabla en dev-gestion — eliminar transiciones
+   que causan efecto de "agrandar" al seleccionar/deseleccionar
+═══════════════════════════════════════════════════════════ */
+
+.dev-abm-table tbody tr,
+.dev-abm-table tbody tr.row-selected,
+.dev-abm-table tbody tr td,
+.dev-abm-table tbody tr.row-selected td {
+    transition: none !important;
+}
+
+/* El highlight de fila seleccionada solo cambia fondo, nada de layout */
+.dev-abm-table tbody tr.row-selected {
+    background: rgba(34, 197, 94, 0.06);
+    /* No agregar border, padding, margin, transform ni box-shadow 
+       que alteren el box-model */
+}
+
+/* Prevenir que el área clickeable del td.cb-col se extienda 
+   más allá del checkbox mismo */
+.dev-abm-table td.cb-col {
+    width: 40px;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.dev-abm-table td.cb-col .dev-cb {
+    margin: 0;
+    padding: 0;
+    cursor: pointer;
+}

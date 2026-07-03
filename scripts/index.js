@@ -193,13 +193,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     /* ===== LIGAS (buscador + render, disponible para todos) ===== */
-    const ligas = [
-        { nombre: 'Liga 5 Estrellas', jugadores: 42, ultimoPartido: 'Fecha 7 — BLANCO 3-2 NEGRO' },
-        { nombre: 'Fútbol Amigos FC', jugadores: 28, ultimoPartido: 'Fecha 5 — Verde 1-1 Rojo' },
-        { nombre: 'Liga Universitaria', jugadores: 56, ultimoPartido: 'Fecha 9 — Halcones 4-0 Tigres' },
-        { nombre: 'Picado de los Martes', jugadores: 18, ultimoPartido: 'Fecha 12 — Azul 2-3 Amarillo' }
-    ];
-
+    let ligas = [];
     const ligasGrid = document.getElementById('ligasGrid');
     const ligasEmpty = document.getElementById('ligasEmpty');
     const ligaSearch = document.getElementById('ligaSearch');
@@ -216,10 +210,10 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="liga-card">
                 <span class="liga-card-name">${liga.nombre}</span>
                 <div class="liga-card-meta">
-                    <span><strong>${liga.jugadores}</strong> jugadores</span>
-                    <span>Último partido: ${liga.ultimoPartido}</span>
+                    <span><strong>${liga.cantidad_miembros}</strong> jugadores</span>
+                    <span>${liga.ultimo_partido ? 'Último partido: ' + new Date(liga.ultimo_partido).toLocaleDateString('es-AR') : 'Sin partidos aún'}</span>
                 </div>
-                <a href="pages/liga.html" class="liga-card-btn">Ver Liga <i class="fa-solid fa-arrow-right"></i></a>
+                <a href="pages/league-selection.html" class="liga-card-btn">Ver Liga <i class="fa-solid fa-arrow-right"></i></a>
             </div>
         `).join('');
 
@@ -228,8 +222,24 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    function cargarLigasPublicas() {
+        fetch('api/listar_ligas_publicas.php')
+            .then(res => res.json())
+            .then(data => {
+                if (data.ok && Array.isArray(data.ligas)) {
+                    ligas = data.ligas;
+                    renderLigas();
+                } else {
+                    console.error('Error al cargar ligas:', data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error cargando ligas públicas:', error);
+            });
+    }
+
     if (ligasGrid) {
-        renderLigas();
+        cargarLigasPublicas();
         if (ligaSearch) {
             ligaSearch.addEventListener('input', (event) => renderLigas(event.target.value));
         }

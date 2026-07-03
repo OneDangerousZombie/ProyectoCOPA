@@ -1,16 +1,23 @@
 <?php
 // api/saveMatchEvents.php
-// Carga un nuevo partido en la tabla partidos y registra
-// los eventos asociados en recolector_eventos.
+// Carga un nuevo partido en la tabla partidos (dentro de la LIGA ACTIVA) y
+// registra los eventos asociados en recolector_eventos. Actualiza
+// estadísticas y ELO, ambos scopeados a esa liga.
 
 header('Content-Type: application/json; charset=utf-8');
 require_once __DIR__ . '/db.php';
+require_once __DIR__ . '/liga_helpers.php';
+session_start();
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code(405);
     echo json_encode(['ok' => false, 'error' => 'Método no permitido']);
     exit;
 }
+
+$idJugadorSesion = requireLogin();
+$idLiga = requireLigaActiva();
+requireAccesoLiga($conn, $idJugadorSesion, $idLiga, 1); // cualquier miembro puede cargar partidos
 
 $input = json_decode(file_get_contents('php://input'), true);
 if (!is_array($input) || !isset($input['match']) || !is_array($input['match'])) {
@@ -37,38 +44,81 @@ $rosterBlack = isset($match['rosterBlack']) && is_array($match['rosterBlack'])
     ? array_values(array_unique(array_map('intval', $match['rosterBlack'])))
     : [];
 
-function findCanchaId($conn, $venue) {
-    if ($venue === '') {
-        return 1;
+// Validamos que todos los jugadores del roster pertenezcan a la liga
+// activa. Esto evita que, por error o manipulación del payload, se
+// mezclen jugadores de otra liga en el ELO/estadísticas de esta.
+function validarRosterEnLiga($conn, $idLiga, array $idsJugadores) {
+    if (count($idsJugadores) === 0) {
+        return [];
     }
-
-    $search = '%' . strtolower($venue) . '%';
-    $stmt = $conn->prepare('SELECT ID_CANCHA FROM canchas WHERE LOWER(NOMBRE) LIKE ? OR LOWER(DIRECCION) LIKE ? OR LOWER(LOCALIDAD) LIKE ? LIMIT 1');
-    if (!$stmt) {
-        return 1;
+    $idsList = implode(',', array_map('intval', $idsJugadores));
+    $result = $conn->query("SELECT ID_USUARIO FROM liga_miembros WHERE ID_LIGA = $idLiga AND ID_USUARIO IN ($idsList) AND ACTIVO = 1");
+    if (!$result) {
+        throw new Exception('Error validando jugadores de la liga: ' . $conn->error);
     }
-    $stmt->bind_param('sss', $search, $search, $search);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    $row = $result->fetch_assoc();
-    $stmt->close();
-
-    return $row ? (int) $row['ID_CANCHA'] : 1;
+    $validos = [];
+    while ($row = $result->fetch_assoc()) {
+        $validos[] = (int) $row['ID_USUARIO'];
+    }
+    $result->free();
+    return $validos;
 }
 
-if ($canchaId === null) {
-    $canchaId = findCanchaId($conn, $venue);
+function findCanchaId($conn, $idLiga, $venue) {
+    if ($venue !== '') {
+        $search = '%' . strtolower($venue) . '%';
+        $stmt = $conn->prepare('SELECT ID_CANCHA FROM canchas WHERE ID_LIGA = ? AND (LOWER(NOMBRE) LIKE ? OR LOWER(DIRECCION) LIKE ? OR LOWER(LOCALIDAD) LIKE ?) LIMIT 1');
+        if ($stmt) {
+            $stmt->bind_param('isss', $idLiga, $search, $search, $search);
+            $stmt->execute();
+            $row = $stmt->get_result()->fetch_assoc();
+            $stmt->close();
+            if ($row) {
+                return (int) $row['ID_CANCHA'];
+            }
+        }
+    }
+
+    // Si no vino nombre de cancha o no matcheó ninguna, usamos la primera
+    // cancha disponible de la liga activa.
+    $stmt = $conn->prepare('SELECT ID_CANCHA FROM canchas WHERE ID_LIGA = ? ORDER BY ID_CANCHA ASC LIMIT 1');
+    $stmt->bind_param('i', $idLiga);
+    $stmt->execute();
+    $row = $stmt->get_result()->fetch_assoc();
+    $stmt->close();
+
+    if (!$row) {
+        throw new Exception('Esta liga todavía no tiene canchas cargadas. Agregá una cancha antes de cargar un partido.');
+    }
+    return (int) $row['ID_CANCHA'];
 }
 
 $conn->begin_transaction();
 
 try {
-    $insertPartido = $conn->prepare('INSERT INTO partidos (FECHA_PARTIDO, FORMATO, CANCHA_PARTIDO) VALUES (?, ?, ?)');
+    if ($canchaId === null) {
+        $canchaId = findCanchaId($conn, $idLiga, $venue);
+    } else {
+        // Verificamos que la cancha indicada pertenezca a la liga activa.
+        $stmtCheck = $conn->prepare('SELECT 1 FROM canchas WHERE ID_CANCHA = ? AND ID_LIGA = ? LIMIT 1');
+        $stmtCheck->bind_param('ii', $canchaId, $idLiga);
+        $stmtCheck->execute();
+        $existeCancha = $stmtCheck->get_result()->num_rows > 0;
+        $stmtCheck->close();
+        if (!$existeCancha) {
+            throw new Exception('La cancha indicada no pertenece a la liga activa');
+        }
+    }
+
+    $rosterWhite = validarRosterEnLiga($conn, $idLiga, $rosterWhite);
+    $rosterBlack = validarRosterEnLiga($conn, $idLiga, $rosterBlack);
+
+    $insertPartido = $conn->prepare('INSERT INTO partidos (ID_LIGA, FECHA_PARTIDO, FORMATO, CANCHA_PARTIDO, ESTADO) VALUES (?, ?, ?, ?, 1)');
     if (!$insertPartido) {
         throw new Exception('Error preparando inserción de partido: ' . $conn->error);
     }
 
-    if (!$insertPartido->bind_param('ssi', $fecha, $formato, $canchaId)) {
+    if (!$insertPartido->bind_param('issi', $idLiga, $fecha, $formato, $canchaId)) {
         throw new Exception('Error vinculando parámetros de partido: ' . $insertPartido->error);
     }
 
@@ -79,7 +129,7 @@ try {
     $partidoId = $conn->insert_id;
     $insertPartido->close();
 
-    $insertEvento = $conn->prepare('INSERT INTO recolector_eventos (ID_PARTIDO, ID_JUGADOR_EVENTO, ID_EVENTO_PARTIDO, EQUIPO_EVENTO) VALUES (?, ?, ?, ?)');
+    $insertEvento = $conn->prepare('INSERT INTO recolector_eventos (ID_PARTIDO, ID_USUARIO, ID_EVENTO_PARTIDO, EQUIPO_EVENTO) VALUES (?, ?, ?, ?)');
     if (!$insertEvento) {
         throw new Exception('Error preparando inserción de evento: ' . $conn->error);
     }
@@ -147,14 +197,14 @@ try {
 
     if (count($rosterCompleto) > 0) {
         $idsList = implode(',', array_keys($rosterCompleto));
-        $resultJugadores = $conn->query("SELECT DISTINCT ID_JUGADOR_EVENTO FROM recolector_eventos WHERE ID_PARTIDO = $partidoId AND ID_JUGADOR_EVENTO IN ($idsList)");
+        $resultJugadores = $conn->query("SELECT DISTINCT ID_USUARIO FROM recolector_eventos WHERE ID_PARTIDO = $partidoId AND ID_USUARIO IN ($idsList)");
         if (!$resultJugadores) {
             throw new Exception('Error verificando jugadores con eventos: ' . $conn->error);
         }
 
         $jugadoresConEventos = [];
         while ($row = $resultJugadores->fetch_assoc()) {
-            $jugadoresConEventos[] = (int) $row['ID_JUGADOR_EVENTO'];
+            $jugadoresConEventos[] = (int) $row['ID_USUARIO'];
         }
         $resultJugadores->free();
 
@@ -171,8 +221,8 @@ try {
 
     $insertEvento->close();
 
-    actualizarEstadisticasJugador($conn, $partidoId);
-    calcularELOPartido($conn, $partidoId);
+    actualizarEstadisticasJugador($conn, $idLiga, $partidoId);
+    calcularELOPartido($conn, $idLiga, $partidoId);
 
     $conn->commit();
 
@@ -187,7 +237,8 @@ try {
     exit;
 }
 
-function actualizarEstadisticasJugador($conn, $partidoId) {
+function actualizarEstadisticasJugador($conn, $idLiga, $partidoId) {
+    $idLiga = (int) $idLiga;
     $partidoId = (int) $partidoId;
 
     $row = $conn->query("SELECT COUNT(*) AS total FROM recolector_eventos WHERE ID_PARTIDO = $partidoId AND ID_EVENTO_PARTIDO = 1 AND EQUIPO_EVENTO = 1");
@@ -204,17 +255,17 @@ function actualizarEstadisticasJugador($conn, $partidoId) {
     $golesEq2 = (int) $row->fetch_assoc()['total'];
     $row->free();
 
-    $playersResult = $conn->query("SELECT DISTINCT ID_JUGADOR_EVENTO, EQUIPO_EVENTO FROM recolector_eventos WHERE ID_PARTIDO = $partidoId");
+    $playersResult = $conn->query("SELECT DISTINCT ID_USUARIO, EQUIPO_EVENTO FROM recolector_eventos WHERE ID_PARTIDO = $partidoId");
     if (!$playersResult) {
         throw new Exception('Error listando jugadores del partido: ' . $conn->error);
     }
 
     while ($playerRow = $playersResult->fetch_assoc()) {
-        $jugadorId = (int) $playerRow['ID_JUGADOR_EVENTO'];
+        $jugadorId = (int) $playerRow['ID_USUARIO'];
         $equipo = (int) $playerRow['EQUIPO_EVENTO'];
-        
+
         // Usar MAX(EQUIPO_EVENTO) para obtener el equipo consistente (en caso de cambios)
-        $equipoRow = $conn->query("SELECT MAX(EQUIPO_EVENTO) AS equipo FROM recolector_eventos WHERE ID_PARTIDO = $partidoId AND ID_JUGADOR_EVENTO = $jugadorId LIMIT 1");
+        $equipoRow = $conn->query("SELECT MAX(EQUIPO_EVENTO) AS equipo FROM recolector_eventos WHERE ID_PARTIDO = $partidoId AND ID_USUARIO = $jugadorId LIMIT 1");
         if ($equipoRow) {
             $equipoData = $equipoRow->fetch_assoc();
             $equipo = (int) $equipoData['equipo'];
@@ -236,21 +287,21 @@ function actualizarEstadisticasJugador($conn, $partidoId) {
             }
         }
 
-        $golesRow = $conn->query("SELECT COUNT(*) AS total FROM recolector_eventos WHERE ID_PARTIDO = $partidoId AND ID_JUGADOR_EVENTO = $jugadorId AND ID_EVENTO_PARTIDO = 1");
+        $golesRow = $conn->query("SELECT COUNT(*) AS total FROM recolector_eventos WHERE ID_PARTIDO = $partidoId AND ID_USUARIO = $jugadorId AND ID_EVENTO_PARTIDO = 1");
         if (!$golesRow) {
             throw new Exception('Error contando goles por jugador: ' . $conn->error);
         }
         $goles = (int) $golesRow->fetch_assoc()['total'];
         $golesRow->free();
 
-        $asisRow = $conn->query("SELECT COUNT(*) AS total FROM recolector_eventos WHERE ID_PARTIDO = $partidoId AND ID_JUGADOR_EVENTO = $jugadorId AND ID_EVENTO_PARTIDO = 2");
+        $asisRow = $conn->query("SELECT COUNT(*) AS total FROM recolector_eventos WHERE ID_PARTIDO = $partidoId AND ID_USUARIO = $jugadorId AND ID_EVENTO_PARTIDO = 2");
         if (!$asisRow) {
             throw new Exception('Error contando asistencias por jugador: ' . $conn->error);
         }
         $asistencias = (int) $asisRow->fetch_assoc()['total'];
         $asisRow->free();
 
-        $existsRow = $conn->query("SELECT 1 FROM estadisticas WHERE ID_JUGADOR = $jugadorId LIMIT 1");
+        $existsRow = $conn->query("SELECT 1 FROM estadisticas WHERE ID_LIGA = $idLiga AND ID_USUARIO = $jugadorId LIMIT 1");
         if (!$existsRow) {
             throw new Exception('Error verificando existencia en estadisticas: ' . $conn->error);
         }
@@ -260,10 +311,9 @@ function actualizarEstadisticasJugador($conn, $partidoId) {
         $ganados = $resultado === 1.0 ? 1 : 0;
         $perdidos = $resultado === 0.0 ? 1 : 0;
         $empatados = $resultado === 0.5 ? 1 : 0;
-        $racha = $resultado === 1.0 ? 1 : 0;
 
         if ($exists) {
-            $updateSql = "UPDATE estadisticas SET 
+            $updateSql = "UPDATE estadisticas SET
                 PARTIDOS_JUGADOS = PARTIDOS_JUGADOS + 1,
                 PARTIDOS_GANADOS = PARTIDOS_GANADOS + $ganados,
                 PARTIDOS_PERDIDOS = PARTIDOS_PERDIDOS + $perdidos,
@@ -271,16 +321,17 @@ function actualizarEstadisticasJugador($conn, $partidoId) {
                 GOLES = GOLES + $goles,
                 ASISTENCIAS = ASISTENCIAS + $asistencias,
                 RACHA = CASE WHEN $resultado = 1.0 THEN RACHA + 1 WHEN $resultado = 0.0 THEN 0 ELSE RACHA END
-             WHERE ID_JUGADOR = $jugadorId";
+             WHERE ID_LIGA = $idLiga AND ID_USUARIO = $jugadorId";
 
             if (!$conn->query($updateSql)) {
                 throw new Exception('Error actualizando estadisticas del jugador ' . $jugadorId . ': ' . $conn->error);
             }
         } else {
+            $racha = $resultado === 1.0 ? 1 : 0;
             $insertSql = "INSERT INTO estadisticas (
-                PARTIDOS_JUGADOS, PARTIDOS_GANADOS, PARTIDOS_PERDIDOS,
-                PARTIDOS_EMPATADOS, GOLES, ASISTENCIAS, ID_JUGADOR, RACHA
-            ) VALUES (1, $ganados, $perdidos, $empatados, $goles, $asistencias, $jugadorId, $racha)";
+                ID_LIGA, ID_USUARIO, PARTIDOS_JUGADOS, PARTIDOS_GANADOS, PARTIDOS_PERDIDOS,
+                PARTIDOS_EMPATADOS, GOLES, ASISTENCIAS, RACHA
+            ) VALUES ($idLiga, $jugadorId, 1, $ganados, $perdidos, $empatados, $goles, $asistencias, $racha)";
 
             if (!$conn->query($insertSql)) {
                 throw new Exception('Error insertando estadisticas del jugador ' . $jugadorId . ': ' . $conn->error);
@@ -291,9 +342,10 @@ function actualizarEstadisticasJugador($conn, $partidoId) {
     $playersResult->free();
 }
 
-function calcularELOPartido($conn, $partidoId) {
+function calcularELOPartido($conn, $idLiga, $partidoId) {
+    $idLiga = (int) $idLiga;
     $partidoId = (int) $partidoId;
-    $jugadores = obtenerJugadoresPartido($conn, $partidoId);
+    $jugadores = obtenerJugadoresPartido($conn, $idLiga, $partidoId);
 
     $equipo1 = array_filter($jugadores, function($j) { return $j['equipo'] == 1; });
     $equipo2 = array_filter($jugadores, function($j) { return $j['equipo'] == 2; });
@@ -317,24 +369,26 @@ function calcularELOPartido($conn, $partidoId) {
         $id = (int) $jugador['id_jugador'];
         $rend = isset($rendimiento1[$id]) ? $rendimiento1[$id] : 1.0;
         $delta = calcularDelta($resultado['equipo1'], $esperado1, $rend);
-        actualizarELO($conn, $id, $delta);
+        actualizarELO($conn, $idLiga, $id, $delta);
     }
 
     foreach ($equipo2 as $jugador) {
         $id = (int) $jugador['id_jugador'];
         $rend = isset($rendimiento2[$id]) ? $rendimiento2[$id] : 1.0;
         $delta = calcularDelta($resultado['equipo2'], $esperado2, $rend);
-        actualizarELO($conn, $id, $delta);
+        actualizarELO($conn, $idLiga, $id, $delta);
     }
 }
 
-function obtenerJugadoresPartido($conn, $partidoId) {
+function obtenerJugadoresPartido($conn, $idLiga, $partidoId) {
+    $idLiga = (int) $idLiga;
     $partidoId = (int) $partidoId;
-    $sql = "SELECT re.ID_JUGADOR_EVENTO AS id_jugador, MAX(re.EQUIPO_EVENTO) AS equipo, j.VALOR_ELO AS elo
+    // El ELO se lee de liga_miembros (por liga), no de jugadores.
+    $sql = "SELECT re.ID_USUARIO AS id_jugador, MAX(re.EQUIPO_EVENTO) AS equipo, lm.VALOR_ELO AS elo
             FROM recolector_eventos re
-            JOIN jugadores j ON re.ID_JUGADOR_EVENTO = j.ID_JUGADORES
+            JOIN liga_miembros lm ON lm.ID_USUARIO = re.ID_USUARIO AND lm.ID_LIGA = $idLiga
             WHERE re.ID_PARTIDO = $partidoId
-            GROUP BY re.ID_JUGADOR_EVENTO, j.ID_JUGADORES, j.VALOR_ELO";
+            GROUP BY re.ID_USUARIO, lm.VALOR_ELO";
 
     $result = $conn->query($sql);
     if (!$result) {
@@ -404,13 +458,13 @@ function calcularRendimientoEquipo($conn, array $jugadores, $partidoId) {
     $idsList = implode(',', $ids);
     $partidoId = (int) $partidoId;
 
-    $sql = "SELECT ID_JUGADOR_EVENTO AS id_jugador,
+    $sql = "SELECT ID_USUARIO AS id_jugador,
                    SUM(CASE WHEN ID_EVENTO_PARTIDO = 1 THEN 1 ELSE 0 END) AS goles,
                    SUM(CASE WHEN ID_EVENTO_PARTIDO = 2 THEN 1 ELSE 0 END) AS asistencias
             FROM recolector_eventos
             WHERE ID_PARTIDO = $partidoId
-              AND ID_JUGADOR_EVENTO IN ($idsList)
-            GROUP BY ID_JUGADOR_EVENTO";
+              AND ID_USUARIO IN ($idsList)
+            GROUP BY ID_USUARIO";
 
     $result = $conn->query($sql);
     if (!$result) {
@@ -455,11 +509,12 @@ function calcularDelta($resultado, $esperado, $rendimiento) {
     return $K * ($componenteEquipo + $componenteIndividual);
 }
 
-function actualizarELO($conn, $idJugador, $delta) {
+function actualizarELO($conn, $idLiga, $idJugador, $delta) {
+    $idLiga = (int) $idLiga;
     $idJugador = (int) $idJugador;
     $delta = round($delta, 2);
 
-    $sql = "UPDATE jugadores SET VALOR_ELO = VALOR_ELO + $delta WHERE ID_JUGADORES = $idJugador";
+    $sql = "UPDATE liga_miembros SET VALOR_ELO = VALOR_ELO + ($delta) WHERE ID_LIGA = $idLiga AND ID_USUARIO = $idJugador";
     if (!$conn->query($sql)) {
         throw new Exception('Error actualizando ELO del jugador ' . $idJugador . ': ' . $conn->error);
     }

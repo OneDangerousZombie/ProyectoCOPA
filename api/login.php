@@ -1,6 +1,5 @@
 <?php
 
-// una prueba
 // api/login.php
 
 header('Content-Type: application/json; charset=utf-8');
@@ -27,7 +26,9 @@ if ($nombre === '' || $clave === '') {
 
 /* Implementamos contraseñas seguras */
 
-$stmt = $conn->prepare('SELECT ID_JUGADORES, NOMBRE, CLAVE, ROL, VALOR_ELO, AVATAR_URL FROM jugadores WHERE NOMBRE = ? LIMIT 1');
+// Nota: VALOR_ELO ya no vive en jugadores (ahora es por liga, en
+// liga_miembros), así que no se pide acá.
+$stmt = $conn->prepare('SELECT ID_JUGADORES, NOMBRE, CLAVE, ROL, AVATAR_URL FROM jugadores WHERE NOMBRE = ? LIMIT 1');
 $stmt->bind_param('s', $nombre);
 $stmt->execute();
 $resultado = $stmt->get_result();
@@ -35,7 +36,7 @@ $resultado = $stmt->get_result();
 if ($resultado->num_rows === 1) {
     // Extraemos los datos del usuario de la base de datos
     $jugador = $resultado->fetch_assoc();
-    
+
     // 2.Verificamos si la clave ingresada coincide con el hash
     if (password_verify($clave, $jugador['CLAVE'])) {
         // Guardar sesión en el backend
@@ -44,6 +45,11 @@ if ($resultado->num_rows === 1) {
         $_SESSION['NOMBRE']      = $jugador['NOMBRE'];
         $_SESSION['AVATAR_URL']  = $jugador['AVATAR_URL'];
 
+        // Importante: NO tocamos $_SESSION['id_liga_activa'] acá. Si el
+        // usuario ya tenía una liga activa elegida en una sesión anterior
+        // (mismo navegador), se respeta; si no, el frontend lo va a mandar
+        // a league-selection.html a elegir/crear una.
+
         // ¡Contraseña correcta! Procedemos con el login exitoso
         echo json_encode([
             'ok' => true,
@@ -51,11 +57,10 @@ if ($resultado->num_rows === 1) {
                 'id'     => (int) $jugador['ID_JUGADORES'],
                 'nombre' => $jugador['NOMBRE'],
                 'rol'    => (int) $jugador['ROL'],
-                'elo'    => (int) $jugador['VALOR_ELO'],
                 'avatar' => $jugador['AVATAR_URL']
             ]
         ]);
-        
+
     } else {
         // La contraseña no coincide con el hash
         http_response_code(401);
