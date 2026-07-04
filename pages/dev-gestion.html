@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>COPA — Dev Gestión</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="../styles/global.css">
+    <link rel="stylesheet" href="../styles/dev.css">
+</head>
+<body>
+
+    <nav class="dev-topnav">
+        <div class="dev-topnav-inner">
+            <a href="home.html" class="dev-topnav-brand">
+                <span class="dev-topnav-brand-icon"><i class="fa-solid fa-futbol"></i></span>
+                <span class="dev-topnav-brand-name">COPA</span>
+                <span class="dev-badge">DEV</span>
+            </a>
+            <div class="dev-topnav-links">
+                <a href="dev-dashboard.html" class="dev-nav-link" data-page="dev-dashboard.html"><i class="fa-solid fa-chart-line"></i> Dashboard</a>
+                <a href="dev-gestion.html" class="dev-nav-link active" data-page="dev-gestion.html"><i class="fa-solid fa-sliders"></i> Gestión</a>
+                <a href="home.html" class="dev-nav-link" style="margin-left:auto;opacity:0.6"><i class="fa-solid fa-arrow-left"></i> Volver a la app</a>
+            </div>
+            <div class="dev-topnav-user">
+                <button type="button" class="app-topnav-user-trigger" id="devUserTrigger" aria-expanded="false">
+                    <span class="app-topnav-user-avatar" id="devUserAvatar"><i class="fa-solid fa-user"></i></span>
+                    <span class="app-topnav-user-name" id="devUserName">DEV</span>
+                    <i class="fa-solid fa-chevron-down app-topnav-user-caret"></i>
+                </button>
+                <div class="app-topnav-user-menu" id="devUserMenu">
+                    <a href="perfil.html" class="app-topnav-user-menu-item">Mi perfil</a>
+                    <a href="home.html" class="app-topnav-user-menu-item">Ir a la app</a>
+                    <button type="button" class="app-topnav-user-menu-item app-topnav-user-menu-item-danger" id="devLogoutBtn">Cerrar sesión</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="dev-layout">
+        <div class="dev-page-header">
+            <h1 class="dev-page-title">Gestión</h1>
+            <p class="dev-page-sub">Alta, baja y modificación de entidades. Seleccioná registros con los checkboxes y aplicá la acción deseada.</p>
+        </div>
+
+        <div class="dev-section">
+            <!-- Tabs -->
+            <div class="dev-tabs">
+                <button class="dev-tab-btn active" data-tab="usuarios"><i class="fa-solid fa-users"></i> Usuarios</button>
+                <button class="dev-tab-btn" data-tab="canchas"><i class="fa-solid fa-location-dot"></i> Canchas</button>
+                <button class="dev-tab-btn" data-tab="ligas"><i class="fa-solid fa-trophy"></i> Ligas</button>
+            </div>
+
+            <!-- Barra de acciones -->
+            <div class="dev-action-bar" id="devActionBar">
+                <button type="button" class="dev-action-btn modificar"    data-action="modificar">   <i class="fa-solid fa-pen"></i>     Modificar</button>
+                <button type="button" class="dev-action-btn inspeccionar" data-action="inspeccionar"><i class="fa-solid fa-eye"></i>     Inspeccionar</button>
+                <button type="button" class="dev-action-btn inhabilitar"  data-action="inhabilitar"> <i class="fa-solid fa-ban"></i>     Inhabilitar</button>
+                <button type="button" class="dev-action-btn eliminar"     data-action="eliminar">    <i class="fa-solid fa-trash"></i>   Eliminar</button>
+                <!-- Botones de alta -->
+                <button type="button" id="btnNuevaCancha" style="display:none;opacity:1;pointer-events:auto;background:rgba(34,197,94,0.1);color:var(--green-primary);border-color:var(--green-border);" class="dev-action-btn" onclick="openCrearCancha()"><i class="fa-solid fa-plus"></i> Nueva cancha</button>
+                <button type="button" id="btnNuevaLiga"  style="display:none;opacity:1;pointer-events:auto;background:rgba(34,197,94,0.1);color:var(--green-primary);border-color:var(--green-border);" class="dev-action-btn" onclick="openCrearLiga()"> <i class="fa-solid fa-plus"></i> Nueva liga</button>
+                <span class="dev-selection-count" id="devSelectionCount"></span>
+            </div>
+
+            <!-- TAB USUARIOS -->
+            <div class="dev-tab-panel" id="panel-usuarios" data-tab="usuarios">
+                <div class="dev-abm-wrap">
+                    <table class="dev-abm-table">
+                        <thead><tr>
+                            <th class="cb-col"><input type="checkbox" class="dev-cb" id="selectAllUsuarios" title="Todos"></th>
+                            <th>ID</th><th>Nombre</th><th>Rol</th><th>ELO prom.</th><th>PJ</th><th>Goles</th><th>Ligas</th>
+                        </tr></thead>
+                        <tbody id="tbodyUsuarios">
+                            <tr id="loadingUsuarios"><td colspan="8" style="text-align:center;padding:2rem;color:var(--text-tertiary)"><i class="fa-solid fa-circle-notch fa-spin" style="color:var(--green-primary);margin-right:.5rem"></i> Cargando…</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- TAB CANCHAS -->
+            <div class="dev-tab-panel" id="panel-canchas" data-tab="canchas" style="display:none">
+                <div class="dev-abm-wrap">
+                    <table class="dev-abm-table">
+                        <thead><tr>
+                            <th class="cb-col"><input type="checkbox" class="dev-cb" id="selectAllCanchas" title="Todas"></th>
+                            <th>ID</th><th>Nombre</th><th>Dirección</th><th>Localidad</th><th>Liga</th><th>Partidos</th>
+                        </tr></thead>
+                        <tbody id="tbodyCanchas">
+                            <tr id="loadingCanchas" style="display:none"><td colspan="7" style="text-align:center;padding:2rem;color:var(--text-tertiary)"><i class="fa-solid fa-circle-notch fa-spin" style="color:var(--green-primary);margin-right:.5rem"></i> Cargando…</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- TAB LIGAS -->
+            <div class="dev-tab-panel" id="panel-ligas" data-tab="ligas" style="display:none">
+                <div class="dev-placeholder-notice" id="ligasPlaceholderNotice" style="display:none">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                    <span>La tabla <strong>ligas</strong> aún no existe en la base de datos.</span>
+                </div>
+                <div class="dev-abm-wrap">
+                    <table class="dev-abm-table">
+                        <thead><tr>
+                            <th class="cb-col"><input type="checkbox" class="dev-cb" id="selectAllLigas" title="Todas"></th>
+                            <th>ID</th><th>Nombre</th><th>Creador</th><th>Miembros</th><th>Partidos</th><th>Código</th><th>Estado</th>
+                        </tr></thead>
+                        <tbody id="tbodyLigas">
+                            <tr id="loadingLigas" style="display:none"><td colspan="8" style="text-align:center;padding:2rem;color:var(--text-tertiary)"><i class="fa-solid fa-circle-notch fa-spin" style="color:var(--green-primary);margin-right:.5rem"></i> Cargando…</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <footer class="dev-footer">
+        <span>© 2026 COPA — Panel DEV</span>
+        <span><a href="dev-dashboard.html">Dashboard</a> · <a href="home.html">Volver a la app</a></span>
+    </footer>
+
+    <!-- MODAL: INSPECCIONAR -->
+    <div class="dev-modal" id="modalInspeccionar">
+        <div class="dev-modal-content">
+            <div class="dev-modal-header">
+                <div><div class="dev-modal-title" id="inspectTitle">Inspeccionar</div><div class="dev-modal-sub">Solo lectura</div></div>
+                <button type="button" class="dev-modal-close">×</button>
+            </div>
+            <div class="dev-inspect-grid" id="inspectGrid"></div>
+            <div class="dev-modal-actions">
+                <button type="button" class="dev-btn dev-btn-ghost dev-modal-close">Cerrar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: MODIFICAR / CREAR -->
+    <div class="dev-modal" id="modalModificar">
+        <div class="dev-modal-content">
+            <div class="dev-modal-header">
+                <div><div class="dev-modal-title" id="modTitle">Modificar</div><div class="dev-modal-sub">Los cambios se guardan en la base</div></div>
+                <button type="button" class="dev-modal-close">×</button>
+            </div>
+            <form id="modForm">
+                <input type="hidden" id="modId">
+                <input type="hidden" id="modTab">
+
+                <!-- Usuarios -->
+                <div id="modFieldsUsuario" style="display:none">
+                    <div class="dev-modal-field"><label>Nombre</label><input type="text" id="modNombre" maxlength="20" required></div>
+                    <div class="dev-modal-field"><label>Rol</label>
+                        <select id="modRol">
+                            <option value="1">1 — JUGADOR</option>
+                            <option value="2">2 — DIRIGENTE</option>
+                            <option value="9">9 — DEV</option>
+                        </select>
+                    </div>
+                    <div class="dev-modal-field"><label>Mail</label><input type="email" id="modMail"></div>
+                </div>
+
+                <!-- Canchas -->
+                <div id="modFieldsCancha" style="display:none">
+                    <div class="dev-modal-field"><label>Nombre</label><input type="text" id="modCanchaNombre" maxlength="30" required></div>
+                    <div class="dev-modal-field"><label>Dirección</label><input type="text" id="modDireccion" maxlength="100" required></div>
+                    <div class="dev-modal-field"><label>Localidad</label><input type="text" id="modLocalidad" maxlength="256" required></div>
+                    <div class="dev-modal-field"><label>Liga</label><select id="modIdLiga" required></select></div>
+                </div>
+
+                <!-- Ligas -->
+                <div id="modFieldsLiga" style="display:none">
+                    <div class="dev-modal-field"><label>Nombre</label><input type="text" id="modLigaNombre" maxlength="50" required></div>
+                    <div class="dev-modal-field"><label>Descripción</label><input type="text" id="modDescripcion"></div>
+                    <div class="dev-modal-field"><label>Formato default</label>
+                        <select id="modFormato">
+                            <option value="F5">F5 (5v5)</option>
+                            <option value="F7">F7 (7v7)</option>
+                            <option value="F8">F8 (8v8)</option>
+                            <option value="F11">F11 (11v11)</option>
+                        </select>
+                    </div>
+                    <div class="dev-modal-field"><label>Privada</label>
+                        <select id="modPrivada"><option value="0">No</option><option value="1">Sí</option></select>
+                    </div>
+                    <div class="dev-modal-field"><label>Estado</label>
+                        <select id="modEstado"><option value="1">Activa</option><option value="0">Inactiva</option></select>
+                    </div>
+                </div>
+
+                <div class="dev-modal-actions">
+                    <button type="button" class="dev-btn dev-btn-ghost dev-modal-close">Cancelar</button>
+                    <button type="submit" class="dev-btn dev-btn-primary"><i class="fa-solid fa-check"></i> Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: INHABILITAR -->
+    <div class="dev-modal" id="modalInhabilitar">
+        <div class="dev-modal-content">
+            <div class="dev-modal-header">
+                <div><div class="dev-modal-title">Inhabilitar</div></div>
+                <button type="button" class="dev-modal-close">×</button>
+            </div>
+            <div class="dev-confirm-msg" id="inhabilitarMsg"></div>
+            <div class="dev-modal-actions">
+                <button type="button" class="dev-btn dev-btn-ghost dev-modal-close">Cancelar</button>
+                <button type="button" class="dev-btn dev-btn-danger" id="inhabilitarConfirmBtn">Confirmar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: ELIMINAR -->
+    <div class="dev-modal" id="modalEliminar">
+        <div class="dev-modal-content">
+            <div class="dev-modal-header">
+                <div><div class="dev-modal-title">Eliminar</div><div class="dev-modal-sub">No se puede deshacer</div></div>
+                <button type="button" class="dev-modal-close">×</button>
+            </div>
+            <div class="dev-confirm-msg" id="eliminarMsg"></div>
+            <div class="dev-modal-actions">
+                <button type="button" class="dev-btn dev-btn-ghost dev-modal-close">Cancelar</button>
+                <button type="button" class="dev-btn dev-btn-danger" id="eliminarConfirmBtn"><i class="fa-solid fa-trash"></i> Eliminar</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../scripts/dev-topnav.js"></script>
+    <script src="../scripts/dev-gestion.js"></script>
+</body>
+</html>

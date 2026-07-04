@@ -46,6 +46,39 @@
     --transition-slow: 0.4s ease;
 }
 
+/* ===========================================================================
+   FONDO DE PÁGINA (background) — ESPACIO RESERVADO, SIN IMAGEN TODAVÍA
+   ===========================================================================
+   Cómo usar esto cuando haya una imagen real:
+   1. Agregar como PRIMER hijo de <body>, antes que cualquier otro elemento:
+        <div class="page-background" aria-hidden="true"></div>
+   2. Completar la imagen real en la línea marcada con "TODO" más abajo.
+   3. El velo oscuro semitransparente (::after) ya está listo para que la
+      imagen no rompa la identidad oscura del proyecto — no hace falta
+      tocarlo salvo que se quiera más o menos oscurecido.
+   4. Comportamiento por defecto (este archivo): fondo fijo, cubre toda la
+      pantalla, igual en cualquier página de la Aplicación.
+   5. En la Landing el comportamiento es distinto (vive arriba del todo y
+      se difumina al scrollear) — ese override vive en index.css, no acá.
+   =========================================================================== */
+.page-background {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background-image: none; /* TODO (backend/diseño): poner aquí la imagen real, ej: url('../assets/bg-textura.jpg') */
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    pointer-events: none;
+}
+
+.page-background::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(8, 8, 8, 0.82);
+}
+
 * {
     margin: 0;
     padding: 0;

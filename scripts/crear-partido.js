@@ -36,7 +36,7 @@ function loadUpcomingMatches() {
     var upcoming = matches.filter(function(m) { return !m.completed; });
 
     if (upcoming.length === 0) {
-        container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📋</div>No hay partidos pendientes.</div>';
+        container.innerHTML = '<div class="empty-state"><div class="empty-state-icon"><i class="fa-solid fa-clipboard-list"></i></div>No hay partidos pendientes.</div>';
         return;
     }
 
@@ -55,37 +55,25 @@ function loadUpcomingMatches() {
             '<div class="match-header">' +
                 '<span class="match-date">' + match.fecha + '</span>' +
                 '<span class="match-status ' + (complete ? 'complete' : 'pending') + '">' +
-                    (complete ? '🟢 Completo' : '⚠️ Incompleto') +
+                    (complete ? '<i class="fa-solid fa-circle-check"></i> Completo' : '<i class="fa-solid fa-triangle-exclamation"></i> Incompleto') +
                 '</span>' +
             '</div>' +
-            '<div class="match-venue">📍 ' + match.venue + '</div>' +
+            '<div class="match-venue"><i class="fa-solid fa-location-dot"></i> ' + match.venue + '</div>' +
             '<div class="match-teams">' +
                 '<span>' + t1 + '</span>' +
                 '<span class="match-vs">vs</span>' +
                 '<span>' + t2 + '</span>' +
             '</div>' +
             '<div class="match-format">' + match.format + ' vs ' + match.format + '</div>' +
-            // Accordion de equipos (oculto por defecto)
+            // Accordion de equipos (oculto por defecto, ahora editable)
             '<div class="teams-accordion" id="acc-' + match.id + '">' +
-                '<div class="teams-accordion-inner">' +
-                    '<div class="acc-team-col">' +
-                        '<div class="acc-team-title">' + t1 + '</div>' +
-                        match.whiteTeam.map(function(p) {
-                            return '<div class="acc-player">' + p + '</div>';
-                        }).join('') +
-                    '</div>' +
-                    '<div class="acc-divider"></div>' +
-                    '<div class="acc-team-col">' +
-                        '<div class="acc-team-title">' + t2 + '</div>' +
-                        match.blackTeam.map(function(p) {
-                            return '<div class="acc-player">' + p + '</div>';
-                        }).join('') +
-                    '</div>' +
+                '<div class="teams-accordion-inner" id="acc-inner-' + match.id + '">' +
+                    buildAccordionInner(match) +
                 '</div>' +
             '</div>' +
             '<div class="match-actions">' +
-                '<button type="button" class="btn-view-teams" onclick="toggleTeams(' + match.id + ')">👥 Ver equipos</button>' +
-                '<button type="button" class="btn-start" onclick="startMatch(' + match.id + ')">▶ Iniciar</button>' +
+                '<button type="button" class="btn-view-teams" onclick="toggleTeams(' + match.id + ')"><i class="fa-solid fa-users"></i> Ver equipos</button>' +
+                '<button type="button" class="btn-start" onclick="startMatch(' + match.id + ')"><i class="fa-solid fa-play"></i> Iniciar</button>' +
             '</div>';
 
         container.appendChild(div);
@@ -100,7 +88,63 @@ function toggleTeams(matchId) {
 
     var isOpen = acc.classList.contains('open');
     acc.classList.toggle('open', !isOpen);
-    if (btn) btn.textContent = isOpen ? '👥 Ver equipos' : '👁 Ocultar';
+    if (btn) btn.innerHTML = isOpen ? '<i class="fa-solid fa-users"></i> Ver equipos' : '<i class="fa-solid fa-eye-slash"></i> Ocultar';
+}
+
+// ── Construir el contenido del acordeón (equipos editables) ──
+// Cada jugador es ahora un botón: tocarlo lo manda al otro equipo.
+// Se usa tanto al renderizar la lista por primera vez como al
+// refrescar después de mover un jugador (moveMatchPlayer).
+function buildAccordionInner(match) {
+    var t1 = match.team1Name || 'BLANCO';
+    var t2 = match.team2Name || 'NEGRO';
+
+    return '<div class="acc-team-col">' +
+            '<div class="acc-team-title">' + t1 + '</div>' +
+            match.whiteTeam.map(function(p) {
+                var safe = p.replace(/'/g, "\\'");
+                return '<button type="button" class="acc-player" onclick="moveMatchPlayer(' + match.id + ', \'white\', \'' + safe + '\')">' +
+                    '<span>' + p + '</span><i class="fa-solid fa-right-left"></i>' +
+                '</button>';
+            }).join('') +
+        '</div>' +
+        '<div class="acc-divider"></div>' +
+        '<div class="acc-team-col">' +
+            '<div class="acc-team-title">' + t2 + '</div>' +
+            match.blackTeam.map(function(p) {
+                var safe = p.replace(/'/g, "\\'");
+                return '<button type="button" class="acc-player" onclick="moveMatchPlayer(' + match.id + ', \'black\', \'' + safe + '\')">' +
+                    '<span>' + p + '</span><i class="fa-solid fa-right-left"></i>' +
+                '</button>';
+            }).join('') +
+        '</div>';
+}
+
+// ── Mover un jugador de equipo en un partido pendiente ────────
+// Funcionalidad nueva (pedida explícitamente): permite modificar
+// quién juega en cada equipo después de creado el partido, sin
+// tener que iniciarlo. Lee/escribe directamente en localStorage
+// con la misma forma que ya usa data.js (getMatches/'matches').
+function moveMatchPlayer(matchId, fromTeam, playerName) {
+    var matches = getMatches();
+    var idx = matches.findIndex(function(m) { return m.id === matchId; });
+    if (idx === -1) return;
+
+    var match = matches[idx];
+    if (fromTeam === 'white') {
+        match.whiteTeam = match.whiteTeam.filter(function(p) { return p !== playerName; });
+        match.blackTeam.push(playerName);
+    } else {
+        match.blackTeam = match.blackTeam.filter(function(p) { return p !== playerName; });
+        match.whiteTeam.push(playerName);
+    }
+    matches[idx] = match;
+    localStorage.setItem('matches', JSON.stringify(matches));
+
+    var inner = document.getElementById('acc-inner-' + matchId);
+    if (inner) inner.innerHTML = buildAccordionInner(match);
+
+    if (typeof showToast === 'function') showToast('Jugador movido de equipo');
 }
 
 // ── Modal crear partido ──────────────────────────────────────
@@ -215,7 +259,7 @@ function updateStep2Counters() {
 function balanceTeams() {
     var players  = getPlayers();
     var selected = selectedPlayers
-        .map(function(name) { return players.find(function(p) { return p.name === name; }) || { name: name, elo: 1200 }; })
+        .map(function(name) { return players.find(function(p) { return p.name === name; }) || { name: name, elo: 1000 }; })
         .sort(function(a, b) { return b.elo - a.elo; });
     currentWhiteTeam = [];
     currentBlackTeam = [];
@@ -238,16 +282,16 @@ function updateTeamsDisplay() {
     var eloSum  = function(team) {
         return team.reduce(function(s, name) {
             var p = players.find(function(pl) { return pl.name === name; });
-            return s + (p ? p.elo : 1200);
+            return s + (p ? p.elo : 1000);
         }, 0);
     };
     var diff    = Math.abs(eloSum(currentWhiteTeam) - eloSum(currentBlackTeam));
     var el      = document.getElementById('eloDiff');
     if (diff < 150) {
-        el.textContent = '⚖️ Equipos equilibrados';
+        el.innerHTML = '<i class="fa-solid fa-scale-balanced"></i> Equipos equilibrados';
         el.style.color = 'var(--green-primary)';
     } else {
-        el.textContent = '⚖️ Diferencia ELO: ' + diff;
+        el.innerHTML = '<i class="fa-solid fa-scale-balanced"></i> Diferencia ELO: ' + diff;
         el.style.color = 'var(--text-secondary)';
     }
     document.querySelectorAll('.edit-team-btn').forEach(function(btn) {

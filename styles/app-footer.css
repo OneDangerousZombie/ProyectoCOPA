@@ -1,0 +1,121 @@
+/* ============================================================================
+   app-footer.css — Footer COMPARTIDO para las páginas de la Aplicación
+   (pages/), visible solo en desktop/tablet (≥860px, mismo punto donde
+   aparece app-topnav.css).
+
+   Dos requisitos puntuales:
+   1) Debe quedar siempre pegado abajo de todo, sin importar cuánto
+      contenido tenga la página (si el contenido es corto, no debe
+      quedar flotando a mitad de pantalla). Solución: patrón clásico de
+      "sticky footer" con flexbox en <body> — el body se vuelve una
+      columna flex de altura mínima 100vh, .app-container se estira con
+      flex:1 para ocupar todo el espacio sobrante, y el footer queda
+      como última pieza, siempre al fondo.
+   2) Debe ocupar el 100% del ancho de la pantalla, no el ancho acotado
+      de .app-container. Por eso el <footer> tiene que vivir FUERA de
+      .app-container (como hermano, no como hijo) — ver el HTML de
+      home.html/estadisticas.html: <footer class="app-footer"> ahora
+      está después de cerrar el </div> de .app-container, no adentro.
+      El contenido interno del footer sí usa un wrapper con max-width
+      para que el texto no quede perdido en pantallas muy anchas.
+
+   Todo esto queda scopeado dentro de @media (min-width: 860px) — en
+   mobile no se toca nada de cómo se comporta body/.app-container.
+   No se modifica global.css directamente.
+   ============================================================================ */
+
+.app-footer {
+    display: none;
+}
+
+@media (min-width: 860px) {
+
+    /* ── Sticky footer: body como columna flex de altura completa.
+       .app-container deja de fijar su propio min-height (lo hacía en
+       global.css para mobile) y en su lugar se estira con flex:1, así
+       el footer siempre queda al fondo del viewport. ── */
+    body {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+    }
+
+    .app-container {
+        flex: 1;
+        min-height: 0;
+        width: 100%;
+    }
+
+    .app-footer {
+        display: block;
+        width: 100%;
+        border-top: 1px solid var(--border-color);
+        background: var(--bg-secondary);
+    }
+
+    .app-footer-inner {
+        max-width: 1180px;
+        margin: 0 auto;
+        padding: 1.75rem 1.5rem 1.25rem;
+    }
+
+    .app-footer-top {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1.25rem;
+        margin-bottom: 1.25rem;
+    }
+
+    .app-footer-brand {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .app-footer-brand-icon {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        background: var(--bg-elevated);
+        border: 1px solid var(--green-border);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.9rem;
+    }
+
+    .app-footer-brand-text {
+        font-size: 0.95rem;
+        font-weight: 800;
+        letter-spacing: -0.01em;
+        color: var(--text-primary);
+    }
+
+    .app-footer-links {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1.5rem;
+    }
+
+    .app-footer-links a {
+        font-size: 0.83rem;
+        font-weight: 500;
+        color: var(--text-tertiary);
+        text-decoration: none;
+        transition: color var(--transition-fast);
+    }
+
+    .app-footer-links a:hover {
+        color: var(--green-primary);
+    }
+
+    .app-footer-bottom {
+        border-top: 1px solid var(--border-color);
+        padding-top: 1rem;
+        text-align: center;
+        font-size: 0.76rem;
+        color: var(--text-tertiary);
+    }
+}

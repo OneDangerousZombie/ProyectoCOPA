@@ -4,14 +4,63 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Nuevo Partido — COPA</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="../styles/global.css">
+    <link rel="stylesheet" href="../styles/app-topnav.css">
+    <link rel="stylesheet" href="../styles/app-footer.css">
     <link rel="stylesheet" href="../styles/nuevo-partido.css">
 </head>
 <body>
+
+    <!-- Navbar de desktop/tablet (≥860px) — componente compartido.
+         "Partidos" activo, ya que esta página es parte de ese flujo. -->
+    <header class="app-topnav">
+        <div class="app-topnav-inner">
+            <a href="../index.html" class="app-topnav-brand">
+                <span class="app-topnav-brand-icon"><i class="fa-solid fa-futbol"></i></span>
+                <span class="app-topnav-brand-text">COPA</span>
+            </a>
+
+            <nav class="app-topnav-links">
+                <div class="nav-item" data-page="home">
+                    <span class="nav-icon"><i class="fa-solid fa-house"></i></span>
+                    Inicio
+                </div>
+                <div class="nav-item" data-page="liga">
+                    <span class="nav-icon"><i class="fa-solid fa-users"></i></span>
+                    Liga
+                </div>
+                <div class="nav-item active" data-page="crear-partido">
+                    <span class="nav-icon"><i class="fa-solid fa-futbol"></i></span>
+                    Partidos
+                </div>
+                <div class="nav-item" data-page="estadisticas">
+                    <span class="nav-icon"><i class="fa-solid fa-chart-column"></i></span>
+                    Stats
+                </div>
+            </nav>
+
+            <div class="app-topnav-user">
+                <button type="button" class="app-topnav-user-trigger" id="userTrigger" aria-expanded="false">
+                    <span class="app-topnav-user-avatar" id="navUserAvatar"><i class="fa-solid fa-user"></i></span>
+                    <span class="app-topnav-user-name" id="navUserName">Usuario</span>
+                    <i class="fa-solid fa-chevron-down app-topnav-user-caret"></i>
+                </button>
+                <div class="app-topnav-user-menu" id="userMenu">
+                    <a href="perfil.html" class="app-topnav-user-menu-item">Mi cuenta</a>
+                    <button type="button" class="app-topnav-user-menu-item app-topnav-user-menu-item-danger" id="logoutBtn">Cerrar sesión</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
     <div class="app-container">
 
         <div class="header">
-            <button type="button" class="back-btn" onclick="window.location.href='crear-partido.html'">‹</button>
+            <button type="button" class="back-btn" onclick="window.location.href='crear-partido.html'"><i class="fa-solid fa-chevron-left"></i></button>
             <h1>Nuevo Partido</h1>
             <div class="header-spacer"></div>
         </div>
@@ -34,7 +83,9 @@
 
                 <div class="np-field">
                     <label>Cancha</label>
-                    <input type="text" id="npVenue" placeholder="Ej: Mega Fútbol - Cancha 3" autocomplete="off">
+                    <select id="npVenue">
+                        <option value="">Seleccioná una cancha</option>
+                    </select>
                 </div>
 
                 <div class="np-field">
@@ -80,10 +131,23 @@
                     <div class="players-progress-fill" id="progressFill"></div>
                 </div>
 
+                <!-- Balancear por ELO: combinado desde crear-partido.js,
+                     actúa sobre los jugadores ya asignados a algún equipo. -->
+                <button type="button" class="balance-btn-np" id="balanceTeamsBtn">
+                    <i class="fa-solid fa-scale-balanced"></i> Balancear equipos por ELO
+                </button>
+
                 <div class="add-player-row">
                     <input type="text" id="newPlayerInput" placeholder="Agregar jugador nuevo..." autocomplete="off">
-                    <button type="button" class="add-player-btn" onclick="addNewPlayer()">+ Agregar</button>
+                    <button type="button" class="add-player-btn" onclick="addNewPlayer()"><i class="fa-solid fa-plus"></i> Agregar</button>
                 </div>
+
+                <!-- Agregar invitado: placeholder pedido explícitamente,
+                     sin función todavía (distinto de "Agregar jugador
+                     nuevo", que sí funciona). -->
+                <button type="button" class="add-guest-btn" id="addGuestBtn">
+                    <i class="fa-solid fa-user-plus"></i> Agregar invitado
+                </button>
 
                 <div class="players-assign-list" id="playersAssignList"></div>
             </div>
@@ -92,15 +156,39 @@
             <div class="np-cta">
                 <div class="np-cta-info" id="npCtaInfo">Completá todos los campos</div>
                 <button type="button" class="np-cta-btn" id="npSaveBtn" disabled onclick="saveAndStart()">
-                    🚀 Guardar e iniciar partido
+                    <i class="fa-solid fa-rocket"></i> Guardar y crear partido
                 </button>
             </div>
 
         </main>
     </div>
 
+    <!-- Footer de desktop/tablet — FUERA de .app-container, full-bleed,
+         siempre pegado abajo (ver app-footer.css). -->
+    <footer class="app-footer">
+        <div class="app-footer-inner">
+            <div class="app-footer-top">
+                <div class="app-footer-brand">
+                    <span class="app-footer-brand-icon"><i class="fa-solid fa-futbol"></i></span>
+                    <span class="app-footer-brand-text">COPA</span>
+                </div>
+                <nav class="app-footer-links">
+                    <a href="home.html">Inicio</a>
+                    <a href="liga.html">Liga</a>
+                    <a href="crear-partido.html">Partidos</a>
+                    <a href="estadisticas.html">Estadísticas</a>
+                    <a href="perfil.html">Mi cuenta</a>
+                    <a href="../index.html">Volver al sitio</a>
+                </nav>
+            </div>
+            <div class="app-footer-bottom">© 2026 COPA — Proyecto académico</div>
+        </div>
+    </footer>
+
     <script src="../scripts/data.js"></script>
     <script src="../scripts/utils.js"></script>
+    <script src="../scripts/navigation.js"></script>
+    <script src="../scripts/app-topnav.js"></script>
     <script src="../scripts/nuevo-partido.js"></script>
 </body>
 </html>

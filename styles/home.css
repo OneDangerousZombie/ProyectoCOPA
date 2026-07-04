@@ -4,6 +4,11 @@
     border-radius: var(--radius-lg);
     padding: 1rem 1.125rem;
     border: 1px solid var(--border-color);
+    transition: border-color var(--transition-normal);
+}
+
+.carousel-section:hover {
+    border-color: var(--border-light);
 }
 
 .carousel-header {
@@ -16,7 +21,7 @@
 .carousel-header h2 {
     font-size: 0.78rem;
     font-weight: 700;
-    letter-spacing: 0.07em;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
     color: var(--green-primary);
 }
@@ -41,6 +46,11 @@
     background: var(--green-primary);
     color: #000;
     border-color: transparent;
+    transform: translateY(-1px);
+}
+
+.carousel-nav:active {
+    transform: scale(0.92);
 }
 
 /* ── Match card ── */
@@ -50,6 +60,7 @@
     padding: 1rem 1.125rem;
     margin-bottom: 0.875rem;
     border: 1px solid var(--border-color);
+    transition: border-color var(--transition-normal);
 }
 
 .match-teams {
@@ -69,10 +80,11 @@
 }
 
 .score {
-    font-size: 1.75rem;
+    font-size: 1.875rem;
     font-weight: 800;
     color: var(--text-primary);
-    letter-spacing: -0.02em;
+    letter-spacing: -0.03em;
+    font-variant-numeric: tabular-nums;
     flex: 1;
     text-align: center;
 }
@@ -92,6 +104,11 @@
     align-items: center;
     padding: 0.45rem 0.625rem;
     border-radius: var(--radius-xs);
+    transition: background var(--transition-fast);
+}
+
+.timeline-item:hover {
+    background: var(--bg-elevated);
 }
 
 .timeline-item.left  { justify-content: flex-start; }
@@ -110,13 +127,23 @@
 
 .timeline-item .event {
     font-size: 0.83rem;
+    font-weight: 500;
     color: var(--text-primary);
+}
+
+.timeline-item .event i {
+    color: var(--green-primary);
+    margin-right: 0.25rem;
 }
 
 .timeline-item .assist {
     font-size: 0.75rem;
     color: var(--text-tertiary);
     margin-left: 0.4rem;
+}
+
+.timeline-item .assist i {
+    margin-right: 0.2rem;
 }
 
 .stats-btn {
@@ -127,16 +154,25 @@
     border-radius: var(--radius-md);
     color: var(--text-secondary);
     font-size: 0.83rem;
-    font-weight: 500;
+    font-weight: 600;
     cursor: pointer;
     transition: all var(--transition-fast);
     letter-spacing: 0.01em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
 }
 
 .stats-btn:hover {
     background: var(--green-glow);
     border-color: var(--green-border);
     color: var(--green-primary);
+    transform: translateY(-1px);
+}
+
+.stats-btn:active {
+    transform: scale(0.98);
 }
 
 /* ── Mi Desempeño ──────────────────────────── */
@@ -147,6 +183,11 @@
     border: 1px solid var(--border-color);
     position: relative;
     overflow: hidden;
+    transition: border-color var(--transition-normal);
+}
+
+.performance-card:hover {
+    border-color: var(--border-light);
 }
 
 .performance-card::before {
@@ -154,14 +195,14 @@
     position: absolute;
     top: 0; right: 0;
     width: 120px; height: 120px;
-    background: radial-gradient(circle, rgba(34,197,94,0.06) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(34,197,94,0.08) 0%, transparent 70%);
     pointer-events: none;
 }
 
 .performance-card h3 {
     font-size: 0.78rem;
     font-weight: 700;
-    letter-spacing: 0.07em;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
     color: var(--text-tertiary);
     margin-bottom: 1rem;
@@ -181,11 +222,12 @@
 }
 
 .points .value {
-    font-size: 2.75rem;
+    font-size: 2.85rem;
     font-weight: 800;
     color: var(--green-primary);
     letter-spacing: -0.04em;
     line-height: 1;
+    font-variant-numeric: tabular-nums;
 }
 
 .points .label {
@@ -204,7 +246,7 @@
 
 .trend.up {
     color: var(--green-primary);
-    background: rgba(34, 197, 94, 0.1);
+    background: rgba(34, 197, 94, 0.12);
 }
 
 .stats-grid {
@@ -219,23 +261,30 @@
     padding: 0.625rem 0.5rem;
     border-radius: var(--radius-sm);
     border: 1px solid var(--border-color);
+    transition: border-color var(--transition-fast), transform var(--transition-fast);
+}
+
+.stat:hover {
+    border-color: var(--green-border);
+    transform: translateY(-1px);
 }
 
 .stat .label {
     display: block;
     font-size: 0.68rem;
     font-weight: 600;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.05em;
     text-transform: uppercase;
     color: var(--text-tertiary);
 }
 
 .stat .value {
     display: block;
-    font-size: 1.1rem;
+    font-size: 1.15rem;
     font-weight: 700;
     margin-top: 0.2rem;
     color: var(--text-primary);
+    font-variant-numeric: tabular-nums;
 }
 
 /* ── Top Jugadores ─────────────────────────── */
@@ -244,6 +293,11 @@
     border-radius: var(--radius-lg);
     padding: 1rem 1.125rem;
     border: 1px solid var(--border-color);
+    transition: border-color var(--transition-normal);
+}
+
+.top-players:hover {
+    border-color: var(--border-light);
 }
 
 .section-header {
@@ -254,11 +308,18 @@
 }
 
 .section-header h3 {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
     font-size: 0.78rem;
     font-weight: 700;
-    letter-spacing: 0.07em;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
     color: var(--text-tertiary);
+}
+
+.section-header h3 i {
+    color: var(--green-primary);
 }
 
 .link-btn {
@@ -268,10 +329,13 @@
     font-size: 0.78rem;
     font-weight: 600;
     cursor: pointer;
-    transition: opacity var(--transition-fast);
+    transition: opacity var(--transition-fast), transform var(--transition-fast);
 }
 
-.link-btn:hover { opacity: 0.75; }
+.link-btn:hover {
+    opacity: 0.75;
+    transform: translateX(2px);
+}
 
 .players-list {
     display: flex;
@@ -287,11 +351,12 @@
     border-radius: var(--radius-sm);
     background: var(--bg-tertiary);
     border: 1px solid var(--border-color);
-    transition: border-color var(--transition-fast);
+    transition: border-color var(--transition-fast), background var(--transition-fast);
 }
 
 .player-row:hover {
-    border-color: var(--border-light);
+    border-color: var(--green-border);
+    background: var(--bg-elevated);
 }
 
 .player-rank {
@@ -317,7 +382,7 @@
 
 .player-stats span strong {
     color: var(--text-secondary);
-    font-weight: 600;
+    font-weight: 700;
 }
 
 /* ── Top liga: barra de progreso y pts badge ── */
@@ -349,15 +414,15 @@
     height: 100%;
     background: var(--green-primary);
     border-radius: 2px;
-    transition: width 0.4s ease;
+    transition: width 0.5s ease;
 }
 
 .pts-badge {
     font-size: 0.72rem;
     font-weight: 700;
     color: var(--green-primary);
-    background: rgba(34,197,94,0.1);
-    padding: 0.15rem 0.4rem;
+    background: rgba(34,197,94,0.12);
+    padding: 0.15rem 0.45rem;
     border-radius: 999px;
 }
 
@@ -368,4 +433,127 @@
 
 .player-stats span strong {
     color: var(--text-secondary);
+}
+
+/* ══════════════════════════════════════════════════════════
+   TABLET (≥860px) — sigue en una columna (el navbar ya cambió
+   en app-topnav.css), pero con más aire y tipografía más grande.
+   No se toca .app-container/.main-content de global.css, todo
+   override vive acá.
+══════════════════════════════════════════════════════════ */
+@media (min-width: 860px) {
+    .app-container {
+        max-width: 640px;
+    }
+
+    .main-content {
+        padding: 1.5rem 1.5rem 1rem;
+        gap: 1.25rem;
+    }
+
+    .carousel-header h2 {
+        font-size: 0.85rem;
+    }
+
+    .score {
+        font-size: 2.1rem;
+    }
+
+    .points .value {
+        font-size: 3.2rem;
+    }
+
+    .timeline-item .event {
+        font-size: 0.88rem;
+    }
+
+    .player-name,
+    .player-name-col .player-name {
+        font-size: 0.92rem;
+    }
+}
+
+/* ══════════════════════════════════════════════════════════
+   DESKTOP (≥1200px) — dos columnas reales: el carrusel de
+   partido a la izquierda (más alto), Mi Desempeño y Top Liga
+   apiladas a la derecha. Tipografía más grande en todo.
+══════════════════════════════════════════════════════════ */
+@media (min-width: 1200px) {
+    .app-container {
+        max-width: 1100px;
+    }
+
+    .main-content {
+        display: grid;
+        grid-template-columns: 1.3fr 1fr;
+        grid-template-areas:
+            "carousel performance"
+            "carousel topplayers";
+        align-items: start;
+        gap: 1.5rem;
+        padding: 2rem 1.5rem 1.5rem;
+    }
+
+    .carousel-section { grid-area: carousel; }
+    .performance-card { grid-area: performance; }
+    .top-players       { grid-area: topplayers; }
+
+    .carousel-header h2 {
+        font-size: 0.92rem;
+    }
+
+    .score {
+        font-size: 2.5rem;
+    }
+
+    .team {
+        font-size: 0.95rem;
+    }
+
+    .timeline-item .event {
+        font-size: 0.95rem;
+    }
+
+    .timeline-item .assist {
+        font-size: 0.82rem;
+    }
+
+    .stats-btn {
+        font-size: 0.88rem;
+        padding: 0.85rem;
+    }
+
+    .points .value {
+        font-size: 3.75rem;
+    }
+
+    .points .label {
+        font-size: 1rem;
+    }
+
+    .stat .value {
+        font-size: 1.3rem;
+    }
+
+    .stat .label {
+        font-size: 0.72rem;
+    }
+
+    .performance-card h3,
+    .section-header h3 {
+        font-size: 0.85rem;
+    }
+
+    .player-name,
+    .player-name-col .player-name {
+        font-size: 0.98rem;
+    }
+
+    .player-stats {
+        font-size: 0.78rem;
+    }
+
+    .pts-badge {
+        font-size: 0.78rem;
+    }
 }

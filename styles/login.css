@@ -1,0 +1,651 @@
+/* ── Tipografía ──────────────────────────────
+   Inter en toda la página (consistente con el resto del proyecto). No se
+   toca global.css; el override vive acá, igual que index.css lo hace
+   para la Landing. */
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif;
+}
+
+/* ── Layout ─────────────────────────────────── */
+body {
+    background: var(--bg-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    min-height: 100dvh;
+}
+
+body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(ellipse 80% 50% at 50% -10%, rgba(34, 197, 94, 0.08) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* En mobile, el shell no necesita estructura propia:
+   el body ya centra todo con flexbox */
+.desktop-shell {
+    width: 100%;
+}
+
+/* Centra el card de login dentro de <main> en TODOS los anchos, no solo
+   en desktop. Antes esta regla vivía únicamente dentro del media query
+   de 1200px, por lo que en cualquier ancho intermedio .login-container
+   quedaba pegado a la izquierda (bloque normal sin centrar) en cuanto
+   la pantalla superaba sus 380px de max-width. */
+.desktop-main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    width: 100%;
+    padding: 1.5rem;
+}
+
+/* ── Header — ahora visible en todos los tamaños de pantalla.
+   Mobile/tablet chica (<860px): una sola fila (logo + hamburger), el
+   nav y el botón quedan detrás del drawer. Desde 860px: nav y botón
+   inline, hamburger oculto. ── */
+.desktop-header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.875rem;
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.logo-group {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.logo-icon-sm {
+    width: 28px;
+    height: 28px;
+    background: var(--green-primary);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    color: #000;
+    flex-shrink: 0;
+}
+
+.logo-text {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    letter-spacing: -0.02em;
+}
+
+.desktop-nav {
+    display: none;
+    flex-wrap: wrap;
+    gap: 1.25rem;
+    font-size: 0.82rem;
+    font-weight: 500;
+}
+
+.desktop-nav a {
+    color: var(--text-tertiary);
+    text-decoration: none;
+    transition: color var(--transition-fast);
+}
+
+.desktop-nav a:hover {
+    color: var(--text-primary);
+}
+
+.desktop-header-actions {
+    display: none;
+    gap: 0.625rem;
+}
+
+.desktop-btn-outline {
+    padding: 0.5rem 1.1rem;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-light);
+    background: var(--bg-elevated);
+    color: var(--text-primary);
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    font-family: inherit;
+}
+
+.desktop-btn-outline:hover {
+    border-color: var(--green-border);
+    background: rgba(34, 197, 94, 0.08);
+}
+
+/* ── Hamburger — solo <860px ── */
+.app-nav-hamburger {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 4px;
+    width: 36px;
+    height: 36px;
+    padding: 0 8px;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.app-nav-hamburger span {
+    display: block;
+    width: 100%;
+    height: 2px;
+    background: var(--text-primary);
+    border-radius: 2px;
+    transition: all var(--transition-fast);
+}
+
+.app-nav-hamburger[aria-expanded="true"] span:nth-child(1) {
+    transform: translateY(6px) rotate(45deg);
+}
+
+.app-nav-hamburger[aria-expanded="true"] span:nth-child(2) {
+    opacity: 0;
+}
+
+.app-nav-hamburger[aria-expanded="true"] span:nth-child(3) {
+    transform: translateY(-6px) rotate(-45deg);
+}
+
+/* ── Drawer mobile — sale desde la izquierda, no empuja contenido,
+   mismo lenguaje que el drawer del navbar de la Landing pero con
+   clases propias de esta página (cada área con su propia hoja). ── */
+.app-nav-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 250;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.35s ease, visibility 0.35s ease;
+}
+
+.app-nav-backdrop.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.app-nav-drawer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: min(80vw, 280px);
+    height: 100vh;
+    background: var(--bg-elevated);
+    border-right: 1px solid var(--border-light);
+    box-shadow: var(--shadow-lg);
+    z-index: 260;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    padding: 5.5rem 1.25rem 1.5rem;
+    transform: translateX(-100%);
+    visibility: hidden;
+    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.35s ease;
+}
+
+.app-nav-drawer.active {
+    transform: translateX(0);
+    visibility: visible;
+}
+
+.app-nav-drawer a {
+    padding: 0.7rem 0.5rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    opacity: 0.85;
+    text-decoration: none;
+}
+
+.app-nav-drawer a:hover {
+    opacity: 1;
+    color: var(--green-primary);
+}
+
+.app-nav-drawer-divider {
+    height: 1px;
+    background: var(--border-color);
+    margin: 0.5rem 0;
+}
+
+.app-nav-drawer-cta {
+    width: 100%;
+    padding: 0.7rem 1rem;
+    background: var(--green-primary);
+    color: #000;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-size: 0.85rem;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+}
+
+.app-nav-drawer-cta:hover {
+    background: var(--green-bright);
+}
+
+/* ── Contenedor ─────────────────────────────── */
+.login-container {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 380px;
+    padding: 2rem 1.75rem;
+    animation: fadeInUp 0.5s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+/* ── Logo ───────────────────────────────────── */
+.logo {
+    text-align: center;
+    margin-bottom: 2.5rem;
+}
+
+.logo-icon {
+    width: 72px;
+    height: 72px;
+    background: var(--green-primary);
+    border-radius: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.25rem;
+    font-size: 2rem;
+    color: #000;
+    box-shadow: 0 0 0 1px rgba(34, 197, 94, 0.3),
+                0 16px 40px rgba(34, 197, 94, 0.2);
+}
+
+.logo h1 {
+    font-size: 2rem;
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    color: var(--text-primary);
+}
+
+.logo p {
+    color: var(--text-tertiary);
+    font-size: 0.8rem;
+    margin-top: 0.4rem;
+    letter-spacing: 0.02em;
+}
+
+/* ── Formulario ─────────────────────────────── */
+.form-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-xl);
+    padding: 1.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.input-group label {
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+}
+
+.input-group input {
+    width: 100%;
+    padding: 0.875rem 1rem;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-md);
+    color: var(--text-primary);
+    font-size: 0.95rem;
+    font-family: inherit;
+    transition: all var(--transition-fast);
+}
+
+.input-group input:focus {
+    outline: none;
+    border-color: var(--green-primary);
+    box-shadow: 0 0 0 3px var(--green-glow);
+    background: var(--bg-elevated);
+}
+
+/* ── Bloques login / registro ────────────────────────────────
+   .form-tabs (#tabLogin / #tabRegister) sigue existiendo en el DOM
+   porque switchTab() en login.js los busca con getElementById sin
+   chequeo de null — pero ya no se muestran como pestañas: el cambio
+   de vista ahora es por los links de "¿No tenés cuenta?" / "¿Ya tenés
+   cuenta?" de cada bloque. El truco es leer la clase .active que
+   switchTab() YA pone en #tabLogin / #tabRegister, sin tocar esa
+   función. */
+.form-tabs {
+    display: none;
+}
+
+.auth-fields {
+    display: none;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.form-card:not(:has(#tabRegister.active)) .auth-fields-login {
+    display: flex;
+}
+
+.form-card:has(#tabRegister.active) .auth-fields-register {
+    display: flex;
+}
+
+.auth-switch-hint {
+    text-align: center;
+    font-size: 0.82rem;
+    color: var(--text-tertiary);
+    margin-top: 0.25rem;
+}
+
+.auth-switch-link {
+    background: none;
+    border: none;
+    padding: 0;
+    margin-left: 0.3rem;
+    font-family: inherit;
+    font-size: inherit;
+    font-weight: 700;
+    color: var(--green-primary);
+    cursor: pointer;
+    text-decoration: none;
+    transition: color var(--transition-fast);
+}
+
+.auth-switch-link:hover {
+    color: var(--green-bright);
+    text-decoration: underline;
+}
+
+/* ── Botón ──────────────────────────────────── */
+.login-btn {
+    width: 100%;
+    padding: 0.9rem;
+    background: var(--green-primary);
+    color: #000;
+    border: none;
+    border-radius: var(--radius-md);
+    font-size: 0.9rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    margin-top: 0.25rem;
+    font-family: inherit;
+}
+
+.login-btn:hover {
+    background: var(--green-bright);
+    box-shadow: var(--shadow-green);
+    transform: translateY(-1px);
+}
+
+.login-btn:active {
+    transform: translateY(0);
+    box-shadow: none;
+}
+
+/* ── Demo hint ──────────────────────────────── */
+.demo-hint {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    margin-top: 1.25rem;
+    color: var(--text-tertiary);
+    font-size: 0.78rem;
+}
+
+.demo-hint .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--green-primary);
+    display: inline-block;
+    animation: pulse 2s infinite;
+}
+
+/* ── Footer — ahora visible en todos los tamaños de pantalla.
+   Mobile/tablet: apilado y centrado. Desktop (≥1200px, más abajo):
+   en fila, con la línea de acento y los hovers. ── */
+.desktop-footer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1.5rem 1.5rem;
+    border-top: 1px solid var(--border-color);
+    text-align: center;
+    font-size: 0.76rem;
+    color: var(--text-tertiary);
+}
+
+.desktop-footer-links {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1.25rem;
+}
+
+.desktop-footer-links span {
+    cursor: pointer;
+    transition: color var(--transition-fast);
+}
+
+.desktop-footer-links span:hover {
+    color: var(--green-primary);
+}
+.form-error {
+    font-size: 0.78rem;
+    color: #f87171;
+    text-align: center;
+    min-height: 0;
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: all var(--transition-fast);
+}
+
+.form-error.visible {
+    min-height: 1.2em;
+    max-height: 2.5em;
+    opacity: 1;
+    margin: -0.25rem 0 0.25rem;
+}
+
+/* ── Botón submit deshabilitado (loading) ───── */
+.login-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
+/* ══════════════════════════════════════════════════════════
+   TABLET ANCHA (≥860px) — header y footer pasan a fila.
+   Reorganización gradual, igual que el resto del proyecto
+   (mobile → 860px → 1200px), en vez de un salto único a 1200px.
+══════════════════════════════════════════════════════════ */
+@media (min-width: 860px) {
+    .desktop-header {
+        padding: 1rem 2rem;
+    }
+
+    .desktop-nav {
+        display: flex;
+    }
+
+    .desktop-header-actions {
+        display: flex;
+    }
+
+    .app-nav-hamburger {
+        display: none;
+    }
+
+    .desktop-footer {
+        flex-direction: row;
+        justify-content: space-between;
+        text-align: left;
+        padding: 1.5rem 2rem;
+    }
+}
+
+/* ══════════════════════════════════════════════════════════
+   DESKTOP (≥1200px) — fondo de cancha oscurecido
+   (sin cambios respecto al original: se mantiene tal cual)
+══════════════════════════════════════════════════════════ */
+@media (min-width: 1200px) {
+    body {
+        background:
+            linear-gradient(180deg, rgba(5,8,5,0.88) 0%, rgba(5,8,5,0.94) 50%, rgba(5,8,5,0.97) 100%),
+            radial-gradient(ellipse 70% 60% at 50% 35%, rgba(34, 197, 94, 0.05) 0%, transparent 65%),
+            url('../images/cancha-fondo.jpg');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        display: block;
+    }
+
+    body::before {
+        display: none;
+    }
+
+    .desktop-shell {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+        max-width: 1280px;
+        margin: 0 auto;
+    }
+
+    /* ── Header ──
+       Mismo lenguaje de hover que el navbar de la Landing (subrayado
+       animado en los links, brillo diagonal en el botón sólido),
+       reimplementado acá con las clases propias de esta página — no se
+       importan los estilos de la Landing para mantener cada área con
+       su propia hoja de estilos. */
+    .desktop-header {
+        padding: 0 2.5rem;
+        height: 64px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        flex-shrink: 0;
+    }
+
+    .logo-icon-sm {
+        width: 30px;
+        height: 30px;
+        font-size: 0.95rem;
+    }
+
+    .logo-text {
+        font-size: 1.1rem;
+    }
+
+    .desktop-nav {
+        gap: 2.5rem;
+    }
+
+    .desktop-nav a {
+        position: relative;
+        color: #a8a8a8;
+    }
+
+    .desktop-nav a::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        bottom: -8px;
+        width: 100%;
+        height: 1.5px;
+        background: var(--green-primary);
+        transform: scaleX(0);
+        transform-origin: left;
+        transition: transform 0.25s ease;
+    }
+
+    .desktop-nav a:hover::after {
+        transform: scaleX(1);
+    }
+
+    .desktop-btn-outline {
+        background: rgba(0, 0, 0, 0.3);
+    }
+
+    /* ── Main ──
+       display/align/justify/flex ya están en la regla base; acá solo
+       se agranda el padding para la pantalla completa. */
+    .desktop-main {
+        padding: 3rem;
+    }
+
+    /* ── Footer ──
+       flex-direction/justify-content/text-align ya pasan a fila desde
+       el breakpoint de 860px. Acá solo se agranda el padding y se suma
+       la línea de acento + el hover con desplazamiento. */
+    .desktop-footer {
+        padding: 1.5rem 2.5rem;
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+        flex-shrink: 0;
+        font-size: 0.74rem;
+        color: #777;
+        position: relative;
+    }
+
+    .desktop-footer::before {
+        content: '';
+        position: absolute;
+        top: -1px;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, var(--green-border), transparent);
+    }
+
+    .desktop-footer-links span:hover {
+        color: var(--green-primary);
+        transform: translateX(2px);
+    }
+
+    .login-container {
+        max-width: 420px;
+    }
+
+    .form-card {
+        background: rgba(24, 24, 24, 0.92);
+        border-color: var(--border-light);
+        box-shadow: 0 30px 90px rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(6px);
+        -webkit-backdrop-filter: blur(6px);
+    }
+
+    .input-group input {
+        background: rgba(0, 0, 0, 0.35);
+    }
+}

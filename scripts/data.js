@@ -1,18 +1,53 @@
-// Datos precargados de jugadores
-const PLAYERS_LIST = [
-    "Brandon", "Rama", "Chanchi", "Loto", "Chapa", "Nico", "Chiwi", "Pipi",
-    "Árbol", "Mateo", "Goofy", "Juanchi", "ByViruzz", "ColoPerez", "TobilED",
-    "MyM", "Dylan", "Santi", "Diego", "Almidonte", "R1", "R2", "BautiTwink"
-];
+// Eliminamos la constante PLAYERS_LIST estática.
+const DB_PLAYERS_API = '../api/traerJugadores.php';
 
-// Inicializar localStorage
-function initLocalStorage() {
-    if (!localStorage.getItem('players')) {
-        const players = PLAYERS_LIST.map((name, index) => ({
-            id: index,
-            name: name,
-            elo: 1200 + Math.floor(Math.random() * 500),
-            stats: {
+function fetchPlayersFromDb() {
+    return fetch(DB_PLAYERS_API, { cache: 'no-store' })
+        .then(function(response) {
+            if (!response.ok) {
+                throw new Error('Error al cargar jugadores desde el servidor: ' + response.status);
+            }
+            return response.json();
+        })
+        .then(function(data) {
+            if (!data.ok || !Array.isArray(data.jugadores)) {
+                throw new Error('Respuesta de jugadores inválida');
+            }
+            return data.jugadores.map(function(player) {
+                return {
+                    id: parseInt(player.id, 10) || null,
+                    name: player.nombre,
+                    elo: parseInt(player.valor_elo, 10) || 1000,
+                    role: player.rol || null,
+                    avatar: player.avatar || ''
+                };
+            });
+        });
+}
+
+function normalizePlayersFromDb(dbPlayers) {
+    const existingPlayers = getPlayers();
+    const existingByName = {};
+    existingPlayers.forEach(function(player) {
+        existingByName[player.name] = player;
+    });
+
+    return dbPlayers.map(function(player) {
+        const existing = existingByName[player.name];
+        // IMPORTANTE: el ID_JUGADORES SIEMPRE debe salir de la base de datos
+        // (fuente de verdad), nunca del ID cacheado en localStorage.
+        // Antes se reusaba existing.id cuando el nombre coincidía con un
+        // registro cacheado; si un jugador se borraba y se recreaba con el
+        // mismo nombre (nuevo ID_JUGADORES), el caché seguía apuntando al ID
+        // viejo para siempre, y todo el ELO/eventos de ese jugador terminaban
+        // registrándose sobre el ID incorrecto. Este era el bug reportado.
+        return {
+            id: player.id,
+            name: player.name,
+            elo: player.elo || 1000,
+            role: existing && existing.role ? existing.role : (player.role || null),
+            avatar: existing && existing.avatar ? existing.avatar : (player.avatar || ''),
+            stats: existing && existing.stats ? existing.stats : {
                 matches: 0,
                 wins: 0,
                 draws: 0,
@@ -21,55 +56,83 @@ function initLocalStorage() {
                 assists: 0,
                 points: 0
             },
-            lastMatch: null
-        }));
-        localStorage.setItem('players', JSON.stringify(players));
-    }
-    
-    if (!localStorage.getItem('matches')) {
-        const exampleMatches = [
-            {
-                id: 1,
-                date: "2024-03-15",
-                venue: "Mega Fútbol",
-                format: 6,
-                fecha: "Fecha 7 Apertura",
-                whiteTeam: ["Brandon", "Rama", "Chanchi", "Loto", "Chapa", "Nico"],
-                blackTeam: ["Chiwi", "Pipi", "Árbol", "Mateo", "Goofy", "Juanchi"],
-                whiteScore: 11,
-                blackScore: 7,
-                completed: true,
-                events: [
-                    { minute: 4, type: 'goal', player: 'Brandon', assist: 'Rama', team: 'white' },
-                    { minute: 12, type: 'goal', player: 'Chanchi', assist: null, team: 'white' },
-                    { minute: 18, type: 'goal', player: 'ByViruzz', assist: null, team: 'black' }
-                ]
-            }
-        ];
-        localStorage.setItem('matches', JSON.stringify(exampleMatches));
-    }
-    
-    if (!localStorage.getItem('stats')) {
-        const players = JSON.parse(localStorage.getItem('players'));
-        const stats = players.map(player => ({
+            lastMatch: existing ? existing.lastMatch : null
+        };
+    });
+}
+
+function ensureStatsForPlayers(players) {
+    const stats = JSON.parse(localStorage.getItem('stats')) || [];
+    const statsById = {};
+    stats.forEach(function(stat) {
+        statsById[stat.playerId] = stat;
+    });
+
+    const normalizedStats = players.map(function(player) {
+        const existing = statsById[player.id];
+        if (existing) {
+            existing.playerName = player.name;
+            return existing;
+        }
+        return {
             playerId: player.id,
             playerName: player.name,
-            goals: Math.floor(Math.random() * 30),
-            assists: Math.floor(Math.random() * 20),
-            matches: Math.floor(Math.random() * 30),
-            wins: Math.floor(Math.random() * 15),
-            draws: Math.floor(Math.random() * 5),
-            losses: Math.floor(Math.random() * 10),
-            points: Math.floor(Math.random() * 45),
-            streak: Math.floor(Math.random() * 5) - 2
-        }));
-        localStorage.setItem('stats', JSON.stringify(stats));
+            goals: 0,
+            assists: 0,
+            matches: 0,
+            wins: 0,
+            draws: 0,
+            losses: 0,
+            points: 0,
+            streak: 0
+        };
+    });
+
+    localStorage.setItem('stats', JSON.stringify(normalizedStats));
+}
+
+function initLocalStorageFallback() {
+    // Ya no inyectamos jugadores ni estadísticas falsas.
+    // Solo aseguramos que las estructuras de datos existan para no romper el código.
+    if (!localStorage.getItem('matches')) {
+        localStorage.setItem('matches', JSON.stringify([]));
     }
+
+    if (!localStorage.getItem('stats')) {
+        localStorage.setItem('stats', JSON.stringify([]));
+    }
+}
+
+function initializePlayerData() {
+    initLocalStorageFallback();
+
+    return fetchPlayersFromDb()
+        .then(function(dbPlayers) {
+            if (!Array.isArray(dbPlayers) || dbPlayers.length === 0) {
+                throw new Error('Lista de jugadores vacía desde el servidor');
+            }
+            const players = normalizePlayersFromDb(dbPlayers);
+            localStorage.setItem('players', JSON.stringify(players));
+            ensureStatsForPlayers(players);
+
+            return players;
+        })
+        .catch(function(error) {
+            console.error('CRÍTICO: No se pudo cargar jugadores desde la base de datos:', error);
+            // Retornamos el caché local (si existe) en caso de caída de red
+            return getPlayers();
+        });
 }
 
 // Obtener jugadores
 function getPlayers() {
     return JSON.parse(localStorage.getItem('players')) || [];
+}
+
+function getPlayersByRole(role) {
+    return getPlayers().filter(function(player) {
+        return String(player.role) === String(role);
+    });
 }
 
 // Actualizar jugador
@@ -188,7 +251,6 @@ function getRanking(statType = 'points', fecha = 'all') {
     if (fecha !== 'all') {
         const matches = getMatches();
         const fechaMatches = matches.filter(m => m.fecha === `Fecha ${fecha} Apertura`);
-        // Simplificado: en producción se filtrarían estadísticas por fecha
     }
     
     switch(statType) {
@@ -218,4 +280,5 @@ function getRanking(statType = 'points', fecha = 'all') {
 }
 
 // Inicializar datos
-initLocalStorage();
+const dataReady = initializePlayerData();
+window.dataReady = dataReady;

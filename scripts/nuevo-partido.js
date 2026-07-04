@@ -2,29 +2,127 @@ let npState = {
     format:     0,
     team1:      [],
     team2:      [],
-    allPlayers: []
+    allPlayers: [],
+    canchas:    []
 };
+
+// ── Helpers ─────────────────────────────────────────────────
+function loadPlayersFromApi() {
+    return Promise.resolve(typeof dataReady !== 'undefined' ? dataReady : Promise.reject(new Error('dataReady no definido')))
+        .then(function() {
+            const players = getPlayersByRole(1);
+            if (!Array.isArray(players) || players.length === 0) {
+                throw new Error('No hay jugadores disponibles en la caché de DB con rol 1');
+            }
+            return players.map(function(player) {
+                return {
+                    name: player.name,
+                    elo: player.elo,
+                    isNew: false
+                };
+            });
+        })
+        .catch(function(error) {
+            console.warn('Fallback directo a la API en nuevo-partido:', error);
+            return fetch('../api/traerJugadores.php')
+                .then(function(response) {
+                    if (!response.ok) {
+                        throw new Error('Error al cargar jugadores (Status HTTP no OK)');
+                    }
+                    return response.json();
+                })
+                .then(function(data) {
+                    if (!data.ok || !Array.isArray(data.jugadores)) {
+                        throw new Error('Respuesta inválida de la base de datos');
+                    }
+                    return data.jugadores
+                        .filter(function(player) {
+                            return String(player.rol) === '1';
+                        })
+                        .map(function(player) {
+                            return {
+                                name: player.nombre,
+                                elo: player.valor_elo,
+                                isNew: false
+                            };
+                        });
+                });
+        });
+}
+
+function loadCanchasFromApi() {
+    return fetch('../api/traerCanchas.php')
+        .then(function(response) {
+            if (!response.ok) {
+                throw new Error('Error al cargar canchas: HTTP ' + response.status);
+            }
+            return response.json();
+        })
+        .then(function(data) {
+            if (!data.ok || !Array.isArray(data.canchas)) {
+                throw new Error('Respuesta inválida de canchas');
+            }
+            npState.canchas = data.canchas;
+            renderCanchaOptions(data.canchas);
+            return data.canchas;
+        });
+}
+
+function renderCanchaOptions(canchas) {
+    var select = document.getElementById('npVenue');
+    if (!select) return;
+
+    var html = '<option value="">Seleccioná una cancha</option>';
+    select.innerHTML = html + canchas.map(function(cancha) {
+        var labelText = cancha.nombre;
+        if (cancha.direccion) {
+            labelText += ' — ' + cancha.direccion;
+        }
+        return '<option value="' + cancha.id + '">' + labelText + '</option>';
+    }).join('');
+}
+
+function getSelectedCancha() {
+    var select = document.getElementById('npVenue');
+    if (!select) {
+        return { id: null, label: '' };
+    }
+    var value = select.value;
+    var id = parseInt(value, 10);
+    var label = select.selectedOptions && select.selectedOptions[0] ? select.selectedOptions[0].textContent.trim() : '';
+    return { id: isNaN(id) ? null : id, label: label };
+}
 
 // ── Init ────────────────────────────────────────────────────
 window.addEventListener('DOMContentLoaded', function() {
-    // Fecha de hoy
     var today = new Date().toISOString().split('T')[0];
     document.getElementById('npDate').value = today;
 
-    // Hora actual redondeada
     var now  = new Date();
     var mins = now.getMinutes() >= 30 ? 30 : 0;
-    document.getElementById('npTime').value =
-        pad(now.getHours()) + ':' + pad(mins);
+    document.getElementById('npTime').value = pad(now.getHours()) + ':' + pad(mins);
 
-    // Cargar jugadores de data.js
-    var dbPlayers = getPlayers();
-    npState.allPlayers = dbPlayers.map(function(p) {
-        return { name: p.name, elo: p.elo, isNew: false };
-    });
+    loadPlayersFromApi()
+        .then(function(players) {
+            npState.allPlayers = players;
+            renderPlayerList();
+            validateForm();
+        })
+        .catch(function(error) {
+            console.error('Error cargando jugadores en nuevo-partido:', error.message);
+            npState.allPlayers = [];
+            renderPlayerList();
+            validateForm();
+        });
 
-    // Listeners formato — usando onclick directo en lugar de addEventListener
-    // para evitar problemas de timing
+    loadCanchasFromApi()
+        .catch(function(error) {
+            console.warn('Error cargando canchas en nuevo-partido:', error.message);
+            var select = document.getElementById('npVenue');
+            if (select) select.innerHTML = '<option value="">No se pudieron cargar las canchas</option>';
+            validateForm();
+        });
+
     document.querySelectorAll('.format-btn').forEach(function(btn) {
         btn.onclick = function() {
             npState.format = parseInt(this.dataset.format);
@@ -37,16 +135,21 @@ window.addEventListener('DOMContentLoaded', function() {
         };
     });
 
-    // Listeners inputs
     ['npDate','npTime','npVenue','npTeam1Name','npTeam2Name'].forEach(function(id) {
         var el = document.getElementById(id);
-        if (el) el.oninput = function() { validateForm(); };
+        if (el) {
+            var eventName = el.tagName === 'SELECT' ? 'change' : 'input';
+            el.addEventListener(eventName, validateForm);
+        }
     });
 
-    // Enter en nuevo jugador
     document.getElementById('newPlayerInput').onkeypress = function(e) {
         if (e.key === 'Enter') addNewPlayer();
     };
+
+    // ── Agregados de la combinación con crear-partido.js ──────
+    document.getElementById('balanceTeamsBtn')?.addEventListener('click', balanceTeams);
+    document.getElementById('addGuestBtn')?.addEventListener('click', addGuestPlaceholder);
 
     renderPlayerList();
     validateForm();
@@ -54,7 +157,7 @@ window.addEventListener('DOMContentLoaded', function() {
 
 function pad(n) { return String(n).padStart(2,'0'); }
 
-// ── Agregar jugador nuevo ───────────────────────────────────
+// ── Agregar jugador nuevo temporalmente ─────────────────────
 function addNewPlayer() {
     var input = document.getElementById('newPlayerInput');
     var name  = input.value.trim();
@@ -65,7 +168,12 @@ function addNewPlayer() {
     });
 
     if (exists) {
-        showToast('Ese jugador ya está en la lista', 'error');
+        // Asumiendo que tienes una función showToast definida globalmente
+        if (typeof showToast === 'function') {
+            showToast('Ese jugador ya está en la lista', 'error');
+        } else {
+            alert('Ese jugador ya está en la lista');
+        }
         input.value = '';
         return;
     }
@@ -74,6 +182,15 @@ function addNewPlayer() {
     input.value = '';
     renderPlayerList();
     validateForm();
+}
+
+// ── Agregar invitado (placeholder, sin función todavía) ──────
+// Pedido explícito: un botón visible que por ahora no hace nada real,
+// distinto de "Agregar jugador nuevo" (que sí funciona y se deja igual).
+function addGuestPlaceholder() {
+    if (typeof showToast === 'function') {
+        showToast('Agregar invitado: próximamente', 'error');
+    }
 }
 
 // ── Asignar jugador ─────────────────────────────────────────
@@ -95,6 +212,35 @@ function assignPlayer(name, team) {
     }
     renderPlayerList();
     validateForm();
+}
+
+// ── Balancear equipos por ELO (combinado desde crear-partido.js) ──
+// Toma los jugadores YA asignados a algún equipo (team1 + team2) y los
+// redistribuye parejos según ELO, igual que balanceTeams() en
+// crear-partido.js, adaptado a la forma de npState.
+function balanceTeams() {
+    var combined = npState.team1.concat(npState.team2);
+    if (combined.length === 0) {
+        if (typeof showToast === 'function') showToast('Asigná jugadores a algún equipo primero', 'error');
+        return;
+    }
+
+    var sorted = combined
+        .map(function(name) {
+            return npState.allPlayers.find(function(p) { return p.name === name; }) || { name: name, elo: 1000 };
+        })
+        .sort(function(a, b) { return (b.elo || 1000) - (a.elo || 1000); });
+
+    npState.team1 = [];
+    npState.team2 = [];
+    sorted.forEach(function(player, i) {
+        if (i % 2 === 0) npState.team1.push(player.name);
+        else             npState.team2.push(player.name);
+    });
+
+    renderPlayerList();
+    validateForm();
+    if (typeof showToast === 'function') showToast('Equipos balanceados por ELO');
 }
 
 // ── Quitar jugador ──────────────────────────────────────────
@@ -167,54 +313,63 @@ function updateStatus() {
 // ── Validar ─────────────────────────────────────────────────
 function validateForm() {
     var date   = document.getElementById('npDate').value;
-    var venue  = document.getElementById('npVenue').value.trim();
+    var cancha = getSelectedCancha();
     var fmt    = npState.format;
     var t1ok   = fmt > 0 && npState.team1.length >= fmt;
     var t2ok   = fmt > 0 && npState.team2.length >= fmt;
-    var ready  = date && venue && fmt && t1ok && t2ok;
+    var ready  = date && cancha.id && fmt && t1ok && t2ok;
 
     document.getElementById('npSaveBtn').disabled = !ready;
 
     var info = '';
-    if      (!date)   info = 'Seleccioná una fecha';
-    else if (!venue)  info = 'Ingresá el nombre de la cancha';
-    else if (!fmt)    info = 'Elegí el formato del partido';
-    else if (!t1ok)   info = 'Faltan ' + (fmt - npState.team1.length) + ' jugadores en equipo 1';
-    else if (!t2ok)   info = 'Faltan ' + (fmt - npState.team2.length) + ' jugadores en equipo 2';
-    else              info = '¡Todo listo para jugar!';
+    if      (!date)        info = 'Seleccioná una fecha';
+    else if (!cancha.id)   info = 'Seleccioná una cancha';
+    else if (!fmt)         info = 'Elegí el formato del partido';
+    else if (!t1ok)        info = 'Faltan ' + (fmt - npState.team1.length) + ' jugadores en equipo 1';
+    else if (!t2ok)        info = 'Faltan ' + (fmt - npState.team2.length) + ' jugadores en equipo 2';
+    else                   info = '¡Todo listo para jugar!';
     document.getElementById('npCtaInfo').textContent = info;
 }
 
 // ── Guardar e iniciar ────────────────────────────────────────
+// CAMBIO CLAVE de la combinación: antes redirigía directo a
+// anotador.html. Ahora el partido queda guardado como pendiente
+// (ya se guardaba con completed:false) y se vuelve a crear-partido.html,
+// donde loadUpcomingMatches() (en crear-partido.js, sin tocar) ya lo
+// va a mostrar automáticamente con sus botones de "Ver equipos" e
+// "Iniciar" (este último sí lleva a anotador.html cuando corresponda).
 function saveAndStart() {
-    var date   = document.getElementById('npDate').value;
-    var time   = document.getElementById('npTime').value;
-    var venue  = document.getElementById('npVenue').value.trim();
-    var t1Name = document.getElementById('npTeam1Name').value.trim() || 'BLANCO';
-    var t2Name = document.getElementById('npTeam2Name').value.trim() || 'NEGRO';
+    var date    = document.getElementById('npDate').value;
+    var time    = document.getElementById('npTime').value;
+    var cancha  = getSelectedCancha();
+    var t1Name  = document.getElementById('npTeam1Name').value.trim() || 'BLANCO';
+    var t2Name  = document.getElementById('npTeam2Name').value.trim() || 'NEGRO';
 
-    var dateObj  = new Date(date + 'T12:00:00');
-    var dateStr  = dateObj.toLocaleDateString('es-AR', { weekday:'short', day:'numeric', month:'short' });
-    var fechaLabel = dateStr + (time ? ' ' + time : '') + ' — ' + venue;
+    var dateObj   = new Date(date + 'T12:00:00');
+    var dateStr   = dateObj.toLocaleDateString('es-AR', { weekday:'short', day:'numeric', month:'short' });
+    var fechaLabel = dateStr + (time ? ' ' + time : '') + ' — ' + cancha.label;
 
     var newMatch = {
-        id:         Date.now(),
-        date:       date,
-        time:       time,
-        venue:      venue,
-        format:     npState.format,
-        fecha:      fechaLabel,
-        team1Name:  t1Name,
-        team2Name:  t2Name,
-        whiteTeam:  npState.team1,
-        blackTeam:  npState.team2,
-        whiteScore: 0,
-        blackScore: 0,
-        completed:  false,
-        events:     []
+        id:          Date.now(),
+        date:        date,
+        time:        time,
+        venue:       cancha.label,
+        canchaId:    cancha.id,
+        format:      npState.format,
+        fecha:       fechaLabel,
+        team1Name:   t1Name,
+        team2Name:   t2Name,
+        whiteTeam:   npState.team1,
+        blackTeam:   npState.team2,
+        whiteScore:  0,
+        blackScore:  0,
+        completed:   false,
+        events:      []
     };
 
     saveMatch(newMatch);
-    sessionStorage.setItem('currentMatchId', newMatch.id);
-    window.location.href = 'anotador.html';
+
+    if (typeof showToast === 'function') showToast('Partido creado, queda pendiente de iniciar');
+
+    window.location.href = 'crear-partido.html';
 }
