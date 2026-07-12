@@ -1,0 +1,20 @@
+=== NUEVO INTENTO DE ENVÍO: 2026-07-07 09:13:10 ===
+PARA: aplicopa2026@gmail.com
+ASUNTO: Nuevo contacto web: prueba
+CABECERAS:
+From: noreply@tusitio.com
+Reply-To: bruno@gmail.com
+Content-Type: text/plain; charset=UTF-8
+X-Mailer: PHP/8.2.12
+CUERPO DEL MENSAJE:
+Has recibido un nuevo mensaje desde el formulario de contacto de tu sitio.
+
+DATOS DEL CONTACTO:
+Nombre: bruno
+Correo Electrónico: bruno@gmail.com
+Asunto: prueba
+Mensaje:
+muy buena la app!
+
+=================================================
+

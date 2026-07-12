@@ -20,10 +20,9 @@
          mismo patrón que home.html/estadisticas.html. -->
     <header class="app-topnav">
         <div class="app-topnav-inner">
-            <a href="../index.html" class="app-topnav-brand">
-                <span class="app-topnav-brand-icon"><i class="fa-solid fa-futbol"></i></span>
-                <span class="app-topnav-brand-text">COPA</span>
-            </a>
+            <div class="app-topnav-brand">
+                <img src="../images/icono-nav.png" alt="COPA" class="app-topnav-logo-img">
+            </div>
 
             <nav class="app-topnav-links">
                 <div class="nav-item" data-page="home">
@@ -52,6 +51,7 @@
                 </button>
                 <div class="app-topnav-user-menu" id="userMenu">
                     <a href="perfil.html" class="app-topnav-user-menu-item">Mi cuenta</a>
+                    <a href="league-selection.html" class="app-topnav-user-menu-item">Cambiar liga</a>
                     <button type="button" class="app-topnav-user-menu-item app-topnav-user-menu-item-danger" id="logoutBtn">Cerrar sesión</button>
                 </div>
             </div>
@@ -61,6 +61,17 @@
     <div class="app-container">
         <!-- Header: título + buscador. Tiene función real (#searchInput
              lo usa liga.js), se mantiene en todos los formatos. -->
+        <!-- Barra del creador: visible solo para ROL_LIGA=5, la muestra el JS -->
+        <div id="creatorBar" style="display:none;" class="creator-bar">
+            <div class="creator-bar-code">
+                <span class="creator-bar-label">Código de invitación</span>
+                <span class="creator-bar-value" id="codigoValor">—</span>
+            </div>
+            <button type="button" class="creator-bar-copy" id="btnCopiarCodigo" title="Copiar código">
+                <i class="fa-solid fa-copy"></i> Copiar
+            </button>
+        </div>
+
         <div class="header">
             <h1>Jugadores</h1>
             <div class="search-box">
@@ -88,8 +99,7 @@
         <div class="app-footer-inner">
             <div class="app-footer-top">
                 <div class="app-footer-brand">
-                    <span class="app-footer-brand-icon"><i class="fa-solid fa-futbol"></i></span>
-                    <span class="app-footer-brand-text">COPA</span>
+                    <img src="../images/icono-nav.png" alt="COPA" class="app-topnav-logo-img">
                 </div>
                 <nav class="app-footer-links">
                     <a href="home.html">Inicio</a>
@@ -108,5 +118,99 @@
     <script src="../scripts/navigation.js"></script>
     <script src="../scripts/app-topnav.js"></script>
     <script src="../scripts/liga.js"></script>
+    <script>
+    // ── Código de invitación para todos + tachito solo para ROL_LIGA=5 ──
+    // El código se muestra siempre que el usuario esté en una liga activa.
+    // El tachito solo aparece si el usuario es ROL_LIGA=5.
+
+    document.addEventListener('DOMContentLoaded', function() {
+        fetch('../api/session.php', { credentials: 'same-origin' })
+            .then(function(r){ return r.json(); })
+            .then(function(data) {
+                if (!data.ok || !data.ligaActiva) return;
+                var ligaId  = data.ligaActiva.id;
+                var rolLiga = parseInt(data.ligaActiva.rol_liga) || 0;
+
+                // Mostrar barra del código para TODOS
+                var bar = document.getElementById('creatorBar');
+                if (bar) bar.style.display = 'flex';
+
+                fetch('../api/listar_ligas.php', { credentials: 'same-origin' })
+                    .then(function(r2){ return r2.json(); })
+                    .then(function(d2) {
+                        var ligaData = (d2.misLigas || []).find(function(l){ return l.id === ligaId; });
+                        var codigo = (ligaData && ligaData.codigo_invitacion) ? ligaData.codigo_invitacion : '—';
+                        var valEl = document.getElementById('codigoValor');
+                        if (valEl) valEl.textContent = codigo;
+                        var btnCopiar = document.getElementById('btnCopiarCodigo');
+                        if (btnCopiar) {
+                            btnCopiar.addEventListener('click', function() {
+                                navigator.clipboard.writeText(codigo).catch(function() {
+                                    var ta = document.createElement('textarea');
+                                    ta.value = codigo; document.body.appendChild(ta);
+                                    ta.select(); document.execCommand('copy'); ta.remove();
+                                });
+                                btnCopiar.innerHTML = '<i class="fa-solid fa-check"></i> Copiado';
+                                setTimeout(function() { btnCopiar.innerHTML = '<i class="fa-solid fa-copy"></i> Copiar'; }, 2000);
+                            });
+                        }
+                    });
+
+                // Tachito solo para ROL_LIGA=5
+                if (rolLiga !== 5) return;
+                window._esCreador = true;
+
+                var container = document.getElementById('playersContainer');
+                if (!container) return;
+
+                function inyectarTachito(card) {
+                    if (card.querySelector('.player-remove-btn')) return;
+                    var nameEl = card.querySelector('.player-name');
+                    if (!nameEl) return;
+                    var nombre = nameEl.textContent.trim();
+                    var player = (window.ligaPlayers || []).find(function(p){ return p.name === nombre; });
+                    if (!player) return;
+                    var btn = document.createElement('button');
+                    btn.className = 'player-remove-btn';
+                    btn.title = 'Dar de baja de la liga';
+                    btn.innerHTML = '<i class="fa-solid fa-trash"></i>';
+                    btn.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        confirmarBaja(player.id, player.name);
+                    });
+                    card.appendChild(btn);
+                }
+
+                new MutationObserver(function(mutations) {
+                    mutations.forEach(function(m) {
+                        m.addedNodes.forEach(function(node) {
+                            if (node.nodeType !== 1) return;
+                            if (node.classList && node.classList.contains('player-card')) inyectarTachito(node);
+                            node.querySelectorAll && node.querySelectorAll('.player-card').forEach(inyectarTachito);
+                        });
+                    });
+                }).observe(container, { childList: true, subtree: true });
+
+                container.querySelectorAll('.player-card').forEach(inyectarTachito);
+            })
+            .catch(function(){});
+    });
+
+    function confirmarBaja(idUsuario, nombre) {
+        if (!confirm('¿Seguro que querés dar de baja a ' + nombre + ' de la liga?')) return;
+        fetch('../api/bajarJugadorLiga.php', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            credentials: 'same-origin', body: JSON.stringify({ id_usuario: idUsuario })
+        })
+        .then(function(r){ return r.json(); })
+        .then(function(data) {
+            if (data.ok) {
+                window.ligaPlayers = (window.ligaPlayers || []).filter(function(p){ return p.id !== idUsuario; });
+                if (typeof renderPlayers === 'function') renderPlayers(window.ligaPlayers);
+            } else { alert('Error: ' + (data.error || 'No se pudo dar de baja')); }
+        })
+        .catch(function() { alert('Error de conexión'); });
+    }
+    </script>
 </body>
 </html>

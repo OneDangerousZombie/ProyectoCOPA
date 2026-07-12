@@ -23,23 +23,14 @@
     <header class="landing-navbar">
         <div class="nav-container">
             <a href="index.html" class="nav-logo">
-                <span class="nav-logo-icon"><i class="fa-solid fa-futbol"></i></span>
-                <span class="nav-logo-text">COPA</span>
+                <img src="images/icono-nav.png" alt="COPA" class="nav-logo-img">
             </a>
 
             <nav class="nav-links">
                 <a href="ligas.html" class="nav-link" data-page="ligas">Ligas</a>
                 <a href="caracteristicas.html" class="nav-link" data-page="caracteristicas">Características</a>
-                <div class="nav-dropdown">
-                    <button type="button" class="nav-link nav-dropdown-trigger" id="aboutTrigger" aria-expanded="false">
-                        ¿Quiénes Somos?
-                        <i class="fa-solid fa-chevron-down dropdown-caret"></i>
-                    </button>
-                    <div class="dropdown-menu" id="aboutMenu">
-                        <a href="sobre-nosotros.html" class="dropdown-item" data-page="sobre-nosotros">Sobre Nosotros</a>
-                        <a href="ayuda.html" class="dropdown-item" data-page="ayuda">Necesito Ayuda</a>
-                    </div>
-                </div>
+                <a href="sobre-nosotros.html" class="nav-link" data-page="sobre-nosotros">Sobre Nosotros</a>
+                <a href="ayuda.html" class="nav-link" data-page="ayuda">Necesito Ayuda</a>
             </nav>
 
             <div class="nav-actions">
@@ -88,6 +79,10 @@
 
         <!-- ============================ HERO ============================ -->
         <section class="hero-section">
+            <video class="hero-video-bg" autoplay muted loop playsinline>
+                <source src="videos/video-index.mp4" type="video/mp4">
+            </video>
+            <div class="hero-video-overlay" aria-hidden="true"></div>
             <div class="hero-container">
                 <div class="hero-content reveal">
                     <span class="hero-eyebrow">Ligas de fútbol amateur, sin vueltas</span>
@@ -106,32 +101,8 @@
 
                 <!-- Mockup visual armado solo con CSS, sin imágenes generadas. -->
                 <div class="hero-visual reveal">
-                    <div class="mock-phone">
-                        <div class="mock-phone-notch"></div>
-                        <div class="mock-match-card">
-                            <span class="mock-match-label">FECHA 7 · APERTURA</span>
-                            <div class="mock-match-teams">
-                                <span>BLANCO</span>
-                                <span class="mock-match-score">3 - 2</span>
-                                <span>NEGRO</span>
-                            </div>
-                        </div>
-                        <div class="mock-stat-row">
-                            <div class="mock-stat-chip">
-                                <span class="mock-stat-value">2450</span>
-                                <span class="mock-stat-label">pts</span>
-                            </div>
-                            <div class="mock-stat-chip">
-                                <span class="mock-stat-value">+45</span>
-                                <span class="mock-stat-label">último partido</span>
-                            </div>
-                        </div>
-                        <div class="mock-bar-row">
-                            <div class="mock-bar"><div class="mock-bar-fill" style="width: 82%;"></div></div>
-                            <div class="mock-bar"><div class="mock-bar-fill" style="width: 64%;"></div></div>
-                            <div class="mock-bar"><div class="mock-bar-fill" style="width: 47%;"></div></div>
-                        </div>
-                    </div>
+                    <img src="images/iphone.png" alt="" class="hero-iphone-img" aria-hidden="true">
+                    
                 </div>
             </div>
         </section>
@@ -227,7 +198,7 @@
 
         <!-- ============================ RANKINGS + ESTADÍSTICAS (panel doble) ============================ -->
         <div class="liga-numbers-pair">
-        <section class="section-padding" id="rankings">
+        <section class="section-padding liga-panel-left" id="rankings">
             <div class="section-container">
                 <div class="section-header reveal">
                     <span class="section-eyebrow">Rankings</span>
@@ -274,7 +245,7 @@
         </section>
 
         <!-- ============================ ESTADÍSTICAS ============================ -->
-        <section class="section-padding section-alt" id="estadisticas">
+        <section class="section-padding section-alt liga-panel-right" id="estadisticas">
             <div class="section-container">
                 <div class="section-header reveal">
                     <span class="section-eyebrow">Estadísticas</span>
@@ -380,8 +351,7 @@
             <div class="footer-top">
                 <div class="footer-brand">
                     <a href="index.html" class="nav-logo">
-                        <span class="nav-logo-icon"><i class="fa-solid fa-futbol"></i></span>
-                        <span class="nav-logo-text">COPA</span>
+                        <img src="images/icono-nav.png" alt="COPA" class="nav-logo-img">
                     </a>
                     <p class="footer-brand-text">Tu liga de fútbol amateur, organizada.</p>
                 </div>
@@ -402,9 +372,11 @@
                 <div class="footer-column">
                     <h4 class="footer-column-title">Redes</h4>
                     <!-- Reemplazar "#" por las URLs reales de cada red. -->
-                    <a href="#" class="footer-link">Instagram</a>
-                    <a href="#" class="footer-link">X</a>
-                    <a href="#" class="footer-link">Discord</a>
+                    <div class="footer-social-row">
+                        <a href="#" class="footer-link footer-social-link" title="Instagram"><i class="fa-brands fa-instagram"></i></a>
+                        <a href="#" class="footer-link footer-social-link" title="X"><i class="fa-brands fa-x-twitter"></i></a>
+                        <a href="#" class="footer-link footer-social-link" title="Discord"><i class="fa-brands fa-discord"></i></a>
+                    </div>
                 </div>
             </div>
 

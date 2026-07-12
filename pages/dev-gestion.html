@@ -56,11 +56,12 @@
 
             <!-- Barra de acciones -->
             <div class="dev-action-bar" id="devActionBar">
-                <button type="button" class="dev-action-btn modificar"    data-action="modificar">   <i class="fa-solid fa-pen"></i>     Modificar</button>
-                <button type="button" class="dev-action-btn inspeccionar" data-action="inspeccionar"><i class="fa-solid fa-eye"></i>     Inspeccionar</button>
-                <button type="button" class="dev-action-btn inhabilitar"  data-action="inhabilitar"> <i class="fa-solid fa-ban"></i>     Inhabilitar</button>
-                <button type="button" class="dev-action-btn eliminar"     data-action="eliminar">    <i class="fa-solid fa-trash"></i>   Eliminar</button>
+                <button type="button" class="dev-action-btn modificar"    data-requires-selection="true" data-action="modificar">   <i class="fa-solid fa-pen"></i>     Modificar</button>
+                <button type="button" class="dev-action-btn inspeccionar" data-requires-selection="true" data-action="inspeccionar"><i class="fa-solid fa-eye"></i>     Inspeccionar</button>
+                <button type="button" class="dev-action-btn inhabilitar" data-requires-selection="true" data-action="inhabilitar"> <i class="fa-solid fa-ban"></i> Inhabilitar/Habilitar</button>
+                <button type="button" class="dev-action-btn eliminar"     data-requires-selection="true" data-action="eliminar">    <i class="fa-solid fa-trash"></i>   Eliminar</button>
                 <!-- Botones de alta -->
+                 <button type="button" id="btnNuevoUsuario" style="display:none;opacity:1;pointer-events:auto;background:rgba(34,197,94,0.1);color:var(--green-primary);border-color:var(--green-border);" class="dev-action-btn" onclick="openCrearUsuario()"><i class="fa-solid fa-plus"></i> Nuevo usuario</button>
                 <button type="button" id="btnNuevaCancha" style="display:none;opacity:1;pointer-events:auto;background:rgba(34,197,94,0.1);color:var(--green-primary);border-color:var(--green-border);" class="dev-action-btn" onclick="openCrearCancha()"><i class="fa-solid fa-plus"></i> Nueva cancha</button>
                 <button type="button" id="btnNuevaLiga"  style="display:none;opacity:1;pointer-events:auto;background:rgba(34,197,94,0.1);color:var(--green-primary);border-color:var(--green-border);" class="dev-action-btn" onclick="openCrearLiga()"> <i class="fa-solid fa-plus"></i> Nueva liga</button>
                 <span class="dev-selection-count" id="devSelectionCount"></span>
@@ -159,8 +160,9 @@
                         </select>
                     </div>
                     <div class="dev-modal-field"><label>Mail</label><input type="email" id="modMail"></div>
+                    <div class="dev-modal-field" id="modClaveWrap"><label>Contraseña</label><input type="password" id="modClave" maxlength="266"></div>
                 </div>
-
+                
                 <!-- Canchas -->
                 <div id="modFieldsCancha" style="display:none">
                     <div class="dev-modal-field"><label>Nombre</label><input type="text" id="modCanchaNombre" maxlength="30" required></div>
@@ -223,6 +225,36 @@
             <div class="dev-modal-actions">
                 <button type="button" class="dev-btn dev-btn-ghost dev-modal-close">Cancelar</button>
                 <button type="button" class="dev-btn dev-btn-danger" id="eliminarConfirmBtn"><i class="fa-solid fa-trash"></i> Eliminar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: HABILITAR/INHABILITAR MEMBRESÍAS -->
+    <div class="dev-modal" id="modalMembresias">
+        <div class="dev-modal-content">
+            <div class="dev-modal-header">
+                <div><div class="dev-modal-title">Habilitar / Inhabilitar</div><div class="dev-modal-sub">Seleccioná las ligas a modificar</div></div>
+                <button type="button" class="dev-modal-close">×</button>
+            </div>
+            <div id="membresiasEmpty" style="display:none;padding:1rem;color:var(--text-tertiary)">El usuario no está en ninguna liga.</div>
+            <div id="membresiasContent" style="display:none">
+                <div class="dev-tabs">
+                    <button type="button" class="dev-tab-btn active" data-mtab="inhabilitar">Inhabilitar</button>
+                    <button type="button" class="dev-tab-btn" data-mtab="habilitar">Habilitar</button>
+                </div>
+                <div class="dev-abm-wrap">
+                    <table class="dev-abm-table">
+                        <thead><tr>
+                            <th class="cb-col"><input type="checkbox" class="dev-cb" id="selectAllMembresias"></th>
+                            <th>Usuario</th><th>Liga</th>
+                        </tr></thead>
+                        <tbody id="tbodyMembresias"></tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="dev-modal-actions">
+                <button type="button" class="dev-btn dev-btn-ghost dev-modal-close">Cancelar</button>
+                <button type="button" class="dev-btn dev-btn-primary" id="membresiasConfirmBtn">Confirmar</button>
             </div>
         </div>
     </div>

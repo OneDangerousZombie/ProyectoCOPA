@@ -10,6 +10,15 @@ document.addEventListener('DOMContentLoaded', function () {
     initJoinDropdown();
     initJoinByCode();
     initCreateLeagueModal();
+    
+    fetch('../api/session.php', { credentials: 'same-origin' })
+    .then(r => r.json())
+    .then(data => {
+        if (data.ok && data.jugador && data.jugador.rol === 9) {
+            document.getElementById('btnPanelDev').style.display = 'flex';
+        }
+    })
+    .catch(() => {});
 });
 
 // ── Traer "mis ligas" + ligas públicas disponibles ─────────────────────────

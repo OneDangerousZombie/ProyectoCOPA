@@ -270,3 +270,73 @@
         margin-bottom: 0;
     }
 }
+
+/* ════════════════════════════════════════════════════════════
+   AGREGADO — background vestuario, espaciado logout, botón home
+   ════════════════════════════════════════════════════════════ */
+
+/* ── Background vestuario.jpg — fade lento y sutil ─────────── */
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 75vh;
+    background-image: url('../images/vestuario.jpg');
+    background-size: cover;
+    background-position: center top;
+    background-repeat: no-repeat;
+    -webkit-mask-image: linear-gradient(to bottom,
+        rgba(0,0,0,0.60) 0%,
+        rgba(0,0,0,0.50) 55%,
+        rgba(0,0,0,0.15) 85%,
+        rgba(0,0,0,0)    100%);
+    mask-image: linear-gradient(to bottom,
+        rgba(0,0,0,0.60) 0%,
+        rgba(0,0,0,0.50) 55%,
+        rgba(0,0,0,0.15) 85%,
+        rgba(0,0,0,0)    100%);
+    z-index: -1;
+    pointer-events: none;
+}
+
+/* ── Botón logout: más espacio arriba en tablet/desktop ─────── */
+@media (min-width: 860px) {
+    .profile-logout-btn {
+        margin-top: 1.25rem;
+    }
+}
+
+/* ── Botón volver al inicio — solo mobile ───────────────────── */
+.profile-home-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    width: 100%;
+    padding: 0.8rem 1rem;
+    margin-bottom: 1.25rem;
+    background: transparent;
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-md);
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    font-weight: 700;
+    font-family: inherit;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.profile-home-btn:hover {
+    background: var(--bg-elevated);
+    border-color: var(--green-border);
+    color: var(--green-primary);
+}
+
+@media (min-width: 860px) {
+    .profile-home-btn {
+        display: none;
+    }
+}

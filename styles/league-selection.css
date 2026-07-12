@@ -71,6 +71,10 @@ body::before {
     flex-direction: column;
     gap: 0.75rem;
     animation: fadeInUp 0.4s cubic-bezier(0.32, 0.72, 0, 1) 0.08s both;
+    flex-direction: row;
+    align-items: stretch;
+    gap: 1.25rem;
+    flex-wrap: wrap;
 }
 
 .league-join-wrap {
@@ -164,6 +168,35 @@ body::before {
 .league-btn.secondary:hover {
     border-color: var(--green-border);
     background: var(--bg-elevated);
+}
+
+.dev-btn {
+    background: var(--green-primary);
+    color: #000;
+    border: none;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    justify-content: center;
+}
+
+#btnPanelDev {
+    order: 99;
+    width: 50%;
+    margin: 0.5rem auto 0;
+    justify-content: center;
+    background: var(--green-primary);
+    color: #000;
+    border: none;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    font-family: inherit;
+    font-size: 0.95rem;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    padding: 1.1rem 1.25rem;
+    border-radius: var(--radius-lg);
+    margin-bottom: 1.5rem;
 }
 
 /* ── Divider ─────────────────────────────────── */
@@ -328,12 +361,6 @@ body::before {
         font-size: 1.85rem;
     }
 
-    .buttons-container {
-        flex-direction: row;
-        align-items: stretch;
-        gap: 1.25rem;
-    }
-
     .league-join-wrap {
         flex: 1;
         display: flex;
@@ -372,4 +399,338 @@ body::before {
     .league-btn {
         padding: 1.375rem 1.5rem;
     }
+}
+
+/* ════════════════════════════════════════════════════════════
+   AGREGADO v2 — botones lado a lado, panel derecho fijo con overlay
+   ════════════════════════════════════════════════════════════ */
+
+/* ── Fondo ───────────────────────────────────────────────── */
+body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url('../images/esquina2.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    z-index: -2;
+    pointer-events: none;
+}
+
+body::before {
+    background: rgba(8, 8, 8, 0.72);
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+}
+
+/* ── Flecha volver ───────────────────────────────────────── */
+.ls-back-arrow {
+    position: fixed;
+    top: 1.25rem;
+    left: 1.25rem;
+    z-index: 100;
+    width: 38px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(14, 14, 14, 0.80);
+    border: 1px solid var(--border-light);
+    border-radius: 50%;
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 0.9rem;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    transition: color var(--transition-fast), border-color var(--transition-fast);
+}
+.ls-back-arrow:hover { color: var(--green-primary); border-color: var(--green-border); }
+
+/* ── Logo imagen ─────────────────────────────────────────── */
+.ls-logo-img {
+    width: 90px;
+    height: 90px;
+    object-fit: contain;
+    display: block;
+}
+.logo-mark {
+    background: transparent;
+    box-shadow: none;
+    width: auto;
+    height: auto;
+    border-radius: 0;
+}
+
+/* ── Container más ancho ─────────────────────────────────── */
+.selection-container { max-width: 820px; }
+
+/* ── Dos columnas principales ────────────────────────────── */
+.ls-two-col {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+@media (min-width: 700px) {
+    .ls-two-col {
+        flex-direction: row;
+        align-items: flex-start;
+        gap: 2rem;
+    }
+    .ls-left, .ls-right { flex: 1; }
+}
+
+/* ── LADO IZQUIERDO: botones apilados verticalmente ─────── */
+.ls-left .buttons-container {
+    flex-direction: column !important;
+    flex-wrap: nowrap !important;
+    align-items: stretch !important;
+    gap: 0.75rem !important;
+    width: 100%;
+}
+
+/* Orden: Unirme arriba, ó en el medio, Crear abajo */
+.ls-left .league-join-wrap { order: 0; }
+.ls-left .or-divider        { order: 1; }
+#createLeagueBtn             { order: 2; }
+
+/* Botones anchos */
+.ls-left .league-btn {
+    width: 100%;
+    padding: 1.1rem 1.25rem;
+    font-size: 0.92rem;
+}
+
+/* Mostrar el texto descriptivo */
+.ls-left .league-btn-text span { display: block; }
+
+/* Divider horizontal entre los botones */
+.ls-left .or-divider {
+    flex-direction: row;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-secondary);
+    margin: 0.125rem 0;
+}
+.ls-left .or-divider::before,
+.ls-left .or-divider::after {
+    width: auto;
+    height: 1px;
+    flex: 1;
+}
+
+.ls-left .league-join-wrap {
+    flex: none;
+    display: block;
+    width: 100%;
+}
+.ls-left .league-join-wrap .league-btn { width: 100%; }
+
+/* Separador vertical derecha del panel izquierdo */
+.ls-left {
+    border-right: 1px solid rgba(255, 255, 255, 0.12);
+    padding-right: 2rem;
+}
+
+/* ── LADO DERECHO: panel con altura fija ─────────────────── */
+/*
+   Altura calculada para 5 ítems de liga:
+   - Cada ítem: ~60px
+   - 5 ítems: 300px
+   - Título: 40px
+   - Total: 340px
+*/
+.ls-right {
+    position: relative;
+    height: 340px;
+    overflow: hidden;
+    border-radius: var(--radius-md);
+}
+
+/* Panel "Tus ligas" — fondo, ocupa todo el espacio */
+.ls-right-panel {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    background: var(--bg-card);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    z-index: 1;
+}
+
+.ls-right-title {
+    flex-shrink: 0;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+    padding: 0.875rem 1rem 0.625rem;
+    margin: 0;
+    border-bottom: 1px solid var(--border-color);
+}
+
+/* Lista de mis ligas — ocupa el espacio restante, scroll si hay más de 5 */
+#misLigasList {
+    flex: 1;
+    overflow-y: auto;
+    min-height: 0;
+}
+
+/* Estado vacío */
+#misLigasList:empty::after {
+    content: 'Todavía no pertenecés a ninguna liga';
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    text-align: center;
+    color: var(--text-tertiary);
+    font-size: 0.8rem;
+    padding: 1rem;
+}
+
+/* Siempre mostrar */
+#misLigasWrap { display: block !important; }
+
+/* ── Panel overlay "Unirme" — se desliza de arriba hacia abajo ─
+   Mismo tamaño que ls-right, arranca fuera de vista (arriba),
+   entra con transform cuando tiene .active.                   */
+.ls-dropdown-panel {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    display: flex !important;
+    flex-direction: column;
+    background: var(--bg-card);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-md);
+    padding: 1rem;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.35);
+    overflow: hidden;
+
+    /* Estado inicial: fuera de vista arriba */
+    transform: translateY(-100%);
+    opacity: 0;
+    visibility: hidden;
+    transition: transform 0.32s cubic-bezier(0.32, 0.72, 0, 1),
+                opacity 0.28s ease,
+                visibility 0.32s ease;
+
+    /* Resetear los estilos de .league-dropdown que usan opacity/visibility */
+    max-height: none;
+}
+
+.ls-dropdown-panel.active {
+    transform: translateY(0);
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Sección del código dentro del overlay */
+.join-code-block {
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 0.25rem;
+}
+
+.join-code-block label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+}
+
+.join-code-row {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.join-code-row input {
+    flex: 1;
+    min-width: 0;
+    padding: 0.65rem 0.875rem;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-sm);
+    color: var(--text-primary);
+    font-size: 0.88rem;
+    font-family: inherit;
+    transition: border-color var(--transition-fast);
+}
+.join-code-row input:focus { outline: none; border-color: var(--green-primary); }
+
+.join-code-btn {
+    flex-shrink: 0;
+    width: auto !important;
+    padding: 0.65rem 1rem !important;
+    font-size: 0.85rem !important;
+}
+
+/* Divider dentro del overlay */
+.ls-dropdown-panel .or-divider {
+    flex-shrink: 0;
+    margin: 0.625rem 0;
+    font-size: 0.72rem;
+}
+
+/* Lista de ligas públicas en el overlay — scroll, máx 3 items */
+#leagueDropdownList {
+    flex: 1;
+    overflow-y: auto;
+    min-height: 0;
+    max-height: calc(3 * 64px); /* exactamente 3 ítems */
+}
+
+/* Estado vacío ligas públicas */
+#leagueDropdownList:empty::after {
+    content: 'No hay ligas públicas disponibles';
+    display: block;
+    text-align: center;
+    color: var(--text-tertiary);
+    font-size: 0.78rem;
+    padding: 1rem;
+}
+
+/* ── Textos ───────────────────────────────────────────────── */
+.page-header h1 { color: var(--text-primary); }
+.page-header p  {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    font-weight: 500;
+}
+
+/* ── Botón DEV — verde musgo/oliva especial ───────────────── */
+.league-btn.btn-dev-dev,
+a.btn-dev-dev,
+#btnPanelDev {
+    background: #2d6a4f !important;
+    color: #b7e4c7 !important;
+    border: 1px solid #40916c !important;
+    font-weight: 700;
+    margin-top: 0.5rem;
+    width: 100%;
+    order: 3;
+    text-decoration: none;
+    justify-content: flex-start;
+}
+
+#btnPanelDev:hover {
+    background: #40916c !important;
+    box-shadow: 0 4px 16px rgba(45, 106, 79, 0.4) !important;
+    transform: translateY(-1px);
+}
+
+#btnPanelDev .league-btn-icon {
+    background: rgba(0,0,0,0.2) !important;
+    color: #b7e4c7;
 }

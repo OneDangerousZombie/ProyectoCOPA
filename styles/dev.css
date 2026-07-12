@@ -329,7 +329,7 @@ body {
     background: var(--bg-card);
     border: 1px solid var(--border-color);
     border-radius: var(--radius-md);
-    overflow: hidden;
+    overflow: clip;
 }
 
 /* Tabs de sección */
@@ -337,6 +337,10 @@ body {
     display: flex;
     border-bottom: 1px solid var(--border-color);
     background: var(--bg-secondary);
+    position: sticky;
+    top: 56px; /* altura del dev-topnav */
+    z-index: 10;
+    
 }
 
 .dev-tab-btn {
@@ -374,6 +378,10 @@ body {
     border-bottom: 1px solid var(--border-color);
     background: var(--bg-tertiary);
     flex-wrap: wrap;
+     position: sticky;
+    top: calc(54px + 48px); /* topnav + tabs */
+    z-index: 9;
+    
 }
 
 .dev-action-btn {
@@ -393,6 +401,7 @@ body {
     opacity: 0.38;
     pointer-events: none;
 }
+
 
 /* Una vez marcado al menos un checkbox (.abm-has-selection en la tabla),
    todos los botones de esa tabla se activan. */
@@ -445,13 +454,21 @@ body {
 }
 
 /* Tabla */
+
+thead {
+    position: sticky;
+    top: 0;
+    z-index: 8;
+}
+
 .dev-abm-wrap {
-    overflow-x: auto;
+    overflow: visible;
 }
 
 .dev-abm-table {
     width: 100%;
-    border-collapse: collapse;
+    border-collapse: separate;
+    border-spacing: 0;
     font-size: 0.83rem;
 }
 
@@ -467,6 +484,9 @@ body {
     border-bottom: 1px solid var(--border-color);
     white-space: nowrap;
     user-select: none;
+    position: sticky;
+    top: 160px;
+    z-index: 8;
 }
 
 .dev-abm-table th.cb-col,
@@ -579,6 +599,13 @@ body {
 
 /* ── Modales DEV ─────────────────────────────────────────────── */
 /* Reutiliza .modal de global.css, agrega variante centrada */
+#modalMembresias .dev-abm-wrap {
+    max-height: 40vh;
+    overflow-y: auto;
+}
+#modalMembresias .dev-abm-table thead th {
+    position: static;
+}
 .dev-modal {
     position: fixed;
     inset: 0;

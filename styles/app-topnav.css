@@ -68,7 +68,7 @@
 
     .app-topnav-brand-icon {
         width: 32px;
-        height: 32px;
+        height: 52px;
         border-radius: 50%;
         background: var(--bg-elevated);
         border: 1px solid var(--green-border);
@@ -245,3 +245,46 @@
         color: #f87171;
     }
 }
+
+/* ── Logo imagen en app nav (reemplaza ícono de pelota) ───── */
+.app-topnav-logo-img {
+    height: 52px;
+    width: auto;
+    display: block;
+}
+
+/* ── Popup acceso restringido nuevo-partido ──────────────────── */
+.access-popup-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(8, 8, 8, 0.80);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+}
+.access-popup {
+    background: var(--bg-card);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-xl);
+    padding: 2rem 2rem 1.75rem;
+    max-width: 340px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 24px 64px rgba(0,0,0,0.55);
+}
+.access-popup-icon { font-size: 2.25rem; color: #f87171; margin-bottom: 1rem; }
+.access-popup h3 { font-size: 1.05rem; font-weight: 800; color: var(--text-primary); margin-bottom: 0.5rem; letter-spacing: -0.02em; }
+.access-popup p { font-size: 0.85rem; color: var(--text-secondary); line-height: 1.55; margin-bottom: 1.5rem; }
+.access-popup-btn {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    padding: 0.7rem 1.5rem; background: var(--bg-elevated);
+    border: 1px solid var(--border-light); border-radius: var(--radius-md);
+    color: var(--text-secondary); font-size: 0.85rem; font-weight: 600;
+    font-family: inherit; cursor: pointer; text-decoration: none;
+    transition: all var(--transition-fast);
+}
+.access-popup-btn:hover { border-color: var(--green-border); color: var(--green-primary); }

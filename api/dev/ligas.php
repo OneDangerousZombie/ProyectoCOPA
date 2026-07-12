@@ -59,6 +59,21 @@ if ($method === 'GET') {
     exit;
 }
 
+// ── POST: inhabilitar/habilitar ──────────────────────────────
+if ($method === 'POST' && isset($_GET['inhabilitar'])) {
+    $input  = json_decode(file_get_contents('php://input'), true);
+    $ids    = array_filter(array_map('intval', (array)($input['ids'] ?? [])));
+    $estado = (int)($input['estado'] ?? 0);
+    if (empty($ids)) { http_response_code(400); echo json_encode(['ok'=>false,'error'=>'ids requeridos']); exit; }
+    $ph    = implode(',', array_fill(0, count($ids), '?'));
+    $types = 'i' . str_repeat('i', count($ids));
+    $s     = $conn->prepare("UPDATE ligas SET ESTADO=? WHERE ID_LIGA IN ($ph)");
+    $s->bind_param($types, $estado, ...$ids);
+    $ok = $s->execute(); $s->close(); $conn->close();
+    echo json_encode(['ok' => $ok, 'actualizadas' => count($ids)]);
+    exit;
+}
+
 // ── POST: crear ───────────────────────────────────────────────
 if ($method === 'POST') {
     $input      = json_decode(file_get_contents('php://input'), true);
@@ -86,7 +101,7 @@ if ($method === 'POST') {
     } while ($exists);
 
     $stmt = $conn->prepare("INSERT INTO ligas (NOMBRE, DESCRIPCION, ID_CREADOR, FECHA_CREACION, FORMATO_DEFAULT, PRIVADA, CODIGO_INVITACION) VALUES (?,?,?,?,?,?,?)");
-    $stmt->bind_param('ssssisi', $nombre, $descripcion, $id_creador, $fecha, $formato, $privada, $codigo);
+    $stmt->bind_param('ssissis', $nombre, $descripcion, $id_creador, $fecha, $formato, $privada, $codigo);
     $ok    = $stmt->execute();
     $newId = $conn->insert_id;
     $stmt->close(); $conn->close();
@@ -129,14 +144,45 @@ if ($method === 'DELETE') {
         exit;
     }
 
-    // Las FKs tienen ON DELETE CASCADE para liga_miembros e invitaciones
     $ph    = implode(',', array_fill(0, count($ids), '?'));
     $types = str_repeat('i', count($ids));
-    $stmt  = $conn->prepare("DELETE FROM ligas WHERE ID_LIGA IN ($ph)");
+
+    $conn->begin_transaction();
+    $conn->begin_transaction();
+try {
+    // Borrar dependencias sin CASCADE antes de la liga, en orden
+    $s_ev = $conn->prepare("
+        DELETE re FROM recolector_eventos re
+        JOIN partidos p ON re.ID_PARTIDO = p.ID_PARTIDOS
+        WHERE p.ID_LIGA IN ($ph)
+    ");
+    $s_ev->bind_param($types, ...$ids);
+    $s_ev->execute(); $s_ev->close();
+
+    $s0 = $conn->prepare("DELETE FROM estadisticas WHERE ID_LIGA IN ($ph)");
+    $s0->bind_param($types, ...$ids);
+    $s0->execute(); $s0->close();
+
+    $s_p = $conn->prepare("DELETE FROM partidos WHERE ID_LIGA IN ($ph)");
+    $s_p->bind_param($types, ...$ids);
+    $s_p->execute(); $s_p->close();
+
+    $s1 = $conn->prepare("DELETE FROM canchas WHERE ID_LIGA IN ($ph)");
+    $s1->bind_param($types, ...$ids);
+    $s1->execute(); $s1->close();
+
+    $stmt = $conn->prepare("DELETE FROM ligas WHERE ID_LIGA IN ($ph)");
     $stmt->bind_param($types, ...$ids);
-    $ok = $stmt->execute();
-    $stmt->close(); $conn->close();
-    echo json_encode(['ok' => $ok, 'eliminadas' => count($ids)]);
+    $stmt->execute(); $stmt->close();
+
+    $conn->commit();
+    echo json_encode(['ok' => true, 'eliminadas' => count($ids)]);
+} catch (Exception $e) {
+    $conn->rollback();
+    http_response_code(500);
+    echo json_encode(['ok' => false, 'error' => $e->getMessage()]);
+}
+    $conn->close();
     exit;
 }
 

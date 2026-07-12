@@ -25,10 +25,9 @@
          ============================================================ -->
     <header class="app-topnav">
         <div class="app-topnav-inner">
-            <a href="../index.html" class="app-topnav-brand">
-                <span class="app-topnav-brand-icon"><i class="fa-solid fa-futbol"></i></span>
-                <span class="app-topnav-brand-text">COPA</span>
-            </a>
+            <div class="app-topnav-brand">
+                <img src="../images/icono-nav.png" alt="COPA" class="app-topnav-logo-img">
+            </div>
 
             <nav class="app-topnav-links">
                 <div class="nav-item active" data-page="home">
@@ -76,11 +75,15 @@
                     <button class="carousel-nav" id="nextFecha">›</button>
                 </div>
 
-                <div class="match-card" id="currentMatch">
-                    <div class="match-teams">
-                        <div class="team">BLANCO</div>
-                        <div class="score">0 - 0</div>
-                        <div class="team">NEGRO</div>
+                <div class="match-stadium-wrap">
+                    <img src="../images/estadio.jpg" alt="" class="stadium-img" aria-hidden="true">
+                    <div class="stadium-overlay" aria-hidden="true"></div>
+                    <div class="match-card" id="currentMatch">
+                        <div class="match-teams">
+                            <div class="team">BLANCO</div>
+                            <div class="score">0 - 0</div>
+                            <div class="team">NEGRO</div>
+                        </div>
                     </div>
                 </div>
 
@@ -124,7 +127,7 @@
             <!-- Top 6 Liga -->
             <div class="top-players">
                 <div class="section-header">
-                    <h3><i class="fa-solid fa-trophy"></i> Top Liga</h3>
+                    <h3><i class="fa-solid fa-trophy"></i> Top de la Liga</h3>
                     <button class="link-btn" id="viewFullTable">Ver tabla completa →</button>
                 </div>
                 <div class="players-list" id="topPlayersList">
@@ -167,8 +170,7 @@
         <div class="app-footer-inner">
             <div class="app-footer-top">
                 <div class="app-footer-brand">
-                    <span class="app-footer-brand-icon"><i class="fa-solid fa-futbol"></i></span>
-                    <span class="app-footer-brand-text">COPA</span>
+                    <img src="../images/icono-nav.png" alt="COPA" class="app-topnav-logo-img">
                 </div>
                 <nav class="app-footer-links">
                     <a href="home.html">Inicio</a>

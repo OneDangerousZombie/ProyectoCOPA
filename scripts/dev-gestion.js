@@ -8,7 +8,9 @@
 var devGestion = {
     tab:       'usuarios',
     selection: [],
-    data: { usuarios: [], canchas: [], ligas: [] }
+    data: { usuarios: [], canchas: [], ligas: [] },
+    membresias: [],
+    mtab: 'inhabilitar'
 };
 
 function devToast(msg, type) {
@@ -20,9 +22,19 @@ function devToast(msg, type) {
 }
 
 document.addEventListener('DOMContentLoaded', function () {
-    document.querySelectorAll('.dev-tab-btn').forEach(function (btn) {
-        btn.addEventListener('click', function () { switchTab(btn.dataset.tab); });
+    document.querySelectorAll('.dev-tab-btn[data-tab]').forEach(function (btn) {
+    btn.addEventListener('click', function () { switchTab(btn.dataset.tab); });
+});
+
+document.querySelectorAll('#modalMembresias .dev-tab-btn[data-mtab]').forEach(function(btn){
+    btn.addEventListener('click', function(){
+        document.querySelectorAll('#modalMembresias .dev-tab-btn[data-mtab]').forEach(function(b){ b.classList.toggle('active', b === btn); });
+        devGestion.mtab = btn.dataset.mtab;
+        renderMembresiasTab();
     });
+});
+
+document.getElementById('membresiasConfirmBtn').addEventListener('click', confirmMembresias);
 
     document.getElementById('devActionBar').addEventListener('click', function (e) {
         var btn = e.target.closest('.dev-action-btn');
@@ -54,6 +66,10 @@ function switchTab(tab) {
     // Botón "Nueva cancha" solo en tab canchas; "Nueva liga" solo en tab ligas
     var btnCancha = document.getElementById('btnNuevaCancha');
     var btnLiga   = document.getElementById('btnNuevaLiga');
+    var btnUsuario = document.getElementById('btnNuevoUsuario');
+    var btnInhabilitar = document.querySelector('.dev-action-btn.inhabilitar');
+    if (btnInhabilitar) btnInhabilitar.style.display = tab === 'canchas' ? 'none' : 'inline-flex';
+    if (btnUsuario) btnUsuario.style.display = tab === 'usuarios' ? 'inline-flex' : 'none';
     if (btnCancha) btnCancha.style.display = tab === 'canchas' ? 'inline-flex' : 'none';
     if (btnLiga)   btnLiga.style.display   = tab === 'ligas'   ? 'inline-flex' : 'none';
 
@@ -216,7 +232,7 @@ function updateActionBar() {
     var count  = document.getElementById('devSelectionCount');
     bar.classList.toggle('abm-active', active);
     if (count) { count.textContent = active ? n + ' seleccionado' + (n!==1?'s':'') : ''; count.classList.toggle('has-selection', active); }
-    document.querySelectorAll('.dev-action-btn').forEach(function(btn) {
+    document.querySelectorAll('.dev-action-btn[data-requires-selection]').forEach(function(btn) {
         btn.disabled          = !active;
         btn.style.opacity     = active ? '1'    : '0.38';
         btn.style.pointerEvents= active ? 'auto' : 'none';
@@ -236,7 +252,10 @@ function handleAction(action) {
         if (ids.length > 1) { devToast('Modificá de a uno', 'warn'); return; }
         openModificar(ids[0], tab); return;
     }
-    if (action === 'inhabilitar') { openInhabilitar(ids, tab); return; }
+    if (action === 'inhabilitar') {
+    if (tab === 'usuarios') { openMembresias(ids); } else { openInhabilitar(ids, tab); }
+    return;
+}
     if (action === 'eliminar')    { openEliminar(ids, tab);    return; }
 }
 
@@ -261,6 +280,15 @@ function openInspeccionar(id, tab) {
         .catch(function(){ devToast('Error al cargar datos', 'error'); });
 }
 
+function hideModFields() {
+    ['modFieldsUsuario','modFieldsCancha','modFieldsLiga'].forEach(function(fid){
+        var e = document.getElementById(fid);
+        if (!e) return;
+        e.style.display = 'none';
+        e.querySelectorAll('input,select').forEach(function(i){ i.disabled = true; });
+    });
+}
+
 // ── Modal: Modificar ──────────────────────────────────────────
 function openModificar(id, tab) {
     var modal = document.getElementById('modalModificar');
@@ -269,13 +297,13 @@ function openModificar(id, tab) {
     document.getElementById('modTab').value = tab;
 
     // Mostrar solo el bloque de campos que corresponde
-    ['modFieldsUsuario','modFieldsCancha','modFieldsLiga'].forEach(function(fid){
-        var el = document.getElementById(fid);
-        if (el) el.style.display = 'none';
-    });
+    hideModFields();
     var fieldMap = { usuarios:'modFieldsUsuario', canchas:'modFieldsCancha', ligas:'modFieldsLiga' };
     var fieldsEl = document.getElementById(fieldMap[tab]);
-    if (fieldsEl) fieldsEl.style.display = 'block';
+    if (fieldsEl) {
+    fieldsEl.style.display = 'block';
+    fieldsEl.querySelectorAll('input,select').forEach(function(i){ i.disabled = false; });
+}
 
     var endpoints = { usuarios:'../api/dev/jugadores.php', canchas:'../api/dev/canchas.php', ligas:'../api/dev/ligas.php' };
     fetch(endpoints[tab] + '?id=' + id, { credentials:'same-origin' })
@@ -325,7 +353,7 @@ function submitModificar() {
     var body, endpoint;
 
     if (tab === 'usuarios') {
-        body     = { id:id, nombre:getVal('modNombre'), rol:parseInt(getVal('modRol'),10), mail:getVal('modMail') };
+        body     = { id:id, nombre:getVal('modNombre'), rol:parseInt(getVal('modRol'),10), mail:getVal('modMail'), clave:getVal('modClave') };
         endpoint = '../api/dev/jugadores.php';
     } else if (tab === 'canchas') {
         body     = { id:id, nombre:getVal('modCanchaNombre'), direccion:getVal('modDireccion'), localidad:getVal('modLocalidad'), id_liga:parseInt(getVal('modIdLiga'),10) };
@@ -335,7 +363,7 @@ function submitModificar() {
         endpoint = '../api/dev/ligas.php';
     }
 
-    if (!id && (tab === 'canchas' || tab === 'ligas')) {
+    if (!id && (tab === 'canchas' || tab === 'ligas' || tab === 'usuarios')) {
         // Crear nuevo
         submitCrear(tab, body);
         return;
@@ -353,25 +381,41 @@ function submitModificar() {
 }
 
 function submitCrear(tab, body) {
-    var endpoint = tab === 'canchas' ? '../api/dev/canchas.php' : '../api/dev/ligas.php';
+    var endpoint = tab === 'canchas' ? '../api/dev/canchas.php'
+                 : tab === 'ligas'   ? '../api/dev/ligas.php'
+                 : '../api/dev/jugadores.php?crear=1';
     fetch(endpoint, { method:'POST', headers:{'Content-Type':'application/json'}, credentials:'same-origin', body:JSON.stringify(body) })
         .then(function(r){ return r.json(); })
         .then(function(json){
             if (!json.ok) throw new Error(json.error);
-            devToast(tab === 'canchas' ? 'Cancha creada' : 'Liga creada');
+            devToast(tab === 'canchas' ? 'Cancha creada' : tab === 'ligas' ? 'Liga creada' : 'Usuario creado');
             closeAllModals();
             loadTabData(tab);
         })
         .catch(function(err){ devToast('Error: ' + err.message, 'error'); });
 }
-
 // ── Crear nueva cancha / liga ─────────────────────────────────
+function openCrearUsuario() {
+    var modal = document.getElementById('modalModificar');
+    document.getElementById('modId').value  = '';
+    document.getElementById('modTab').value = 'usuarios';
+    hideModFields();
+
+    document.getElementById('modFieldsUsuario').style.display = 'block';
+    document.getElementById('modFieldsUsuario').querySelectorAll('input,select').forEach(function(i){ i.disabled = false; });
+    setVal('modNombre',''); setVal('modRol','1'); setVal('modMail',''); setVal('modClave','');
+    document.getElementById('modTitle').textContent = 'Nuevo usuario';
+    modal.classList.add('active');
+}
+
 function openCrearCancha() {
     var modal = document.getElementById('modalModificar');
     document.getElementById('modId').value  = '';
     document.getElementById('modTab').value = 'canchas';
-    ['modFieldsUsuario','modFieldsCancha','modFieldsLiga'].forEach(function(fid){ var e=document.getElementById(fid); if(e) e.style.display='none'; });
+    hideModFields();
+
     document.getElementById('modFieldsCancha').style.display = 'block';
+    document.getElementById('modFieldsCancha').querySelectorAll('input,select').forEach(function(i){ i.disabled = false; });
     setVal('modCanchaNombre',''); setVal('modDireccion',''); setVal('modLocalidad','');
     loadLigasSelect('modIdLiga', null);
     document.getElementById('modTitle').textContent = 'Nueva cancha';
@@ -382,8 +426,10 @@ function openCrearLiga() {
     var modal = document.getElementById('modalModificar');
     document.getElementById('modId').value  = '';
     document.getElementById('modTab').value = 'ligas';
-    ['modFieldsUsuario','modFieldsCancha','modFieldsLiga'].forEach(function(fid){ var e=document.getElementById(fid); if(e) e.style.display='none'; });
+    hideModFields();
+
     document.getElementById('modFieldsLiga').style.display = 'block';
+    document.getElementById('modFieldsLiga').querySelectorAll('input,select').forEach(function(i){ i.disabled = false; });
     setVal('modLigaNombre',''); setVal('modDescripcion',''); setVal('modFormato','F5'); setVal('modPrivada','0'); setVal('modEstado','1');
     document.getElementById('modTitle').textContent = 'Nueva liga';
     modal.classList.add('active');
@@ -413,29 +459,119 @@ function openInhabilitar(ids, tab) {
             })
             .catch(function(err){ devToast('Error: '+err.message,'error'); });
         };
+        modal.classList.add('active');
+
     } else if (tab === 'ligas') {
-        // Para ligas: cambiar ESTADO a 0
-        msg.innerHTML = 'Pondrá en <strong>ESTADO = 0</strong> (inactiva) a ' + ids.length + ' liga' + (ids.length>1?'s':'') + '.';
+        var estados = ids.map(function(id){
+            var l = devGestion.data.ligas.find(function(x){ return x.id == id; });
+            return l ? parseInt(l.estado) : null;
+        });
+        var mixto = estados.some(function(e){ return e !== estados[0]; });
+        if (mixto) {
+            devToast('Seleccioná ligas con el mismo estado (todas activas o todas inactivas)', 'warn');
+            return;
+        }
+        var estadoActual = estados[0];
+        var nuevoEstado   = estadoActual === 1 ? 0 : 1;
+        var accionTexto   = nuevoEstado === 0 ? 'Deshabilitar' : 'Habilitar';
+        msg.innerHTML = accionTexto + ' <strong>' + ids.length + ' liga' + (ids.length>1?'s':'') + '</strong>?';
         btn.style.display = 'inline-flex';
         btn.onclick = function() {
-            Promise.all(ids.map(function(id){
-                return fetch('../api/dev/ligas.php', {
-                    method:'PUT', headers:{'Content-Type':'application/json'},
-                    credentials:'same-origin',
-                    body:JSON.stringify({id:id, nombre:'', estado:0}) // nombre se completará desde PHP si vacío
-                }).then(function(r){ return r.json(); });
-            }))
-            .then(function(){
-                devToast('Liga' + (ids.length>1?'s':'') + ' inhabilitada' + (ids.length>1?'s':''));
+            fetch('../api/dev/ligas.php?inhabilitar=1', {
+                method:'POST', headers:{'Content-Type':'application/json'},
+                credentials:'same-origin', body:JSON.stringify({ids:ids, estado:nuevoEstado})
+            })
+            .then(function(r){ return r.json(); })
+            .then(function(json){
+                if (!json.ok) throw new Error(json.error || 'Error desconocido');
+                devToast(accionTexto + ' correctamente');
                 closeAllModals(); devGestion.selection = []; updateActionBar(); loadTabData(tab);
             })
             .catch(function(err){ devToast('Error: '+err.message,'error'); });
         };
+        modal.classList.add('active');
+
     } else {
         msg.innerHTML = 'Inhabilitar <strong>' + tab + '</strong> no está disponible para esta entidad.';
         btn.style.display = 'none';
+        modal.classList.add('active');
     }
-    modal.classList.add('active');
+}
+
+function openMembresias(ids) {
+    var modal = document.getElementById('modalMembresias');
+    fetch('../api/dev/jugadores.php?membresias=1', {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        credentials:'same-origin', body:JSON.stringify({ids:ids})
+    })
+    .then(function(r){ return r.json(); })
+    .then(function(json){
+        if (!json.ok) throw new Error(json.error || 'Error');
+        devGestion.membresias = json.membresias || [];
+        devGestion.mtab = 'inhabilitar';
+        document.querySelectorAll('#modalMembresias .dev-tab-btn[data-mtab]').forEach(function(b){
+            b.classList.toggle('active', b.dataset.mtab === 'inhabilitar');
+        });
+        var empty   = document.getElementById('membresiasEmpty');
+        var content = document.getElementById('membresiasContent');
+        if (!devGestion.membresias.length) {
+            empty.style.display   = 'block';
+            content.style.display = 'none';
+        } else {
+            empty.style.display   = 'none';
+            content.style.display = 'block';
+            renderMembresiasTab();
+        }
+        modal.classList.add('active');
+    })
+    .catch(function(err){ devToast('Error: ' + err.message, 'error'); });
+}
+
+function renderMembresiasTab() {
+    var estadoFiltro = devGestion.mtab === 'inhabilitar' ? 1 : 0;
+    var rows = devGestion.membresias.filter(function(m){ return parseInt(m.ACTIVO) === estadoFiltro; });
+    var tbody = document.getElementById('tbodyMembresias');
+
+    if (!rows.length) {
+        tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;padding:1rem;color:var(--text-tertiary)">Sin registros en esta pestaña</td></tr>';
+        return;
+    }
+
+    tbody.innerHTML = rows.map(function(m){
+        return '<tr>' +
+            '<td class="cb-col"><input type="checkbox" class="dev-cb mem-cb" data-usuario="' + m.ID_USUARIO + '" data-liga="' + m.ID_LIGA + '"></td>' +
+            '<td>' + escHtml(m.usuario_nombre) + '</td>' +
+            '<td>' + escHtml(m.liga_nombre) + '</td>' +
+        '</tr>';
+    }).join('');
+
+    var selectAll = document.getElementById('selectAllMembresias');
+    selectAll.checked = false;
+    selectAll.onchange = function(){
+        document.querySelectorAll('#tbodyMembresias .mem-cb').forEach(function(cb){ cb.checked = selectAll.checked; });
+    };
+}
+
+function confirmMembresias() {
+    var checked = document.querySelectorAll('#tbodyMembresias .mem-cb:checked');
+    if (!checked.length) { devToast('Seleccioná al menos una liga', 'warn'); return; }
+
+    var pares = Array.from(checked).map(function(cb){
+        return { id_usuario: parseInt(cb.dataset.usuario,10), id_liga: parseInt(cb.dataset.liga,10) };
+    });
+    var estado = devGestion.mtab === 'inhabilitar' ? 0 : 1;
+
+    fetch('../api/dev/jugadores.php?actualizar_membresias=1', {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        credentials:'same-origin', body:JSON.stringify({pares:pares, estado:estado})
+    })
+    .then(function(r){ return r.json(); })
+    .then(function(json){
+        if (!json.ok) throw new Error(json.error || 'Error');
+        devToast(estado === 0 ? 'Inhabilitado correctamente' : 'Habilitado correctamente');
+        closeAllModals(); devGestion.selection = []; updateActionBar(); loadTabData('usuarios');
+    })
+    .catch(function(err){ devToast('Error: ' + err.message, 'error'); });
 }
 
 // ── Modal: Eliminar ───────────────────────────────────────────

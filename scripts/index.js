@@ -194,56 +194,160 @@ document.addEventListener('DOMContentLoaded', () => {
 
     /* ===== LIGAS (buscador + render, disponible para todos) ===== */
     let ligas = [];
-    const ligasGrid = document.getElementById('ligasGrid');
-    const ligasEmpty = document.getElementById('ligasEmpty');
-    const ligaSearch = document.getElementById('ligaSearch');
+    const ligasGrid   = document.getElementById('ligasGrid');
+    const ligasEmpty  = document.getElementById('ligasEmpty');
+    const ligaSearch  = document.getElementById('ligaSearch');
+    const ligaDetalle = document.getElementById('ligaDetalle');
+    const ligaSection = document.getElementById('ligas');
 
+    // ── Renderizar grilla de ligas ────────────────────────────────
     function renderLigas(filtro = '') {
         if (!ligasGrid) return;
+        const filtroNorm = filtro.trim().toLowerCase();
+        const filtradas  = ligas.filter(l => l.nombre.toLowerCase().includes(filtroNorm));
 
-        const filtroNormalizado = filtro.trim().toLowerCase();
-        const filtradas = ligas.filter((liga) =>
-            liga.nombre.toLowerCase().includes(filtroNormalizado)
-        );
-
-        ligasGrid.innerHTML = filtradas.map((liga) => `
+        ligasGrid.innerHTML = filtradas.map(liga => `
             <div class="liga-card">
-                <span class="liga-card-name">${liga.nombre}</span>
-                <div class="liga-card-meta">
-                    <span><strong>${liga.cantidad_miembros}</strong> jugadores</span>
-                    <span>${liga.ultimo_partido ? 'Último partido: ' + new Date(liga.ultimo_partido).toLocaleDateString('es-AR') : 'Sin partidos aún'}</span>
+                <div class="liga-card-header">
+                    <span class="liga-card-name">${liga.nombre}</span>
+                    ${liga.privada == 1 ? '<span class="liga-card-badge"><i class="fa-solid fa-lock"></i> Privada</span>' : ''}
                 </div>
-                <a href="pages/league-selection.html" class="liga-card-btn">Ver Liga <i class="fa-solid fa-arrow-right"></i></a>
+                <div class="liga-card-meta">
+                    <span><i class="fa-solid fa-users"></i> <strong>${liga.cantidad_miembros}</strong> jugadores</span>
+                    <span><i class="fa-solid fa-calendar-days"></i> ${liga.ultimo_partido ? new Date(liga.ultimo_partido).toLocaleDateString('es-AR') : 'Sin partidos'}</span>
+                </div>
+                <button class="liga-card-btn" onclick="verDetalleLiga(${liga.id}, '${liga.nombre.replace(/'/g,"\'")}')" >
+                    Ver estadísticas <i class="fa-solid fa-arrow-right"></i>
+                </button>
             </div>
         `).join('');
 
-        if (ligasEmpty) {
-            ligasEmpty.classList.toggle('active', filtradas.length === 0);
-        }
+        if (ligasEmpty) ligasEmpty.classList.toggle('active', filtradas.length === 0);
     }
 
     function cargarLigasPublicas() {
         fetch('api/listar_ligas_publicas.php')
-            .then(res => res.json())
+            .then(r => r.json())
             .then(data => {
-                if (data.ok && Array.isArray(data.ligas)) {
-                    ligas = data.ligas;
-                    renderLigas();
-                } else {
-                    console.error('Error al cargar ligas:', data.error);
-                }
+                if (data.ok && Array.isArray(data.ligas)) { ligas = data.ligas; renderLigas(); }
             })
-            .catch(error => {
-                console.error('Error cargando ligas públicas:', error);
-            });
+            .catch(() => {});
     }
 
     if (ligasGrid) {
         cargarLigasPublicas();
-        if (ligaSearch) {
-            ligaSearch.addEventListener('input', (event) => renderLigas(event.target.value));
-        }
+        if (ligaSearch) ligaSearch.addEventListener('input', e => renderLigas(e.target.value));
     }
+
+    // ── Ver detalle de una liga ───────────────────────────────────
+    window.verDetalleLiga = function(ligaId, nombre) {
+        if (!ligaDetalle || !ligaSection) return;
+
+        // Ocultar grilla, mostrar detalle
+        ligaSection.style.display = 'none';
+        ligaDetalle.style.display = 'block';
+
+        document.getElementById('detalleLigaNombre').textContent = nombre;
+        document.getElementById('detallePartido').innerHTML = '<div class="detalle-loading"><i class="fa-solid fa-circle-notch fa-spin"></i> Cargando…</div>';
+        document.getElementById('detalleStatsBody').innerHTML = '';
+
+        fetch('api/ligaDetalle.php?liga_id=' + ligaId)
+            .then(r => r.json())
+            .then(data => {
+                if (!data.ok) return;
+                renderDetallePartido(data.partido);
+                renderDetalleStats(data.stats);
+            })
+            .catch(() => {
+                document.getElementById('detallePartido').innerHTML = '<p style="color:var(--text-tertiary);text-align:center;padding:1rem">No se pudo cargar el detalle.</p>';
+            });
+    };
+
+    window.volverALigas = function() {
+        if (ligaDetalle) ligaDetalle.style.display = 'none';
+        if (ligaSection) ligaSection.style.display = '';
+    };
+
+    function renderDetallePartido(partido) {
+        const el = document.getElementById('detallePartido');
+        if (!el) return;
+        if (!partido) {
+            el.innerHTML = '<p style="color:var(--text-tertiary);text-align:center;padding:1.5rem;font-size:0.85rem"><i class="fa-solid fa-calendar-xmark"></i>  Todavía no hay partidos en esta liga.</p>';
+            return;
+        }
+        const eq1 = partido.equipos ? partido.equipos.equipo1 : 'Blanco';
+        const eq2 = partido.equipos ? partido.equipos.equipo2 : 'Negro';
+        const g1  = partido.goles  ? partido.goles.equipo1  : 0;
+        const g2  = partido.goles  ? partido.goles.equipo2  : 0;
+        const fecha = new Date(partido.fecha).toLocaleDateString('es-AR', {day:'2-digit',month:'long',year:'numeric'});
+
+        el.innerHTML = `
+            <div class="detalle-match-label">Último partido · ${fecha}</div>
+            <div class="detalle-match-score">
+                <span class="detalle-team">${eq1}</span>
+                <div class="detalle-score-center">
+                    <span class="detalle-score-num">${g1}</span>
+                    <span class="detalle-score-sep">—</span>
+                    <span class="detalle-score-num">${g2}</span>
+                </div>
+                <span class="detalle-team">${eq2}</span>
+            </div>
+            ${partido.cancha ? '<div class="detalle-match-cancha"><i class="fa-solid fa-location-dot"></i> ' + partido.cancha + '</div>' : ''}
+        `;
+    }
+
+    // ── Stats con filtros ─────────────────────────────────────────
+    let detalleStats = [];
+    let detalleSortKey  = 'goles';
+    let detalleSortDir  = -1;
+
+    function renderDetalleStats(stats) {
+        detalleStats = stats || [];
+        renderDetalleTabla();
+    }
+
+    function renderDetalleTabla() {
+        const sorted = [...detalleStats].sort((a, b) => (a[detalleSortKey] - b[detalleSortKey]) * detalleSortDir);
+        const tbody = document.getElementById('detalleStatsBody');
+        if (!tbody) return;
+        tbody.innerHTML = sorted.map((p, i) => {
+            const av = p.avatar
+                ? `<img src="${p.avatar}" class="detalle-avatar" alt="">`
+                : `<div class="detalle-avatar-ph"><i class="fa-solid fa-user"></i></div>`;
+            return `<tr>
+                <td>${i+1}°</td>
+                <td class="td-name"><div class="detalle-name-row">${av}<span>${escHtml(p.nombre)}</span></div></td>
+                <td>${p.pj}</td>
+                <td>${p.pg}</td>
+                <td>${p.pe}</td>
+                <td>${p.pp}</td>
+                <td>${p.goles}</td>
+                <td>${p.asistencias}</td>
+                <td>${p.racha}</td>
+                <td>${Math.round(p.elo||1000)}</td>
+            </tr>`;
+        }).join('');
+    }
+
+    window.detalleSort = function(key) {
+        if (detalleSortKey === key) { detalleSortDir *= -1; }
+        else { detalleSortKey = key; detalleSortDir = -1; }
+        document.querySelectorAll('.detalle-th-sort').forEach(th => th.classList.remove('active'));
+        const th = document.querySelector('.detalle-th-sort[data-key="' + key + '"]');
+        if (th) th.classList.add('active');
+        renderDetalleTabla();
+    };
+
+    window.detalleFiltrar = function(key) {
+        detalleSortKey = key;
+        detalleSortDir = -1;
+        document.querySelectorAll('.detalle-filter-btn').forEach(b => b.classList.remove('active'));
+        const btn = document.querySelector('.detalle-filter-btn[data-key="' + key + '"]');
+        if (btn) btn.classList.add('active');
+        renderDetalleTabla();
+    };
+
+    function escHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
 
     /* ===== FORMULARIO (ayuda.html) =====

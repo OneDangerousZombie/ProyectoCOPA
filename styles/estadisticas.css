@@ -238,17 +238,17 @@
 
     .main-content {
         display: grid;
-        grid-template-columns: 320px 1fr;
+        grid-template-columns: 300px 1fr;
         grid-template-areas:
-            "summary table"
-            "filters table";
+            "summary filters"
+            "summary table";
         align-items: start;
         gap: 1.5rem;
         padding: 2rem 1.5rem 1.5rem;
     }
 
     .summary-cards-grid { grid-area: summary; }
-    .filters             { grid-area: filters; flex-direction: column; margin-bottom: 0; }
+    .filters             { grid-area: filters; margin-bottom: 0; }
     .ranking-table-container { grid-area: table; }
 
     .header h1 {
@@ -280,4 +280,65 @@
         font-size: 0.95rem;
         padding: 0.85rem 1.05rem;
     }
+}
+
+/* ── Background stats.jpg con fade lento ──────────────────── */
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 75vh;
+    background-image: url('../images/stats.jpg');
+    background-size: cover;
+    background-position: center top;
+    background-repeat: no-repeat;
+    -webkit-mask-image: linear-gradient(to bottom,
+        rgba(0,0,0,0.75) 0%,
+        rgba(0,0,0,0.55) 50%,
+        rgba(0,0,0,0.15) 80%,
+        rgba(0,0,0,0)    100%);
+    mask-image: linear-gradient(to bottom,
+        rgba(0,0,0,0.75) 0%,
+        rgba(0,0,0,0.55) 50%,
+        rgba(0,0,0,0.15) 80%,
+        rgba(0,0,0,0)    100%);
+    z-index: -1;
+    pointer-events: none;
+}
+
+/* ── Avatar en tabla de ranking ─────────────────────────────── */
+.ranking-name-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.2rem;
+}
+
+.ranking-avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+    border: 1px solid var(--border-light);
+}
+
+.ranking-avatar-placeholder {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 0.7rem;
+    color: var(--text-tertiary);
+}
+
+.ranking-name-row span {
+    margin-bottom: 0 !important;
 }

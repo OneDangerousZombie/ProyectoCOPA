@@ -131,6 +131,77 @@ if ($method === 'DELETE') {
     exit;
 }
 
+// ── POST: crear usuario ────────────────────────────────────────
+if ($method === 'POST' && isset($_GET['crear'])) {
+    $input  = json_decode(file_get_contents('php://input'), true);
+    $nombre = trim($input['nombre'] ?? '');
+    $rol    = (int)($input['rol'] ?? 1);
+    $mail   = trim($input['mail'] ?? '');
+    $clave  = trim($input['clave'] ?? '');
+
+    if (!$nombre || !$clave) {
+        http_response_code(400);
+        echo json_encode(['ok' => false, 'error' => 'nombre y clave son obligatorios']);
+        exit;
+    }
+
+    $hash = password_hash($clave, PASSWORD_DEFAULT);
+    $stmt = $conn->prepare("INSERT INTO jugadores (NOMBRE, ROL, MAIL, CLAVE) VALUES (?,?,?,?)");
+    $stmt->bind_param('siss', $nombre, $rol, $mail, $hash);
+    $ok    = $stmt->execute();
+    $newId = $conn->insert_id;
+    $stmt->close(); $conn->close();
+    echo json_encode(['ok' => $ok, 'id' => $newId]);
+    exit;
+}
+
+// ── POST: membresías (para popup habilitar/inhabilitar) ──────
+if ($method === 'POST' && isset($_GET['membresias'])) {
+    $input = json_decode(file_get_contents('php://input'), true);
+    $ids   = array_filter(array_map('intval', (array)($input['ids'] ?? [])));
+    if (empty($ids)) { http_response_code(400); echo json_encode(['ok'=>false,'error'=>'ids requeridos']); exit; }
+    $ph    = implode(',', array_fill(0, count($ids), '?'));
+    $types = str_repeat('i', count($ids));
+    $stmt = $conn->prepare("
+        SELECT lm.ID_USUARIO, j.NOMBRE as usuario_nombre,
+               lm.ID_LIGA, l.NOMBRE as liga_nombre, lm.ACTIVO
+        FROM liga_miembros lm
+        JOIN jugadores j ON lm.ID_USUARIO = j.ID_JUGADORES
+        JOIN ligas l ON lm.ID_LIGA = l.ID_LIGA
+        WHERE lm.ID_USUARIO IN ($ph)
+        ORDER BY j.NOMBRE, l.NOMBRE
+    ");
+    $stmt->bind_param($types, ...$ids);
+    $stmt->execute();
+    $res = $stmt->get_result();
+    $list = [];
+    while ($r = $res->fetch_assoc()) $list[] = $r;
+    $stmt->close(); $conn->close();
+    echo json_encode(['ok' => true, 'membresias' => $list]);
+    exit;
+}
+
+// ── POST: actualizar membresías (activar/desactivar por par) ──
+if ($method === 'POST' && isset($_GET['actualizar_membresias'])) {
+    $input  = json_decode(file_get_contents('php://input'), true);
+    $pares  = (array)($input['pares'] ?? []);
+    $estado = (int)($input['estado'] ?? 0);
+    if (empty($pares)) { http_response_code(400); echo json_encode(['ok'=>false,'error'=>'pares requeridos']); exit; }
+
+    $stmt = $conn->prepare("UPDATE liga_miembros SET ACTIVO=? WHERE ID_USUARIO=? AND ID_LIGA=?");
+    $ok = true;
+    foreach ($pares as $p) {
+        $idu = (int)($p['id_usuario'] ?? 0);
+        $idl = (int)($p['id_liga'] ?? 0);
+        if (!$idu || !$idl) continue;
+        $stmt->bind_param('iii', $estado, $idu, $idl);
+        if (!$stmt->execute()) $ok = false;
+    }
+    $stmt->close(); $conn->close();
+    echo json_encode(['ok' => $ok, 'actualizadas' => count($pares)]);
+    exit;
+}
+
 // ── POST: inhabilitar ─────────────────────────────────────────
 if ($method === 'POST') {
     // Inhabilitar = poner ACTIVO=0 en liga_miembros para todos los ids

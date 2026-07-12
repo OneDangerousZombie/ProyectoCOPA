@@ -23,23 +23,14 @@
     <header class="landing-navbar">
         <div class="nav-container">
             <a href="index.html" class="nav-logo">
-                <span class="nav-logo-icon"><i class="fa-solid fa-futbol"></i></span>
-                <span class="nav-logo-text">COPA</span>
+                <img src="images/icono-nav.png" alt="COPA" class="nav-logo-img">
             </a>
 
             <nav class="nav-links">
                 <a href="ligas.html" class="nav-link" data-page="ligas">Ligas</a>
                 <a href="caracteristicas.html" class="nav-link" data-page="caracteristicas">Características</a>
-                <div class="nav-dropdown">
-                    <button type="button" class="nav-link nav-dropdown-trigger" id="aboutTrigger" aria-expanded="false">
-                        ¿Quiénes Somos?
-                        <i class="fa-solid fa-chevron-down dropdown-caret"></i>
-                    </button>
-                    <div class="dropdown-menu" id="aboutMenu">
-                        <a href="sobre-nosotros.html" class="dropdown-item" data-page="sobre-nosotros">Sobre Nosotros</a>
-                        <a href="ayuda.html" class="dropdown-item" data-page="ayuda">Necesito Ayuda</a>
-                    </div>
-                </div>
+                <a href="sobre-nosotros.html" class="nav-link" data-page="sobre-nosotros">Sobre Nosotros</a>
+                <a href="ayuda.html" class="nav-link" data-page="ayuda">Necesito Ayuda</a>
             </nav>
 
             <div class="nav-actions">
@@ -103,14 +94,8 @@
                          imagen y borrar el segundo marco, lo que quede mejor con
                          las capturas reales). No es necesario tocar el layout. -->
                     <div class="page-hero-media-gallery">
-                        <div class="gallery-placeholder reveal">
-                            <span class="gallery-placeholder-icon"><i class="fa-solid fa-image"></i></span>
-                            <span class="gallery-placeholder-text">Captura real de la app</span>
-                        </div>
-                        <div class="gallery-placeholder reveal">
-                            <span class="gallery-placeholder-icon"><i class="fa-solid fa-image"></i></span>
-                            <span class="gallery-placeholder-text">Captura real de la app</span>
-                        </div>
+                        <img src="images/laptop-caract.png" alt="COPA en laptop" class="caract-laptop reveal">
+                        <img src="images/iphone-caract.png" alt="COPA en celular" class="caract-iphone reveal">
                     </div>
                 </div>
             </div>
@@ -151,6 +136,10 @@
 
         <!-- ============================ CARACTERÍSTICAS ============================ -->
         <section class="section-padding section-alt" id="caracteristicas-grid">
+            <video class="caracteristicas-video-bg" autoplay muted loop playsinline>
+                <source src="videos/caracteristicas.mp4" type="video/mp4">
+            </video>
+            <div class="caracteristicas-video-overlay" aria-hidden="true"></div>
             <div class="section-container">
                 <div class="section-header reveal">
                     <span class="section-eyebrow">Características</span>
@@ -212,8 +201,7 @@
             <div class="footer-top">
                 <div class="footer-brand">
                     <a href="index.html" class="nav-logo">
-                        <span class="nav-logo-icon"><i class="fa-solid fa-futbol"></i></span>
-                        <span class="nav-logo-text">COPA</span>
+                        <img src="images/icono-nav.png" alt="COPA" class="nav-logo-img">
                     </a>
                     <p class="footer-brand-text">Tu liga de fútbol amateur, organizada.</p>
                 </div>
@@ -233,9 +221,11 @@
 
                 <div class="footer-column">
                     <h4 class="footer-column-title">Redes</h4>
-                    <a href="#" class="footer-link">Instagram</a>
-                    <a href="#" class="footer-link">X</a>
-                    <a href="#" class="footer-link">Discord</a>
+                    <div class="footer-social-row">
+                        <a href="#" class="footer-link footer-social-link" title="Instagram"><i class="fa-brands fa-instagram"></i></a>
+                        <a href="#" class="footer-link footer-social-link" title="X"><i class="fa-brands fa-x-twitter"></i></a>
+                        <a href="#" class="footer-link footer-social-link" title="Discord"><i class="fa-brands fa-discord"></i></a>
+                    </div>
                 </div>
             </div>
 

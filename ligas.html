@@ -23,23 +23,14 @@
     <header class="landing-navbar">
         <div class="nav-container">
             <a href="index.html" class="nav-logo">
-                <span class="nav-logo-icon"><i class="fa-solid fa-futbol"></i></span>
-                <span class="nav-logo-text">COPA</span>
+                <img src="images/icono-nav.png" alt="COPA" class="nav-logo-img">
             </a>
 
             <nav class="nav-links">
                 <a href="ligas.html" class="nav-link" data-page="ligas">Ligas</a>
                 <a href="caracteristicas.html" class="nav-link" data-page="caracteristicas">Características</a>
-                <div class="nav-dropdown">
-                    <button type="button" class="nav-link nav-dropdown-trigger" id="aboutTrigger" aria-expanded="false">
-                        ¿Quiénes Somos?
-                        <i class="fa-solid fa-chevron-down dropdown-caret"></i>
-                    </button>
-                    <div class="dropdown-menu" id="aboutMenu">
-                        <a href="sobre-nosotros.html" class="dropdown-item" data-page="sobre-nosotros">Sobre Nosotros</a>
-                        <a href="ayuda.html" class="dropdown-item" data-page="ayuda">Necesito Ayuda</a>
-                    </div>
-                </div>
+                <a href="sobre-nosotros.html" class="nav-link" data-page="sobre-nosotros">Sobre Nosotros</a>
+                <a href="ayuda.html" class="nav-link" data-page="ayuda">Necesito Ayuda</a>
             </nav>
 
             <div class="nav-actions">
@@ -120,6 +111,64 @@
             </div>
         </section>
 
+        <!-- ============================ DETALLE DE LIGA ============================ -->
+        <section id="ligaDetalle" style="display:none;" class="section-padding">
+            <div class="section-container">
+
+                <!-- Volver -->
+                <button type="button" class="detalle-back-btn" onclick="volverALigas()">
+                    <i class="fa-solid fa-arrow-left"></i> Todas las ligas
+                </button>
+
+                <!-- Nombre de la liga -->
+                <h2 class="detalle-liga-titulo" id="detalleLigaNombre"></h2>
+
+                <!-- Layout: partido a la izquierda, filtros a la derecha -->
+                <div class="detalle-top-row">
+                    <!-- Último partido -->
+                    <div class="detalle-partido-card">
+                        <div class="detalle-section-label"><i class="fa-solid fa-futbol"></i> Último partido</div>
+                        <div id="detallePartido"></div>
+                    </div>
+
+                    <!-- Filtros de stats -->
+                    <div class="detalle-filters-card">
+                        <div class="detalle-section-label"><i class="fa-solid fa-sliders"></i> Ordenar por</div>
+                        <div class="detalle-filter-btns">
+                            <button class="detalle-filter-btn active" data-key="goles"       onclick="detalleFiltrar('goles')">Goles</button>
+                            <button class="detalle-filter-btn"        data-key="asistencias" onclick="detalleFiltrar('asistencias')">Asistencias</button>
+                            <button class="detalle-filter-btn"        data-key="pj"          onclick="detalleFiltrar('pj')">PJ</button>
+                            <button class="detalle-filter-btn"        data-key="pg"          onclick="detalleFiltrar('pg')">PG</button>
+                            <button class="detalle-filter-btn"        data-key="racha"       onclick="detalleFiltrar('racha')">Racha</button>
+                            <button class="detalle-filter-btn"        data-key="elo"         onclick="detalleFiltrar('elo')">ELO</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tabla de estadísticas -->
+                <div class="detalle-table-wrap">
+                    <table class="detalle-table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Jugador</th>
+                                <th class="detalle-th-sort" data-key="pj"          onclick="detalleSort('pj')">PJ</th>
+                                <th class="detalle-th-sort" data-key="pg"          onclick="detalleSort('pg')">PG</th>
+                                <th class="detalle-th-sort" data-key="pe"          onclick="detalleSort('pe')">PE</th>
+                                <th class="detalle-th-sort" data-key="pp"          onclick="detalleSort('pp')">PP</th>
+                                <th class="detalle-th-sort active" data-key="goles"       onclick="detalleSort('goles')">Goles</th>
+                                <th class="detalle-th-sort" data-key="asistencias" onclick="detalleSort('asistencias')">Asist.</th>
+                                <th class="detalle-th-sort" data-key="racha"       onclick="detalleSort('racha')">Racha</th>
+                                <th class="detalle-th-sort" data-key="elo"         onclick="detalleSort('elo')">ELO</th>
+                            </tr>
+                        </thead>
+                        <tbody id="detalleStatsBody"></tbody>
+                    </table>
+                </div>
+
+            </div>
+        </section>
+
         <!-- ============================ CTA DE CIERRE ============================ -->
         <section class="section-padding section-alt">
             <div class="section-container">
@@ -140,8 +189,7 @@
             <div class="footer-top">
                 <div class="footer-brand">
                     <a href="index.html" class="nav-logo">
-                        <span class="nav-logo-icon"><i class="fa-solid fa-futbol"></i></span>
-                        <span class="nav-logo-text">COPA</span>
+                        <img src="images/icono-nav.png" alt="COPA" class="nav-logo-img">
                     </a>
                     <p class="footer-brand-text">Tu liga de fútbol amateur, organizada.</p>
                 </div>
@@ -161,9 +209,11 @@
 
                 <div class="footer-column">
                     <h4 class="footer-column-title">Redes</h4>
-                    <a href="#" class="footer-link">Instagram</a>
-                    <a href="#" class="footer-link">X</a>
-                    <a href="#" class="footer-link">Discord</a>
+                    <div class="footer-social-row">
+                        <a href="#" class="footer-link footer-social-link" title="Instagram"><i class="fa-brands fa-instagram"></i></a>
+                        <a href="#" class="footer-link footer-social-link" title="X"><i class="fa-brands fa-x-twitter"></i></a>
+                        <a href="#" class="footer-link footer-social-link" title="Discord"><i class="fa-brands fa-discord"></i></a>
+                    </div>
                 </div>
             </div>
 

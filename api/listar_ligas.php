@@ -42,7 +42,7 @@ while ($row = $result->fetch_assoc()) {
         'descripcion' => $row['DESCRIPCION'],
         'formato_default' => $row['FORMATO_DEFAULT'],
         'privada' => (bool) $row['PRIVADA'],
-        'codigo_invitacion' => $row['ROL_LIGA'] >= 5 ? $row['CODIGO_INVITACION'] : null, // solo el admin ve el código
+        'codigo_invitacion' => $row['CODIGO_INVITACION'], // visible para todos los miembros
         'rol_liga' => (int) $row['ROL_LIGA'],
         'valor_elo' => (float) $row['VALOR_ELO'],
         'cantidad_miembros' => (int) $row['CANTIDAD_MIEMBROS']

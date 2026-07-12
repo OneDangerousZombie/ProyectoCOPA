@@ -1075,18 +1075,14 @@ input:focus-visible {
     flex-direction: column;
     justify-content: center;
     gap: 0.625rem;
-    transition: border-color 0.25s var(--ease-premium), background 0.25s var(--ease-premium), transform 0.25s var(--ease-premium);
+    transition: border-color 0.25s var(--ease-premium);
 }
 
 .quick-access-card:hover {
     border-color: var(--green-border);
-    background: var(--bg-card-hover);
-    transform: translateY(-4px);
 }
 
-.quick-access-card:active {
-    transform: scale(0.98);
-}
+
 
 .quick-access-icon {
     font-size: 1.4rem;
@@ -2418,5 +2414,667 @@ body:has(.landing-navbar) .page-background {
 }
 
 body:has(.landing-navbar) .page-background::after {
-    background: rgba(8, 8, 8, 0.85);
+    background: rgba(8, 8, 8, 0.35);
+}
+/* ════════════════════════════════════════════════════════════
+   AGREGADO — nav logo, video hero, paneles liga-numbers-pair,
+   quick-access-grid con imágenes, iPhone hero, footer
+   ════════════════════════════════════════════════════════════ */
+
+/* ── Nav logo imagen ─────────────────────────────────────────
+   height: 80px como pedido. El link .nav-logo ya tiene
+   display:flex y align-items:center, así que escala bien.   */
+.nav-logo-img {
+    height: 80px;
+    width: auto;
+    display: block;
+}
+
+/* Nav más alto para acompañar el logo grande */
+.nav-container {
+    padding: 0.75rem 1.25rem;
+}
+
+/* ── Video de fondo en el hero ───────────────────────────────
+   object-fit:cover asegura que cubra sin deformarse en
+   cualquier tamaño de pantalla (mobile, tablet, desktop).   */
+.hero-video-bg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 0;
+    pointer-events: none;
+}
+
+.hero-video-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(8, 8, 8, 0.55);
+    z-index: 1;
+}
+
+.hero-container {
+    position: relative;
+    z-index: 2;
+}
+
+/* ── iPhone hero — mock-phone eliminado del HTML ─────────────
+   El iPhone pasa a ser el único elemento visual del hero.
+   Usa position: relative para mantenerse dentro de su
+   contenedor en cualquier tamaño de pantalla.              */
+
+/* Neutralizar la animación de hover del mock-phone (ya no
+   está en el DOM pero por limpieza se deja override).     */
+.hero-visual:hover .mock-phone {
+    transform: none;
+}
+
+.hero-visual {
+    position: relative;
+}
+
+/* iPhone: flujo normal (no absoluto), se adapta al contenedor */
+.hero-iphone-img {
+    position: relative;
+    display: block;
+    width: 100%;
+    max-width: 260px;
+    height: auto;
+    z-index: 1;
+    opacity: 0.95;
+    pointer-events: none;
+    filter: drop-shadow(0 12px 40px rgba(0,0,0,0.6));
+    margin: 0 auto;
+}
+
+@media (min-width: 860px) {
+    .hero-iphone-img {
+        max-width: 310px;
+        margin: 0;
+    }
+}
+
+@media (min-width: 1200px) {
+    .hero-iphone-img {
+        max-width: 360px;
+    }
+}
+
+/* ── Paneles liga-numbers-pair con imagen de fondo ───────────
+   Overlay más suave (0.35) para que la imagen se vea.
+   En mobile: apilados. En ≥860px: lado a lado.              */
+.liga-panel-left,
+.liga-panel-right {
+    position: relative;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.liga-panel-left::before,
+.liga-panel-right::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(8, 8, 8, 0.40);
+    z-index: 0;
+}
+
+.liga-panel-left > *,
+.liga-panel-right > * {
+    position: relative;
+    z-index: 1;
+}
+
+.liga-panel-left  { background-image: url('../images/esquina1.jpg'); }
+.liga-panel-right { background-image: url('../images/botin-pelota.jpg'); }
+
+@media (min-width: 860px) {
+    .liga-numbers-pair {
+        flex-direction: row;
+    }
+    .liga-panel-left,
+    .liga-panel-right {
+        flex: 1;
+    }
+}
+
+/* ── Quick-access-grid: imágenes + solo borde verde y aclaramiento ──
+   Se eliminan TODAS las animaciones de movimiento/escala.
+   Solo se animan: border-color (verde al hover) y el overlay
+   de la imagen (se aclara gradualmente).                    */
+
+/* Pisar la transition original: solo border-color, sin transform */
+.quick-access-card {
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    overflow: hidden;
+    transition: border-color 0.3s ease !important;
+}
+
+/* Overlay oscuro como pseudo-elemento — solo este hace transition */
+.quick-access-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(8, 8, 8, 0.60);
+    transition: background 0.35s ease;
+    border-radius: inherit;
+    z-index: 0;
+}
+
+/* Hover: solo borde verde + aclarar imagen. Sin ningún transform */
+.quick-access-card:hover {
+    border-color: var(--green-border) !important;
+    background-color: var(--bg-card) !important;
+    transform: none !important;
+}
+
+.quick-access-card:hover::before {
+    background: rgba(8, 8, 8, 0.25);
+}
+
+/* Active: sin scale */
+.quick-access-card:active {
+    transform: none !important;
+}
+
+/* Contenido por encima del overlay */
+.quick-access-card > * {
+    position: relative;
+    z-index: 1;
+}
+
+/* Imagen por card */
+.quick-access-card:nth-child(1) { background-image: url('../images/vestuario.jpg'); }
+.quick-access-card:nth-child(2) { background-image: url('../images/stats.jpg'); }
+.quick-access-card:nth-child(3) { background-image: url('../images/banco-suplentes.jpg'); }
+.quick-access-card:nth-child(4) { background-image: url('../images/estadio.jpg'); }
+
+/* ── Footer: logo imagen ─────────────────────────────────────
+   Misma clase nav-logo-img pero con tamaño más chico
+   para que sea proporcional en el footer.                   */
+.landing-footer .nav-logo-img {
+    height: 72px;
+}
+
+/* ── Background ligas.html: imagen que se funde hacia abajo ──
+   La imagen cubre el .page-hero completo. Un gradiente de
+   máscara la funde hacia abajo, desapareciendo antes de
+   llegar a la sección de ligas.
+   El pseudo-elemento ::before contiene la imagen; el
+   contenido del hero queda por encima via z-index.         */
+.page-hero {
+    position: relative;
+    overflow: hidden;
+    /* Padding extra para dar protagonismo a la imagen */
+    padding-bottom: 5rem;
+}
+
+.page-hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(8, 8, 8, 0.25);
+    z-index: 0;
+}
+
+/* Contenido del hero por encima de la imagen */
+.page-hero > * {
+    position: relative;
+    z-index: 1;
+}
+
+/* ── ligas.html: imagen de fondo que cubre hero + sección de ligas ──
+   Se usa .page-background (ya existe en el HTML, diseñado para esto).
+   :has(#ligas) la acota solo a ligas.html sin tocar otras páginas.
+   El mask-image ya definido en este archivo funde la imagen.        */
+body:has(#ligas) .page-background {
+    background-image: url('../images/ligas.jpg');
+    background-size: cover;
+    background-position: center top;
+    background-repeat: no-repeat;
+}
+
+/* #ligas levemente transparente para que se vea la imagen de fondo */
+#ligas {
+    background: rgba(8, 8, 8, 0.55);
+}
+
+/* ── ligas.html: hero transparente para mostrar la imagen ────
+   .page-hero tiene background: var(--bg-secondary) que tapa
+   la imagen. Lo pisamos scoped a ligas.html.                */
+body:has(#ligas) .page-hero {
+    background: rgba(8, 8, 8, 0.30);
+    border-bottom-color: transparent;
+}
+
+/* #ligas más transparente para ver mejor la imagen */
+#ligas {
+    background: rgba(8, 8, 8, 0.30) !important;
+}
+
+/* ── caracteristicas.html: video de fondo en #caracteristicas-grid ──
+   El video cubre toda la sección. El overlay oscuro mantiene
+   legible el contenido de las feature-cards.                */
+#caracteristicas-grid {
+    position: relative;
+    overflow: hidden;
+}
+
+.caracteristicas-video-bg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 0;
+    pointer-events: none;
+}
+
+.caracteristicas-video-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(8, 8, 8, 0.60);
+    z-index: 1;
+}
+
+/* Contenido de la sección por encima del video */
+#caracteristicas-grid > .section-container {
+    position: relative;
+    z-index: 2;
+}
+
+/* ── caracteristicas.html: laptop + iphone en page-hero-media-gallery ──
+   Flex row: laptop izquierda (adelante, z-index 2), iphone derecha
+   (detrás, z-index 1). Overlap controlado con margin negativo.
+   Nunca desbordan: usan % del contenedor, sin position absolute.
+   En mobile el contenedor se achica y ambas imágenes escalan juntas. */
+
+.page-hero-media-gallery {
+    height: auto !important;
+    max-width: 500px;
+    display: flex;
+    align-items: flex-end;  /* ambos alineados al mismo piso */
+    justify-content: center;
+    overflow: visible;
+}
+
+.caract-laptop {
+    position: relative;
+    width: 74%;
+    max-width: 340px;
+    height: auto;
+    flex-shrink: 0;
+    z-index: 2;
+    filter: drop-shadow(0 8px 28px rgba(0,0,0,0.45));
+}
+
+.caract-iphone {
+    position: relative;
+    width: 38%;
+    max-width: 160px;
+    height: auto;
+    flex-shrink: 0;
+    z-index: 1;
+    margin-left: -5%;
+    filter: drop-shadow(0 8px 28px rgba(0,0,0,0.45));
+}
+
+@media (max-width: 599px) {
+    .page-hero-media-gallery {
+        max-width: 300px;
+    }
+}
+
+@media (min-width: 600px) and (max-width: 859px) {
+    .page-hero-media-gallery {
+        max-width: 390px;
+    }
+}
+
+/* ── sobre-nosotros.html: video de fondo en #sobre-nosotros ── */
+#sobre-nosotros {
+    position: relative;
+    overflow: hidden;
+}
+
+.sobre-nosotros-video-bg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 0;
+    pointer-events: none;
+}
+
+.sobre-nosotros-video-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(8, 8, 8, 0.60);
+    z-index: 1;
+}
+
+#sobre-nosotros > .section-container {
+    position: relative;
+    z-index: 2;
+}
+
+/* ── sobre-nosotros.html: imagen de fondo en sección palco ── */
+#palco-section {
+    position: relative;
+    overflow: hidden;
+}
+
+#palco-section::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url('../images/palco.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    z-index: 0;
+}
+
+#palco-section::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(8, 8, 8, 0.55);
+    z-index: 1;
+}
+
+#palco-section > .section-container {
+    position: relative;
+    z-index: 2;
+}
+
+/* ── ayuda.html: imagen de fondo en toda la página ──────────
+   Usa .page-background (ya existe en el HTML).
+   Se sobreescribe la mask para que cubra toda la altura,
+   no solo el 85% como en el resto de las landings.         */
+body:has(#formulario-contacto) .page-background {
+    background-image: url('../images/ayuda.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    height: 100%;
+    -webkit-mask-image: none;
+    mask-image: none;
+}
+
+/* Formulario apenas transparente: se ve la imagen pero
+   el contenido sigue siendo legible.                      */
+body:has(#formulario-contacto) .help-form-card {
+    background: rgba(14, 14, 14, 0.82);
+}
+
+/* Info lateral con la misma transparencia leve */
+body:has(#formulario-contacto) .help-info {
+    background: rgba(14, 14, 14, 0.82);
+    border-radius: var(--radius-sm);
+    padding: 1rem;
+}
+
+/* ════════════════════════════════════════════════════════════
+   AGREGADO — Vista de detalle de liga (ligas.html)
+   ════════════════════════════════════════════════════════════ */
+
+/* ── Header de la liga card ──────────────────────────────── */
+.liga-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.liga-card-badge {
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+    background: var(--bg-elevated);
+    padding: 0.15rem 0.45rem;
+    border-radius: var(--radius-xs);
+    border: 1px solid var(--border-color);
+    white-space: nowrap;
+}
+
+/* ── Detalle: botón volver ───────────────────────────────── */
+.detalle-back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: none;
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-sm);
+    color: var(--text-secondary);
+    font-size: 0.82rem;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    padding: 0.5rem 0.875rem;
+    margin-bottom: 1.25rem;
+    transition: all var(--transition-fast);
+}
+
+.detalle-back-btn:hover {
+    border-color: var(--green-border);
+    color: var(--green-primary);
+}
+
+.detalle-liga-titulo {
+    font-size: 1.5rem;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    color: var(--text-primary);
+    margin-bottom: 1.25rem;
+}
+
+/* ── Fila superior: partido + filtros ───────────────────── */
+.detalle-top-row {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+}
+
+@media (min-width: 700px) {
+    .detalle-top-row {
+        flex-direction: row;
+        align-items: flex-start;
+    }
+    .detalle-partido-card { flex: 1.2; }
+    .detalle-filters-card { flex: 1; }
+}
+
+.detalle-partido-card,
+.detalle-filters-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 1.125rem;
+}
+
+.detalle-section-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+    margin-bottom: 0.875rem;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+/* ── Partido ─────────────────────────────────────────────── */
+.detalle-loading {
+    text-align: center;
+    color: var(--text-tertiary);
+    font-size: 0.82rem;
+    padding: 1rem;
+}
+
+.detalle-match-label {
+    font-size: 0.72rem;
+    color: var(--text-tertiary);
+    margin-bottom: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.detalle-match-score {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    padding: 0.625rem 0;
+}
+
+.detalle-team {
+    font-size: 0.9rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    letter-spacing: 0.04em;
+    flex: 1;
+    text-align: center;
+}
+
+.detalle-score-center {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    flex-shrink: 0;
+}
+
+.detalle-score-num {
+    font-size: 2rem;
+    font-weight: 900;
+    color: var(--green-primary);
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+}
+
+.detalle-score-sep {
+    font-size: 1.25rem;
+    color: var(--text-tertiary);
+    font-weight: 300;
+}
+
+.detalle-match-cancha {
+    font-size: 0.75rem;
+    color: var(--text-tertiary);
+    text-align: center;
+    margin-top: 0.5rem;
+}
+
+/* ── Filtros ─────────────────────────────────────────────── */
+.detalle-filter-btns {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+}
+
+.detalle-filter-btn {
+    padding: 0.4rem 0.875rem;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    color: var(--text-secondary);
+    font-size: 0.78rem;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.detalle-filter-btn.active,
+.detalle-filter-btn:hover {
+    background: rgba(34,197,94,0.1);
+    border-color: var(--green-border);
+    color: var(--green-primary);
+}
+
+/* ── Tabla de estadísticas ───────────────────────────────── */
+.detalle-table-wrap {
+    overflow-x: auto;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-color);
+}
+
+.detalle-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.83rem;
+}
+
+.detalle-table th {
+    background: var(--bg-secondary);
+    color: var(--text-tertiary);
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    padding: 0.75rem 0.875rem;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+    white-space: nowrap;
+}
+
+.detalle-th-sort {
+    cursor: pointer;
+    transition: color var(--transition-fast);
+}
+
+.detalle-th-sort:hover,
+.detalle-th-sort.active {
+    color: var(--green-primary);
+}
+
+.detalle-table td {
+    padding: 0.75rem 0.875rem;
+    border-bottom: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    vertical-align: middle;
+}
+
+.detalle-table tr:last-child td { border-bottom: none; }
+.detalle-table tr:hover td { background: var(--bg-elevated); }
+
+.detalle-name-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.detalle-avatar {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid var(--border-light);
+    flex-shrink: 0;
+}
+
+.detalle-avatar-ph {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 0.65rem;
+    color: var(--text-tertiary);
 }

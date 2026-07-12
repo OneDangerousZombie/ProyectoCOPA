@@ -5,142 +5,210 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>COPA</title>
+    <title>COPA — Ingresar</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="../styles/global.css">
+    <link rel="stylesheet" href="../styles/index.css">
     <link rel="stylesheet" href="../styles/login.css">
 </head>
-<body>
-    <div class="desktop-shell">
+<body class="login-page">
 
-        <!-- Header — visible en todos los anchos. En mobile/tablet chica
-             (<860px) el nav y el botón se ocultan detrás del hamburger;
-             desde 860px se muestran inline (ver login.css). -->
-        <header class="desktop-header">
-            <div class="logo-group">
-                <div class="logo-icon-sm"><i class="fa-solid fa-futbol"></i></div>
-                <span class="logo-text">COPA</span>
-            </div>
-            <nav class="desktop-nav">
-                <a href="../caracteristicas.html">Características</a>
-                <a href="../caracteristicas.html#como-funciona">Cómo funciona</a>
-                <a href="../ligas.html">Ligas</a>
+    <!-- Carrusel de fondo con 5 imágenes -->
+    <div class="login-carousel-bg" aria-hidden="true">
+        <div class="carousel-slide" style="background-image:url('../images/carrusel1.jpg'); animation-delay:0s;"></div>
+        <div class="carousel-slide" style="background-image:url('../images/carrusel2.jpg'); animation-delay:5s;"></div>
+        <div class="carousel-slide" style="background-image:url('../images/carrusel3.jpg'); animation-delay:10s;"></div>
+        <div class="carousel-slide" style="background-image:url('../images/carrusel4.jpg'); animation-delay:15s;"></div>
+        <div class="carousel-slide" style="background-image:url('../images/carrusel5.jpg'); animation-delay:20s;"></div>
+    </div>
+    <div class="login-video-overlay" aria-hidden="true"></div>
+
+    <!-- ══ NAV — idéntico al de la landing, rutas ajustadas ══ -->
+    <header class="landing-navbar login-navbar">
+        <div class="nav-container">
+            <a href="../index.html" class="nav-logo">
+                <img src="../images/icono-nav.png" alt="COPA" class="nav-logo-img">
+            </a>
+
+            <nav class="nav-links">
+                <a href="../ligas.html" class="nav-link" data-page="ligas">Ligas</a>
+                <a href="../caracteristicas.html" class="nav-link" data-page="caracteristicas">Características</a>
+                <a href="../sobre-nosotros.html" class="nav-link" data-page="sobre-nosotros">Sobre Nosotros</a>
+                <a href="../ayuda.html" class="nav-link" data-page="ayuda">Necesito Ayuda</a>
             </nav>
-            <div class="desktop-header-actions">
-                <!-- Pedido explícito: solo "Iniciar sesión" arriba a la derecha, sin botón de Registrarse -->
-                <button type="button" class="desktop-btn-outline" onclick="switchTab('login')">Iniciar sesión</button>
+
+            <div class="nav-actions">
+                <a href="login.html" class="btn-nav btn-nav-outline">Iniciar sesión</a>
+                <button type="button" class="nav-hamburger" id="navHamburger" aria-label="Abrir menú" aria-expanded="false">
+                    <span></span><span></span><span></span>
+                </button>
             </div>
+        </div>
 
-            <!-- Hamburger: solo visible <860px. Maneja su apertura/cierre
-                 scripts/app-nav.js (archivo nuevo, no toca login.js). -->
-            <button type="button" class="app-nav-hamburger" id="navHamburger" aria-label="Abrir menú" aria-expanded="false">
-                <span></span><span></span><span></span>
-            </button>
-        </header>
+        <div class="mobile-menu-backdrop" id="mobileMenuBackdrop"></div>
+        <div class="mobile-menu-panel" id="mobileMenuPanel">
+            <a href="../ligas.html" class="mobile-link">Ligas</a>
+            <a href="../caracteristicas.html" class="mobile-link">Características</a>
+            <a href="../sobre-nosotros.html" class="mobile-link">Sobre Nosotros</a>
+            <a href="../ayuda.html" class="mobile-link">Necesito Ayuda</a>
+            <div class="mobile-divider"></div>
+            <a href="login.html" class="mobile-link">Iniciar sesión</a>
+        </div>
+    </header>
 
-        <!-- Backdrop + drawer del menú mobile — fuera del header para que
-             el position:fixed no quede condicionado por su contenedor. -->
-        <div class="app-nav-backdrop" id="navBackdrop"></div>
-        <nav class="app-nav-drawer" id="navDrawer">
-            <a href="../caracteristicas.html">Características</a>
-            <a href="../caracteristicas.html#como-funciona">Cómo funciona</a>
-            <a href="../ligas.html">Ligas</a>
-            <div class="app-nav-drawer-divider"></div>
-            <button type="button" class="app-nav-drawer-cta" onclick="switchTab('login')">Iniciar sesión</button>
-        </nav>
+    <!-- ══ MAIN ══ -->
+    <main class="login-main">
+        <div class="login-split-card">
 
-        <!-- Main — contiene el card de login, igual en mobile y desktop -->
-        <main class="desktop-main">
-            <div class="login-container">
-                <div class="logo">
-                    <div class="logo-icon"><i class="fa-solid fa-futbol"></i></div>
-                    <h1>COPA</h1>
-                    <p>Computación de Organización y Parejos Automáticos</p>
+            <!-- ── Izquierda: formulario ── -->
+            <div class="login-form-col">
+
+                <div class="login-logo">
+                    <a href="../index.html">
+                        <img src="../images/icono-nav.png" alt="COPA" class="login-logo-img">
+                    </a>
+                    <p class="login-tagline">Computación de Organización y Parejos Automáticos</p>
                 </div>
 
-                <div class="form-card">
-                    <!-- form-tabs se mantiene en el DOM (switchTab() de login.js no
-                         tiene chequeo de null y rompería si #tabLogin/#tabRegister
-                         no existieran) pero queda oculto visualmente: ya no se
-                         muestran botones de tabs, el cambio de vista ahora es por
-                         el link de abajo de cada bloque. -->
-                    <div class="form-tabs">
-                        <button type="button" class="form-tab active" id="tabLogin" onclick="switchTab('login')">Ingresar</button>
-                        <button type="button" class="form-tab" id="tabRegister" onclick="switchTab('register')">Registrarse</button>
+                <!-- Tabs: ocultos visualmente, necesarios para login.js -->
+                <div class="form-tabs">
+                    <button type="button" class="form-tab active" id="tabLogin"    onclick="switchTab('login')">Ingresar</button>
+                    <button type="button" class="form-tab"        id="tabRegister" onclick="switchTab('register')">Registrarse</button>
+                </div>
+
+                <form id="loginForm" class="login-form">
+
+                    <!-- ── Vista LOGIN ── -->
+                    <div class="auth-fields auth-fields-login">
+                        <div class="input-group">
+                            <label class="input-label">Usuario</label>
+                            <input type="text" id="username" class="input-field" placeholder="Tu usuario" autocomplete="username">
+                        </div>
+                        <div class="input-group">
+                            <label class="input-label">Contraseña</label>
+                            <div class="pw-row">
+                                <input type="password" id="password" class="input-field" placeholder="Tu contraseña" autocomplete="current-password">
+                                <button type="button" class="btn-toggle-pw" onclick="togglePw('password',this)" tabindex="-1" title="Mostrar contraseña">
+                                    <i class="fa-solid fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <p class="auth-switch-hint">
+                            ¿No tenés una cuenta?
+                            <button type="button" class="auth-switch-link" onclick="switchTab('register')">Crear una cuenta nueva</button>
+                        </p>
                     </div>
 
-                    <form id="loginForm">
-
-                        <!-- ===== Bloque LOGIN (visible por defecto) ===== -->
-                        <div class="auth-fields auth-fields-login">
-                            <div class="input-group">
-                                <label>Usuario</label>
-                                <input type="text" id="username" placeholder="Tu usuario" autocomplete="username">
-                            </div>
-                            <div class="input-group">
-                                <label>Contraseña</label>
-                                <input type="password" id="password" placeholder="Tu contraseña" autocomplete="current-password">
-                            </div>
-
-                            <p class="auth-switch-hint">
-                                ¿No tenés una cuenta?
-                                <button type="button" class="auth-switch-link" onclick="switchTab('register')">Crear una cuenta nueva</button>
-                            </p>
+                    <!-- ── Vista REGISTER ── -->
+                    <div class="auth-fields auth-fields-register">
+                        <div class="input-group">
+                            <label class="input-label">Nombre de usuario</label>
+                            <input type="text" id="inputNombre" class="input-field" placeholder="Tu nombre de usuario" autocomplete="username" maxlength="20">
                         </div>
-
-                        <!-- ===== Bloque REGISTRO (oculto hasta switchTab('register')) =====
-                             IDs inputNombre / inputClave: ya son los que lee
-                             handleRegister() en login.js. inputCorreo e
-                             inputClaveRepeat son nuevos — todavía no los lee
-                             ningún JS (funcionalidad pendiente, según lo acordado:
-                             "la funcionalidad se la damos después"). -->
-                        <div class="auth-fields auth-fields-register">
-                            <div class="input-group">
-                                <label>Nombre</label>
-                                <input type="text" id="inputNombre" placeholder="Tu nombre de usuario" autocomplete="username">
-                            </div>
-                            <div class="input-group">
-                                <label>Correo</label>
-                                <input type="email" id="inputCorreo" placeholder="tu@correo.com" autocomplete="email">
-                            </div>
-                            <div class="input-group">
-                                <label>Clave</label>
-                                <input type="password" id="inputClave" placeholder="Elegí una contraseña" autocomplete="new-password">
-                            </div>
-                            <div class="input-group">
-                                <label>Repetir clave</label>
-                                <input type="password" id="inputClaveRepeat" placeholder="Repetí la contraseña" autocomplete="new-password">
-                            </div>
-
-                            <p class="auth-switch-hint">
-                                ¿Ya tenés una cuenta?
-                                <button type="button" class="auth-switch-link" onclick="switchTab('login')">Iniciar sesión</button>
-                            </p>
+                        <div class="input-group">
+                            <label class="input-label">Correo</label>
+                            <input type="email" id="inputCorreo" class="input-field" placeholder="tu@correo.com" autocomplete="email">
                         </div>
+                        <div class="input-group">
+                            <label class="input-label">Contraseña</label>
+                            <div class="pw-row">
+                                <input type="password" id="inputClave" class="input-field" placeholder="Elegí una contraseña" autocomplete="new-password">
+                                <button type="button" class="btn-toggle-pw" onclick="togglePw('inputClave',this)" tabindex="-1" title="Mostrar contraseña">
+                                    <i class="fa-solid fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="input-group">
+                            <label class="input-label">Repetir contraseña</label>
+                            <div class="pw-row">
+                                <input type="password" id="inputClaveRepeat" class="input-field" placeholder="Repetí la contraseña" autocomplete="new-password">
+                                <button type="button" class="btn-toggle-pw" onclick="togglePw('inputClaveRepeat',this)" tabindex="-1" title="Mostrar contraseña">
+                                    <i class="fa-solid fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <p class="auth-switch-hint">
+                            ¿Ya tenés una cuenta?
+                            <button type="button" class="auth-switch-link" onclick="switchTab('login')">Iniciar sesión</button>
+                        </p>
+                    </div>
 
-                        <div class="form-error" id="formError"></div>
-                        <button type="submit" class="login-btn" id="submitBtn">Ingresar</button>
-                    </form>
-                </div>
+                    <div class="form-error" id="formError"></div>
+                    <button type="submit" class="login-btn" id="submitBtn">Ingresar</button>
+
+                </form>
             </div>
-        </main>
 
-        <!-- Footer — visible solo en desktop ≥1200px -->
-        <footer class="desktop-footer">
-            <span>© 2026 COPA — Proyecto académico</span>
-            <div class="desktop-footer-links">
-                <span>Términos</span>
-                <span>Privacidad</span>
-                <span>Contacto</span>
+            <!-- ── Derecha: imagen ── -->
+            <div class="login-img-col" aria-hidden="true">
+                <img src="../images/cuandoloveodudar.jpg" alt="" class="login-side-img">
             </div>
-        </footer>
 
-    </div>
+        </div>
+    </main>
+
+    <!-- ══ FOOTER — compacto ══ -->
+    <footer class="login-footer-mini">
+        <span class="login-footer-copy">© 2026 COPA — Proyecto académico</span>
+        <div class="login-footer-links">
+            <a href="../ayuda.html">Ayuda</a>
+            <a href="../index.html">Volver al inicio</a>
+        </div>
+        <div class="login-footer-social">
+            <a href="#" title="Instagram"><i class="fa-brands fa-instagram"></i></a>
+            <a href="#" title="X"><i class="fa-brands fa-x-twitter"></i></a>
+            <a href="#" title="Discord"><i class="fa-brands fa-discord"></i></a>
+        </div>
+    </footer>
 
     <script src="../scripts/login.js"></script>
     <script src="../scripts/app-nav.js"></script>
+    <script>
+    // ── Show/hide contraseña ──────────────────────────────────
+    function togglePw(id, btn) {
+        var inp = document.getElementById(id);
+        if (!inp) return;
+        var show = inp.type === 'password';
+        inp.type = show ? 'text' : 'password';
+        btn.innerHTML = show
+            ? '<i class="fa-solid fa-eye-slash"></i>'
+            : '<i class="fa-solid fa-eye"></i>';
+    }
+
+    // ── Validación y correo — sin tocar login.js ──────────────
+    document.addEventListener('DOMContentLoaded', function () {
+        var form = document.getElementById('loginForm');
+        if (!form) return;
+        form.addEventListener('submit', function (e) {
+            if (typeof currentTab !== 'undefined' && currentTab === 'register') {
+                var clave  = (document.getElementById('inputClave')?.value  || '').trim();
+                var repeat = (document.getElementById('inputClaveRepeat')?.value || '').trim();
+                if (repeat && clave !== repeat) {
+                    e.stopImmediatePropagation();
+                    e.preventDefault();
+                    var el = document.getElementById('formError');
+                    if (el) { el.textContent = 'Las contraseñas no coinciden'; el.classList.add('visible'); }
+                    return;
+                }
+                // Inyectar mail en el fetch de register.php
+                var mail = (document.getElementById('inputCorreo')?.value || '').trim();
+                if (!window._mailPatchDone) {
+                    window._mailPatchDone = true;
+                    var _orig = window.fetch;
+                    window.fetch = function (url, opts) {
+                        if (typeof url === 'string' && url.includes('register.php') && opts && opts.body) {
+                            try { var b = JSON.parse(opts.body); b.mail = mail; opts = Object.assign({}, opts, { body: JSON.stringify(b) }); } catch(x) {}
+                        }
+                        return _orig.apply(this, arguments);
+                    };
+                }
+            }
+        }, true);
+    });
+    </script>
+
 </body>
 </html>

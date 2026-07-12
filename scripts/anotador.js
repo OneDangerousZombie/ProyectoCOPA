@@ -9,6 +9,42 @@ var pendingSub    = { team: null, playerOut: null };
 
 var AVATAR_COLORS = ['#7f77dd', '#1d9e75', '#d85a30', '#d4537e', '#378ade', '#ba7517', '#639922'];
 
+// ── Timer persistence (sessionStorage) ───────────────────────
+var TIMER_KEY = 'copa_timer_state';
+
+function getTimerKey() {
+    var matchId = sessionStorage.getItem('currentMatchId') || 'default';
+    return TIMER_KEY + '_' + matchId;
+}
+
+function saveTimerState() {
+    sessionStorage.setItem(getTimerKey(), JSON.stringify({
+        seconds: seconds,
+        isRunning: isRunning,
+        lastUpdate: Date.now()
+    }));
+}
+
+function loadTimerState() {
+    var saved = sessionStorage.getItem(getTimerKey());
+    if (!saved) return null;
+    try {
+        var state = JSON.parse(saved);
+        // Si estaba corriendo, sumar el tiempo transcurrido desde la última vez
+        if (state.isRunning && state.lastUpdate) {
+            var elapsed = Math.floor((Date.now() - state.lastUpdate) / 1000);
+            state.seconds = (state.seconds || 0) + elapsed;
+        }
+        return state;
+    } catch (e) {
+        return null;
+    }
+}
+
+function clearTimerState() {
+    sessionStorage.removeItem(getTimerKey());
+}
+
 // ── Init ────────────────────────────────────────────────────
 window.addEventListener('DOMContentLoaded', function() {
     var matchId = sessionStorage.getItem('currentMatchId');
@@ -17,6 +53,25 @@ window.addEventListener('DOMContentLoaded', function() {
     } else {
         window.location.href = 'crear-partido.html';
         return;
+    }
+
+    // Restaurar estado del timer si existe
+    var timerState = loadTimerState();
+    if (timerState) {
+        seconds = timerState.seconds || 0;
+        isRunning = timerState.isRunning || false;
+        updateTimerDisplay();
+
+        // Si estaba corriendo, reanudar automáticamente
+        if (isRunning) {
+            startTimer();
+        } else {
+            // Mostrar botón de continuar si estaba pausado
+            document.getElementById('startTimer').classList.add('hidden');
+            document.getElementById('pauseTimer').classList.add('hidden');
+            document.getElementById('resumeTimer').classList.remove('hidden');
+            document.getElementById('timer').classList.remove('running');
+        }
     }
 
     document.getElementById('startTimer')    .onclick = startTimer;
@@ -36,6 +91,14 @@ function loadMatch(matchId) {
     if (!currentMatch) {
         window.location.href = 'crear-partido.html';
         return;
+    }
+
+    // Restaurar timer desde el partido guardado (fallback)
+    if (currentMatch.timerSeconds !== undefined) {
+        seconds = currentMatch.timerSeconds;
+    }
+    if (currentMatch.timerRunning !== undefined) {
+        isRunning = currentMatch.timerRunning;
     }
 
     currentMatch.whiteScore = currentMatch.whiteScore || 0;
@@ -67,11 +130,16 @@ function setEl(id, val) {
 function startTimer() {
     if (timerInterval) return;
     isRunning     = true;
-    timerInterval = setInterval(function() { seconds++; updateTimerDisplay(); }, 1000);
+    timerInterval = setInterval(function() {
+        seconds++;
+        updateTimerDisplay();
+        saveTimerState();
+    }, 1000);
     document.getElementById('timer').classList.add('running');
     document.getElementById('startTimer').classList.add('hidden');
     document.getElementById('pauseTimer').classList.remove('hidden');
     document.getElementById('resumeTimer').classList.add('hidden');
+    saveTimerState();
 }
 
 function pauseTimer() {
@@ -80,6 +148,7 @@ function pauseTimer() {
     document.getElementById('timer').classList.remove('running');
     document.getElementById('pauseTimer').classList.add('hidden');
     document.getElementById('resumeTimer').classList.remove('hidden');
+    saveTimerState();
 }
 
 function resumeTimer() {
@@ -342,6 +411,8 @@ function undoLastEvent() {
 // ── Guardar ──────────────────────────────────────────────────
 function saveMatchProgress() {
     currentMatch.events = eventsList;
+    currentMatch.timerSeconds = seconds;
+    currentMatch.timerRunning = isRunning;
     var matches = getMatches();
     var idx     = -1;
     for (var i = 0; i < matches.length; i++) {
@@ -351,6 +422,7 @@ function saveMatchProgress() {
         matches[idx] = currentMatch;
         localStorage.setItem('matches', JSON.stringify(matches));
     }
+    saveTimerState();
 }
 
 // ── Confirmar salida ─────────────────────────────────────────
@@ -367,8 +439,12 @@ async function finishMatch() {
     if (!confirm('¿Finalizar el partido?')) return;
     if (isRunning) pauseTimer();
 
+    clearTimerState();
+
     currentMatch.completed = true;
     currentMatch.events    = eventsList;
+    currentMatch.timerSeconds = seconds;
+    currentMatch.timerRunning = false;
 
     saveMatchProgress();
 

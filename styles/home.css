@@ -557,3 +557,100 @@
         font-size: 0.78rem;
     }
 }
+
+/* ── Estadio de fondo en el match-card ──────────────────────
+   .match-stadium-wrap contiene la imagen de fondo + overlay +
+   el match-card encima. El match-card muestra equipo | score |
+   equipo en horizontal sobre la imagen.
+   La timeline y el botón quedan debajo, fuera de la imagen.  */
+
+.match-stadium-wrap {
+    position: relative;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    margin-bottom: 0.875rem;
+}
+
+.stadium-img {
+    display: block;
+    width: 100%;
+    height: 160px;
+    object-fit: cover;
+    object-position: center;
+}
+
+.stadium-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(8, 8, 8, 0.55);
+}
+
+/* Match-card sobre la imagen: transparente, posición absoluta */
+#currentMatch {
+    position: absolute;
+    inset: 0;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 1.25rem;
+    z-index: 1;
+}
+
+/* Equipos y score en fila: team izq | score centro | team der */
+#currentMatch .match-teams {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    gap: 0.5rem;
+}
+
+#currentMatch .team {
+    font-size: 1rem;
+    font-weight: 800;
+    color: #ffffff;
+    letter-spacing: 0.04em;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.7);
+    flex: 1;
+    text-align: center;
+}
+
+#currentMatch .team:first-child { text-align: left; }
+#currentMatch .team:last-child  { text-align: right; }
+
+#currentMatch .score {
+    font-size: 2rem;
+    font-weight: 900;
+    color: var(--green-primary);
+    letter-spacing: -0.02em;
+    text-shadow: 0 2px 12px rgba(0,0,0,0.8);
+    flex-shrink: 0;
+    padding: 0 0.75rem;
+}
+
+/* ── Background palco.jpg que se difumina hacia abajo ─────── */
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 60vh;
+    background-image: url('../images/palco.jpg');
+    background-size: cover;
+    background-position: center top;
+    background-repeat: no-repeat;
+    -webkit-mask-image: linear-gradient(to bottom,
+        rgba(0,0,0,0.75) 0%,
+        rgba(0,0,0,0.45) 50%,
+        rgba(0,0,0,0)    100%);
+    mask-image: linear-gradient(to bottom,
+        rgba(0,0,0,0.75) 0%,
+        rgba(0,0,0,0.45) 50%,
+        rgba(0,0,0,0)    100%);
+    z-index: -1;
+    pointer-events: none;
+}

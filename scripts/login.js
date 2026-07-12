@@ -59,7 +59,7 @@ async function handleLogin() {
         });
 
         const data = await res.json();
-
+        console.log(data);
         if (!data.ok) {
             showError(data.error || 'No se pudo iniciar sesión');
             setLoading(false);
@@ -67,6 +67,7 @@ async function handleLogin() {
         }
 
         // Redirección
+        sessionStorage.setItem('copaUser', JSON.stringify(data.jugador));
         window.location.href = 'league-selection.html';
 
     } catch (err) {
